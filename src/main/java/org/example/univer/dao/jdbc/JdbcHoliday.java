@@ -38,8 +38,8 @@ public class JdbcHoliday implements DaoHolidayInterfaces {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
             ps.setString(1, holiday.getDesc());
-            ps.setDate(2, Date.valueOf(holiday.getStartHoliday()));
-            ps.setDate(3, Date.valueOf(holiday.getEndHoliday()));
+            ps.setObject(2, holiday.getStartHolidayLocal());
+            ps.setObject(3, holiday.getEndHolidayLocal());
             return ps;
         }, keyHolder);
     }
@@ -49,8 +49,8 @@ public class JdbcHoliday implements DaoHolidayInterfaces {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
             ps.setString(1, holiday.getDesc());
-            ps.setDate(2, Date.valueOf(holiday.getStartHoliday()));
-            ps.setDate(3, Date.valueOf(holiday.getEndHoliday()));
+            ps.setObject(2, holiday.getStartHolidayLocal());
+            ps.setObject(3, holiday.getEndHolidayLocal());
             ps.setLong(4, holiday.getId());
             return ps;
         });

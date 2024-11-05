@@ -24,6 +24,9 @@ public class Holiday implements Serializable {
     public String getStartHoliday() {
         return start_holiday.format(formatter);
     }
+    public LocalDate getStartHolidayLocal() {
+        return start_holiday;
+    }
 
     public void setStartHoliday(LocalDate start_holiday) {
         this.start_holiday = start_holiday;
@@ -31,6 +34,9 @@ public class Holiday implements Serializable {
 
     public String getEndHoliday() {
         return end_holiday.format(formatter);
+    }
+    public LocalDate getEndHolidayLocal() {
+        return end_holiday;
     }
 
     public void setEndHoliday(LocalDate end_holiday) {

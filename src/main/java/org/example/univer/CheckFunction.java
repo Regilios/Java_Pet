@@ -9,6 +9,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CheckFunction {
@@ -47,25 +48,24 @@ public class CheckFunction {
     List<Lecture> lectures = jdbcLecture.findAll();
 
     public void startCheck() {
-//        System.out.println(formatter.formatListStudent(studentsList));
-//        System.out.println();
-//        System.out.println(formatter.formatListGroup(groupList));
-//        System.out.println();
-//        System.out.println(formatter.formatListTeacher(teacherList));
-//        System.out.println();
-//        System.out.println(formatter.formatListVacation(vacationList));
-//        System.out.println();
-//        System.out.println(formatter.formatListSubject(subjectList));
-//        System.out.println();
-//        System.out.println(formatter.formatListLectionTime(lectureTimes));
-//        System.out.println();
-//        System.out.println(formatter.formatAudience(audiences));
-//        System.out.println();
-//        System.out.println(formatter.formatListHoliday(holidays));
-//        System.out.println();
-//        System.out.println(formatter.formatListLecture(lectures));
-//        System.out.println();
-
+        System.out.println(formatter.formatListStudent(studentsList));
+        System.out.println();
+        System.out.println(formatter.formatListGroup(groupList));
+        System.out.println();
+        System.out.println(formatter.formatListTeacher(teacherList));
+        System.out.println();
+        System.out.println(formatter.formatListVacation(vacationList));
+        System.out.println();
+        System.out.println(formatter.formatListSubject(subjectList));
+        System.out.println();
+        System.out.println(formatter.formatListLectionTime(lectureTimes));
+        System.out.println();
+        System.out.println(formatter.formatAudience(audiences));
+        System.out.println();
+        System.out.println(formatter.formatListHoliday(holidays));
+        System.out.println();
+        System.out.println(formatter.formatListLecture(lectures));
+        System.out.println();
         System.out.println(formatter.formatListLecture(getTimetableDay(jdbcStudent.findById(1L), LocalDate.parse("2024-02-02"))));
         System.out.println();
         System.out.println(formatter.formatListLecture(getTimetableDay(jdbcTeacher.findById(2L), LocalDate.parse("2024-02-03"))));

@@ -110,8 +110,8 @@ public class Formatter {
         )).collect(Collectors.joining(System.lineSeparator()));
     }
     public String formatListVacation(List<Vacation> list) {
-        int maxStartJob = getMaxCol(list, Vacation::getStartJob);
-        int maxEndJob = getMaxCol(list, Vacation::getEndJob);
+        int maxStartJob = getMaxCol(list, Vacation::getStartJobString);
+        int maxEndJob = getMaxCol(list, Vacation::getEndJobString);
         int maxFirstName = getMaxCol(list, Vacation::getTeacherFirstName);
         int maxLastName = getMaxCol(list, Vacation::getTeacherLastName);
 
@@ -121,8 +121,8 @@ public class Formatter {
             "END JOB: %-" + maxEndJob + "s" + COL +
             "TEACHER: %-" + maxFirstName + "s %-" + maxLastName +"s",
             vacation.getId(),
-            vacation.getStartJob(),
-            vacation.getEndJob(),
+            vacation.getStartJobLocal(),
+            vacation.getEndJobLocal(),
             vacation.getTeacher().getFirstName(),
             vacation.getTeacher().getLastName()
         )).collect(Collectors.joining(System.lineSeparator()));

@@ -8,10 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-
 import javax.sql.DataSource;
 
 @Configuration
@@ -28,7 +25,7 @@ public class SpringConfig {
     @Value("${password}")
     private String password;
 
-    @Value("init_sql.sql")
+    @Value("schema.sql")
     Resource init;
     @Value("data.sql")
     Resource data;

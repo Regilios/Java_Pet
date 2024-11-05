@@ -34,8 +34,8 @@ public class JdbcVacation implements DaoVacationInterfaces {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
-            ps.setDate(1, Date.valueOf(vacation.getStartJob()));
-            ps.setDate(2, Date.valueOf(vacation.getEndJob()));
+            ps.setObject(1, vacation.getStartJobLocal());
+            ps.setObject(2, vacation.getEndJobLocal());
             ps.setLong(3, vacation.getTeacher().getId());
             return ps;
         }, keyHolder);
@@ -45,8 +45,8 @@ public class JdbcVacation implements DaoVacationInterfaces {
     public void update(Vacation vacation) {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
-            ps.setDate(1, Date.valueOf(vacation.getStartJob()));
-            ps.setDate(2, Date.valueOf(vacation.getEndJob()));
+            ps.setObject(1, vacation.getStartJobLocal());
+            ps.setObject(2, vacation.getEndJobLocal());
             ps.setLong(3, vacation.getTeacher().getId());
             ps.setLong(4, vacation.getId());
             return ps;

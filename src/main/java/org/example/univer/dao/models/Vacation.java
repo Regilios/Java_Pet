@@ -30,21 +30,27 @@ public class Vacation implements Serializable {
         this.id = id;
     }
 
-    public String getStartJob() {
-        return startJob.format(formatter);
-    }
-
     public void setStartJob(LocalDate startJob) {
         this.startJob = startJob;
     }
-
-    public String getEndJob() {
-        return endJob.format(formatter);
+    public String getStartJobString() {
+        return startJob.format(formatter);
     }
+    public LocalDate getStartJobLocal() {
+        return startJob;
+    }
+
 
     public void setEndJob(LocalDate endJob) {
         this.endJob = endJob;
     }
+    public String getEndJobString() {
+        return endJob.format(formatter);
+    }
+    public LocalDate getEndJobLocal() {
+        return endJob;
+    }
+
 
     public Teacher getTeacher() {
         return teacher;

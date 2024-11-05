@@ -31,9 +31,6 @@ public class JdbcTeacher implements DaoTeacherInterfaces {
 
     @Override
     public void create(Teacher teacher) {
-        if (!Objects.isNull(teacher.getId())) {
-            throw new IllegalArgumentException("Учитель с таким id уже существует!");
-        }
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
