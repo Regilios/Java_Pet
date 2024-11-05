@@ -14,13 +14,14 @@ import java.util.List;
 
 @Component
 public class JdbcAudience implements DaoAudienceInterfaces {
-    private final JdbcTemplate jdbcTemplate;
-    private AudienceMapper audienceMapper;
     private static final String SQL_GET_BY_ID = "SELECT * FROM audience WHERE id = ?";
     private static final String SQL_FIND_ALL = "SELECT * FROM audience";
     private static final String SQL_CREATE = "INSERT INTO audience (room, size) VALUES (?, ?)";
     private static final String SQL_UPDATE = "UPDATE audience SET room=?, size=? WHERE id=?";
     private static final String SQL_DELETE = "DELETE FROM audience WHERE id = ?";
+
+    private final JdbcTemplate jdbcTemplate;
+    private AudienceMapper audienceMapper;
 
     @Autowired
     public JdbcAudience(JdbcTemplate jdbcTemplate, AudienceMapper audienceMapper) {

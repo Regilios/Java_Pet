@@ -15,13 +15,14 @@ import java.util.List;
 
 @Component
 public class JdbcCathedra implements DaoCathedraInterfaces {
-    private final JdbcTemplate jdbcTemplate;
-    private CathedraMapper cathedraMapper;
     private static final String SQL_GET_BY_ID = "SELECT * FROM cathedra WHERE id = ?";
     private static final String SQL_FIND_ALL = "SELECT * FROM cathedra";
     private static final String SQL_CREATE = "INSERT INTO cathedra (name) VALUES (?)";
     private static final String SQL_UPDATE = "UPDATE cathedra SET name=? WHERE id=?";
     private static final String SQL_DELETE = "DELETE FROM cathedra WHERE id = ?";
+
+    private final JdbcTemplate jdbcTemplate;
+    private CathedraMapper cathedraMapper;
 
     @Autowired
     public JdbcCathedra(JdbcTemplate jdbcTemplate, CathedraMapper cathedraMapper) {

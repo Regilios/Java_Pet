@@ -15,8 +15,6 @@ import java.util.Objects;
 
 @Component
 public class JdbcTeacher implements DaoTeacherInterfaces {
-    private final JdbcTemplate jdbcTemplate;
-    private TeacherMapper teacherMapper;
     private static final String SQL_CREATE = "INSERT INTO teacher (firstName, lastName, gender, address, email, phone, birthday, cathedra_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_UPDATE = "UPDATE teacher SET firstName=?, lastName=?, gender=?, address=?, email=?, phone=?, birthday=?, cathedra_id=? WHERE id = ?";
     private static final String SQL_DELETE = "DELETE FROM teacher WHERE id = ?";
@@ -24,6 +22,9 @@ public class JdbcTeacher implements DaoTeacherInterfaces {
     private static final String SQL_FIND_ALL = "SELECT * FROM teacher ORDER BY id";
     private static final String SQL_TEACHER_APPOINT_SUBJECT = "INSERT INTO teacher_subject (teacher_id, subject_id) VALUES (?, ?)";
     private static final String SQL_DELETE_TEACHER_TO_SUBJECT = "DELETE FROM teacher_subject WHERE teacher_id = ? AND subject_id = ?";
+
+    private final JdbcTemplate jdbcTemplate;
+    private TeacherMapper teacherMapper;
 
     @Autowired
     public JdbcTeacher(JdbcTemplate jdbcTemplate, TeacherMapper teacherMapper) {

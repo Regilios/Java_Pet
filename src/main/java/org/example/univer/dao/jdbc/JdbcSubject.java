@@ -19,6 +19,7 @@ public class JdbcSubject implements DaoSubjectInterfaces {
     private static final String SQL_CREATE = "INSERT INTO subject (name, description) VALUES (?, ?)";
     private static final String SQL_DELETE = "DELETE FROM subject WHERE id = ?";
     private static final String SQL_UPDATE = "UPDATE subject SET name=?, description=? WHERE id=?";
+
     private final JdbcTemplate jdbcTemplate;
     private SubjectMapper subjectMapper;
 

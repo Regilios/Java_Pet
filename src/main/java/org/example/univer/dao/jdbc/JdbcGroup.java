@@ -22,6 +22,7 @@ public class JdbcGroup implements DaoGroupInterfaces {
     private static final String SQL_DELETE = "DELETE FROM groups WHERE id = ?";
     private static final String SQL_DELETE_GROUP_TO_LECTION = "DELETE FROM group_lection WHERE group_id = ? AND lection_id=?";
     private static final String SQL_UPDATE = "UPDATE groups SET name=?, cathedra_id=? WHERE id=?";
+
     private final JdbcTemplate jdbcTemplate;
     private GroupMapper groupMapper;
 

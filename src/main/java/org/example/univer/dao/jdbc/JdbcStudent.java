@@ -16,15 +16,15 @@ import java.util.List;
 @Component
 public class JdbcStudent implements DaoStudentInterfaces {
 
-    private final JdbcTemplate jdbcTemplate;
-    private StudentMapper studentMapper;
-
     private static final String SQL_UPDATE = "UPDATE students SET firstName=?, lastName=?, gender=?, address=?, email=?, phone=?, birthday=?, group_id=? WHERE id = ?";
     private static final String SQL_DELETE = "DELETE FROM students WHERE id = ?";
     private static final String SQL_GET_BY_ID = "SELECT * FROM students WHERE id = ?";
     private static final String SQL_FIND_STUDENT_BY_GROUP_ID = "SELECT * FROM students WHERE group_id = ? ORDER BY id";
     private static final String SQL_FIND_ALL = "SELECT * FROM students ORDER BY id";
     private static final String SQL_CREATE = "INSERT INTO students (firstName, lastName, gender, address, email, phone, birthday, group_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    private final JdbcTemplate jdbcTemplate;
+    private StudentMapper studentMapper;
 
     @Autowired
     public JdbcStudent(JdbcTemplate jdbcTemplate, StudentMapper studentMapper) {

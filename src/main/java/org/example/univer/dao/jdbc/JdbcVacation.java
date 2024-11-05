@@ -19,6 +19,7 @@ public class JdbcVacation implements DaoVacationInterfaces {
     private static final String SQL_CREATE = "INSERT INTO vacation (startjob, endjob, teacher_id) VALUES (?, ?, ?)";
     private static final String SQL_DELETE = "DELETE FROM vacation WHERE id = ?";
     private static final String SQL_UPDATE = "UPDATE vacation SET startjob=?, endjob=?, teacher_id=? WHERE id=?";
+
     private final JdbcTemplate jdbcTemplate;
     private VacationMapper vacationMapper;
 
