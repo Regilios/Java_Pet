@@ -16,7 +16,6 @@ import java.util.Objects;
 @Component
 public class JdbcGroup implements DaoGroupInterfaces {
     private static final String SQL_FIND_ALL = "SELECT * FROM groups ORDER BY id";
-
     private static final String SQL_GET_BY_ID = "SELECT * FROM groups WHERE id = ?";
     private static final String SQL_CREATE = "INSERT INTO groups (name, cathedra_id) VALUES (?, ?)";
     private static final String SQL_GROUP_APPOINT_LECTION = "INSERT INTO group_lection (group_id, lection_id) VALUES (?, ?)";
@@ -41,9 +40,6 @@ public class JdbcGroup implements DaoGroupInterfaces {
             ps.setLong(2, group.getCathedra().getId());
             return ps;
         }, keyHolder);
-
-//        Устанавливаем ключ обрновления
-//        int id =  jdbcTemplate.update(SQL_CREATE, group.getName(), group.getCathedra().getId());
     }
 
     public void groupAppointLection(Long group_id, Long lection_id) {

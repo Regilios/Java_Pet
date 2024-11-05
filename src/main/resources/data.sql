@@ -192,13 +192,6 @@ INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups 
 INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Ардор'), 14);
 INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Ардор'), 15);
 INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Этонсель'), 16);
---
--- INSERT INTO Groups_Students (group_id, student_id) VALUES (1,1);
--- INSERT INTO Groups_Students (group_id, student_id) VALUES (1,2);
--- INSERT INTO Groups_Students (group_id, student_id) VALUES (1,3);
--- INSERT INTO Groups_Students (group_id, student_id) VALUES (2,4);
--- INSERT INTO Groups_Students (group_id, student_id) VALUES (2,5);
--- INSERT INTO Groups_Students (group_id, student_id) VALUES (2,6);
 
 
 

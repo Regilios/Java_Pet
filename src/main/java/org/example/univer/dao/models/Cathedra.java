@@ -14,8 +14,7 @@ public class Cathedra implements Serializable {
     private List<Lecture> leactions = new ArrayList<>();
     private List<Holiday> holydays = new ArrayList<>();
 
-    public Cathedra() {
-    }
+    public Cathedra() {}
 
     public Cathedra(Long id, String name, List<Group> groups, List<Teacher> teachers, List<Lecture> leactions, List<Holiday> holydays) {
         this.id = id;

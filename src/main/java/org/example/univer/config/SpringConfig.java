@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+
 import javax.sql.DataSource;
 
 @Configuration
@@ -55,46 +56,55 @@ public class SpringConfig {
     public Group group() {
         return new Group();
     }
+
     @Bean
     @Scope("prototype")
     public Student student() {
         return new Student();
     }
+
     @Bean
     @Scope("prototype")
     public Cathedra cathedra() {
         return new Cathedra();
     }
+
     @Bean
     @Scope("prototype")
     public Teacher teacher() {
         return new Teacher();
     }
+
     @Bean
     @Scope("prototype")
     public Vacation vacation() {
         return new Vacation();
     }
+
     @Bean
     @Scope("prototype")
     public Subject subject() {
         return new Subject();
     }
+
     @Bean
     @Scope("prototype")
     public LectureTime lectureTime() {
         return new LectureTime();
     }
+
     @Bean
     @Scope("prototype")
     public Audience audience() {
         return new Audience();
     }
+
     @Bean
     @Scope("prototype")
     public Holiday holiday() {
         return new Holiday();
     }
+
     @Bean
     @Scope("prototype")
     public Lecture lecture() {

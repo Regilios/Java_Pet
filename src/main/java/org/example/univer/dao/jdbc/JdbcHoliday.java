@@ -2,16 +2,13 @@ package org.example.univer.dao.jdbc;
 
 import org.example.univer.dao.interfaces.DaoHolidayInterfaces;
 import org.example.univer.dao.mapper.HolidayMapper;
-import org.example.univer.dao.mapper.VacationMapper;
 import org.example.univer.dao.models.Holiday;
-import org.example.univer.dao.models.Vacation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 

@@ -1,16 +1,14 @@
 package org.example.univer.dao.mapper;
 
 import org.example.univer.dao.jdbc.JdbcTeacher;
-import org.example.univer.dao.models.Cathedra;
-import org.example.univer.dao.models.Group;
 import org.example.univer.dao.models.Teacher;
 import org.example.univer.dao.models.Vacation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 @Component
 public class VacationMapper implements RowMapper<Vacation> {
     private JdbcTeacher jdbcTeacher;
@@ -27,7 +25,7 @@ public class VacationMapper implements RowMapper<Vacation> {
         vacation.setEndJob(rs.getDate("endjob").toLocalDate());
 
         Long localTeacherId = rs.getLong("teacher_id");
-        if(!rs.wasNull()) {
+        if (!rs.wasNull()) {
             Teacher teacher = jdbcTeacher.findById(localTeacherId);
             vacation.setTeacher(teacher);
         }

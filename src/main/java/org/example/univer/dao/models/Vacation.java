@@ -19,8 +19,8 @@ public class Vacation implements Serializable {
         this.endJob = endJob;
         this.teacher = teacher;
     }
-    public Vacation() {
-    }
+
+    public Vacation() {}
 
     public Long getId() {
         return id;
@@ -33,24 +33,26 @@ public class Vacation implements Serializable {
     public void setStartJob(LocalDate startJob) {
         this.startJob = startJob;
     }
+
     public String getStartJobString() {
         return startJob.format(formatter);
     }
+
     public LocalDate getStartJobLocal() {
         return startJob;
     }
 
-
     public void setEndJob(LocalDate endJob) {
         this.endJob = endJob;
     }
+
     public String getEndJobString() {
         return endJob.format(formatter);
     }
+
     public LocalDate getEndJobLocal() {
         return endJob;
     }
-
 
     public Teacher getTeacher() {
         return teacher;
@@ -59,12 +61,15 @@ public class Vacation implements Serializable {
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
+
     public String getTeacherFirstName() {
         return teacher.getFirstName();
     }
+
     public String getTeacherLastName() {
         return teacher.getLastName();
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

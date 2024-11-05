@@ -15,8 +15,8 @@ public class Audience implements Serializable {
         this.room = room;
         this.size = size;
     }
-    public Audience() {
 
+    public Audience() {
     }
 
     public Long getId() {
@@ -46,9 +46,11 @@ public class Audience implements Serializable {
     public String getRoomString() {
         return room.toString();
     }
+
     public String getSizeString() {
         return size.toString();
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,6 +63,4 @@ public class Audience implements Serializable {
     public int hashCode() {
         return Objects.hash(id, room, size);
     }
-
-
 }

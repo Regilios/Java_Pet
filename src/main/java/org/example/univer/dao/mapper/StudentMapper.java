@@ -1,13 +1,12 @@
 package org.example.univer.dao.mapper;
 
 import org.example.univer.dao.jdbc.JdbcGroup;
-
-import org.example.univer.dao.jdbc.JdbcStudent;
 import org.example.univer.dao.models.Gender;
 import org.example.univer.dao.models.Group;
 import org.example.univer.dao.models.Student;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -33,7 +32,7 @@ public class StudentMapper implements RowMapper<Student> {
 
         Long localGroupId = rs.getLong("group_id");
 
-        if(!rs.wasNull()) {
+        if (!rs.wasNull()) {
             Group group = jdbcGroup.findById(localGroupId);
             student.setGroup(group);
         }

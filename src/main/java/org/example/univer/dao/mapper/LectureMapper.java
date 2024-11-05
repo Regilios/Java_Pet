@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 @Component
 public class LectureMapper implements RowMapper<Lecture> {
     private JdbcCathedra jdbcCathedra;
@@ -34,7 +35,7 @@ public class LectureMapper implements RowMapper<Lecture> {
         Long localLectureTimeId = rs.getLong("lecture_time_id");
         Long localAudienceId = rs.getLong("audience_id");
 
-        if(!rs.wasNull()) {
+        if (!rs.wasNull()) {
             Cathedra cathedra = jdbcCathedra.findById(localCathedraId);
             lecture.setCathedra(cathedra);
 

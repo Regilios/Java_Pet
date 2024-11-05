@@ -14,13 +14,14 @@ public class Teacher extends Person implements Serializable {
     private Cathedra cathedra;
     private List<Vacation> vacation = new ArrayList<>();
 
-    public Teacher(String firstName, String lastName, Gender gender, String addres, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subject, List<Vacation> vacation ) {
+    public Teacher(String firstName, String lastName, Gender gender, String addres, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subject, List<Vacation> vacation) {
         super(firstName, lastName, gender, addres, email, phone, birthday);
         this.id = id;
         this.cathedra = cathedra;
         this.subject = subject;
         this.vacation = vacation;
     }
+
     public Teacher() {}
 
     public Long getId() {
@@ -42,6 +43,7 @@ public class Teacher extends Person implements Serializable {
     public Cathedra getCathedra() {
         return cathedra;
     }
+
     public String getCathedraName() {
         return cathedra.getName();
     }

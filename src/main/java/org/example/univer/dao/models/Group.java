@@ -17,8 +17,7 @@ public class Group implements Serializable {
         this.cathedra = cathedra;
     }
 
-    public Group() {
-    }
+    public Group() {}
 
     public Long getId() {
         return id;
@@ -56,7 +55,6 @@ public class Group implements Serializable {
         this.students = students;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,6 +67,4 @@ public class Group implements Serializable {
     public int hashCode() {
         return Objects.hash(id, name, cathedra, students);
     }
-
-
 }

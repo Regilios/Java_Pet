@@ -22,9 +22,7 @@ public abstract class Person {
         this.birthday = birthday;
     }
 
-    public Person() {
-
-    }
+    public Person() {}
 
     public String getFirstName() {
         return firstName;

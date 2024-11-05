@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+
 @Component
 public class JdbcTeacher implements DaoTeacherInterfaces {
     private final JdbcTemplate jdbcTemplate;
@@ -23,6 +24,7 @@ public class JdbcTeacher implements DaoTeacherInterfaces {
     private static final String SQL_FIND_ALL = "SELECT * FROM teacher ORDER BY id";
     private static final String SQL_TEACHER_APPOINT_SUBJECT = "INSERT INTO teacher_subject (teacher_id, subject_id) VALUES (?, ?)";
     private static final String SQL_DELETE_TEACHER_TO_SUBJECT = "DELETE FROM teacher_subject WHERE teacher_id = ? AND subject_id = ?";
+
     @Autowired
     public JdbcTeacher(JdbcTemplate jdbcTemplate, TeacherMapper teacherMapper) {
         this.jdbcTemplate = jdbcTemplate;

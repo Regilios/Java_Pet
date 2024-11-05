@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+
 @Component
 public class JdbcSubject implements DaoSubjectInterfaces {
     private static final String SQL_FIND_ALL = "SELECT * FROM subject ORDER BY id";

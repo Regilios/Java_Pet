@@ -18,8 +18,7 @@ public class Subject implements Serializable {
         this.description = description;
     }
 
-    public Subject() {
-    }
+    public Subject() {}
 
     public Long getId() {
         return id;

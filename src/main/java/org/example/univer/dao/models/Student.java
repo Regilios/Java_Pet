@@ -30,9 +30,11 @@ public class Student extends Person implements Serializable {
     public Group getGroup() {
         return group;
     }
+
     public String getGroupName() {
         return group.getName();
     }
+
     public void setGroup(Group group) {
         this.group = group;
     }

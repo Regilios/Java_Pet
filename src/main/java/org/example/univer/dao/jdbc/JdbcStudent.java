@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class JdbcStudent implements DaoStudentInterfaces {
@@ -49,7 +48,7 @@ public class JdbcStudent implements DaoStudentInterfaces {
 
             return ps;
         }, keyHolder);
-       // System.out.println(keyHolder.getKey());
+        // System.out.println(keyHolder.getKey());
     }
 
     @Override

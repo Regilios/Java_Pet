@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class LectureTime implements Serializable  {
+public class LectureTime implements Serializable {
     private static final long serialVersionUID = 4670760351992342275L;
     private Long id;
     private LocalDateTime start_lection;
@@ -17,6 +17,7 @@ public class LectureTime implements Serializable  {
         this.start_lection = start;
         this.end_lection = end;
     }
+
     public LectureTime() {}
 
     public Long getId() {

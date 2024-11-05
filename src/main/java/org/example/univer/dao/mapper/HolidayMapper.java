@@ -1,12 +1,12 @@
 package org.example.univer.dao.mapper;
 
-import org.example.univer.dao.models.Audience;
 import org.example.univer.dao.models.Holiday;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 @Component
 public class HolidayMapper implements RowMapper<Holiday> {
     @Override

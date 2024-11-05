@@ -19,11 +19,13 @@ public class Holiday implements Serializable {
         this.start_holiday = start_holiday;
         this.end_holiday = end_holiday;
     }
+
     public Holiday() {}
 
     public String getStartHoliday() {
         return start_holiday.format(formatter);
     }
+
     public LocalDate getStartHolidayLocal() {
         return start_holiday;
     }
@@ -35,6 +37,7 @@ public class Holiday implements Serializable {
     public String getEndHoliday() {
         return end_holiday.format(formatter);
     }
+
     public LocalDate getEndHolidayLocal() {
         return end_holiday;
     }
@@ -71,5 +74,4 @@ public class Holiday implements Serializable {
     public int hashCode() {
         return Objects.hash(id, desc, start_holiday, end_holiday);
     }
-
 }

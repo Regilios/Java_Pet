@@ -7,9 +7,7 @@ import org.example.univer.dao.models.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CheckFunction {
@@ -31,8 +29,8 @@ public class CheckFunction {
     private Teacher teacher = context.getBean("teacher", Teacher.class);
     private Vacation vacation = context.getBean("vacation", Vacation.class);
     private Subject subject = context.getBean("subject", Subject.class);
-    private LectureTime lectureTime = context.getBean("lectureTime",LectureTime.class);
-    private Audience audience = context.getBean("audience",Audience.class);
+    private LectureTime lectureTime = context.getBean("lectureTime", LectureTime.class);
+    private Audience audience = context.getBean("audience", Audience.class);
     private Holiday holiday = context.getBean("holiday", Holiday.class);
     private Lecture lecture = context.getBean("lecture", Lecture.class);
     private Formatter formatter = context.getBean(Formatter.class);
@@ -71,7 +69,7 @@ public class CheckFunction {
         System.out.println(formatter.formatListLecture(getTimetableDay(jdbcTeacher.findById(2L), LocalDate.parse("2024-02-03"))));
 
     }
-    /* Узнать какие у студента лекции в конкретное число */
+
     public List<Lecture> getTimetableDay(Student student, LocalDate localDate) {
         List<Lecture> lection_list = jdbcLecture.findLectionByGroupIdForStudent(student.getGroup().getId());
         return lection_list.stream().filter(lecture -> lecture.getLocalTimeStart().getDayOfMonth() == localDate.getDayOfMonth()).collect(Collectors.toList());

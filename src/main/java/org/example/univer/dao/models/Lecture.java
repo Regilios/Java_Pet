@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Lecture implements Serializable  {
+public class Lecture implements Serializable {
     private static final long serialVersionUID = 3903027710562111557L;
     private Long id;
     private LectureTime time;
@@ -26,7 +26,9 @@ public class Lecture implements Serializable  {
         this.audience = audience;
         this.subject = subject;
     }
-    public Lecture() {}
+
+    public Lecture() {
+    }
 
     public Long getId() {
         return id;
@@ -43,18 +45,23 @@ public class Lecture implements Serializable  {
     public void setTime(LectureTime time) {
         this.time = time;
     }
+
     public String getTimeStart() {
-         return time.getStart();
+        return time.getStart();
     }
+
     public LocalDateTime getLocalTimeStart() {
         return time.getStartLocal();
     }
+
     public String getTimeEnd() {
         return time.getEnd();
     }
+
     public LocalDateTime getLocalTimeEnd() {
         return time.getEndLocal();
     }
+
     public Teacher getTeacher() {
         return teacher;
     }
@@ -62,9 +69,11 @@ public class Lecture implements Serializable  {
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
+
     public String getTeacherFirstName() {
         return teacher.getFirstName();
     }
+
     public String getTeacherLastName() {
         return teacher.getLastName();
     }
@@ -76,6 +85,7 @@ public class Lecture implements Serializable  {
     public void setCathedra(Cathedra cathedra) {
         this.cathedra = cathedra;
     }
+
     public String getCathedraName() {
         return cathedra.getName();
     }
@@ -91,6 +101,7 @@ public class Lecture implements Serializable  {
     public Audience getAudience() {
         return audience;
     }
+
     public String getAudienceRoom() {
         return audience.getRoomString();
     }
@@ -102,6 +113,7 @@ public class Lecture implements Serializable  {
     public Subject getSubject() {
         return subject;
     }
+
     public String getSubjectName() {
         return subject.getName();
     }

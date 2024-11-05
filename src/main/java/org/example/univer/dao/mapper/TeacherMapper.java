@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+
 @Component
 public class TeacherMapper implements RowMapper<Teacher> {
     private JdbcCathedra jdbcCathedra;
@@ -29,7 +30,7 @@ public class TeacherMapper implements RowMapper<Teacher> {
         teacher.setBirthday(rs.getObject("birthday", LocalDate.class));
 
         Long localCathderaId = rs.getLong("cathedra_id");
-        if(!rs.wasNull()) {
+        if (!rs.wasNull()) {
             Cathedra cathedra = jdbcCathedra.findById(localCathderaId);
             teacher.setCathedra(cathedra);
         }

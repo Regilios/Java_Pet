@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+
 @Component
 public class JdbcLecture implements DaoLectureInterfaces {
     private static final String SQL_FIND_ALL = "SELECT * FROM lection ORDER BY id";

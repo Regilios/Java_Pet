@@ -82,33 +82,10 @@ CREATE TABLE IF NOT EXISTS teacher_subject (
     subject_id INTEGER,
     FOREIGN KEY (teacher_id) REFERENCES teacher (id) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subject (id) ON UPDATE CASCADE ON DELETE CASCADE
-    --UNIQUE (teacher_id, subject_id)
 );
 CREATE TABLE IF NOT EXISTS group_lection (
     group_id INTEGER,
     lection_id INTEGER,
     FOREIGN KEY (group_id) REFERENCES groups (id) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (lection_id) REFERENCES lection (id) ON UPDATE CASCADE ON DELETE CASCADE
-    --UNIQUE (teacher_id, subject_id)
 );
-
-
---
--- CREATE TABLE IF NOT EXISTS Groups_Students
--- (
---     group_id INTEGER,
---     student_id INTEGER,
---     FOREIGN KEY (group_id) REFERENCES Groups (id) ON UPDATE CASCADE ON DELETE CASCADE,
---     FOREIGN KEY (student_id) REFERENCES Students (id) ON UPDATE CASCADE ON DELETE CASCADE
---     --UNIQUE (group_id, student_id)
--- );
---
--- CREATE TABLE IF NOT EXISTS Cathedra_Groups
--- (
---     cathedra_id INTEGER,
---     group_id INTEGER,
---     FOREIGN KEY (cathedra_id) REFERENCES Cathedra (id) ON UPDATE CASCADE ON DELETE CASCADE,
---     FOREIGN KEY (group_id) REFERENCES Groups (id) ON UPDATE CASCADE ON DELETE CASCADE
---     --UNIQUE (cathedra_id, group_id)
--- );
---

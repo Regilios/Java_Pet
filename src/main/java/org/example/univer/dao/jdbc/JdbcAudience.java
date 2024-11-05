@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+
 @Component
 public class JdbcAudience implements DaoAudienceInterfaces {
     private final JdbcTemplate jdbcTemplate;
