@@ -1,8 +1,8 @@
 package org.example.univer.dao.jdbc;
 
-import org.example.univer.dao.interfaces.DaoSubjectInterfaces;
+import org.example.univer.dao.interfaces.DaoSubjectInterface;
 import org.example.univer.dao.mapper.SubjectMapper;
-import org.example.univer.dao.models.Subject;
+import org.example.univer.models.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,12 +13,13 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
-public class JdbcSubject implements DaoSubjectInterfaces {
-    private static final String SQL_FIND_ALL = "SELECT * FROM subject ORDER BY id";
-    private static final String SQL_GET_BY_ID = "SELECT * FROM subject WHERE id = ?";
-    private static final String SQL_CREATE = "INSERT INTO subject (name, description) VALUES (?, ?)";
-    private static final String SQL_DELETE = "DELETE FROM subject WHERE id = ?";
-    private static final String SQL_UPDATE = "UPDATE subject SET name=?, description=? WHERE id=?";
+public class JdbcSubject implements DaoSubjectInterface {
+    private static final String CREATE_SUBJECT = "INSERT INTO subject (name, description) VALUES (?, ?)";
+    private static final String DELETE_SUBJECT = "DELETE FROM subject WHERE id = ?";
+    private static final String UPDATE_SUBJECT = "UPDATE subject SET name=?, description=? WHERE id=?";
+    private static final String GET_BY_ID = "SELECT * FROM subject WHERE id = ?";
+    private static final String FIND_ALL = "SELECT * FROM subject ORDER BY id";
+
 
     private final JdbcTemplate jdbcTemplate;
     private SubjectMapper subjectMapper;
@@ -33,17 +34,18 @@ public class JdbcSubject implements DaoSubjectInterfaces {
     public void create(Subject subject) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(CREATE_SUBJECT, new String[]{"id"});
             ps.setString(1, subject.getName());
             ps.setString(2, subject.getDescription());
             return ps;
         }, keyHolder);
+        subject.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
     @Override
     public void update(Subject subject) {
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
+            PreparedStatement ps = connection.prepareStatement(UPDATE_SUBJECT);
             ps.setString(1, subject.getName());
             ps.setString(2, subject.getDescription());
             ps.setLong(3, subject.getId());
@@ -53,17 +55,17 @@ public class JdbcSubject implements DaoSubjectInterfaces {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(SQL_DELETE, id);
+        jdbcTemplate.update(DELETE_SUBJECT, id);
     }
 
     @Override
     public Subject findById(Long id) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_ID, subjectMapper, id);
+        return jdbcTemplate.queryForObject(GET_BY_ID, subjectMapper, id);
     }
 
     @Override
     public List<Subject> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL, subjectMapper);
+        return jdbcTemplate.query(FIND_ALL, subjectMapper);
     }
 }
 

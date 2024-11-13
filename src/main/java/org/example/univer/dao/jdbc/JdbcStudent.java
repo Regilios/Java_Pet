@@ -1,9 +1,9 @@
 package org.example.univer.dao.jdbc;
 
-import org.example.univer.dao.interfaces.DaoStudentInterfaces;
+import org.example.univer.dao.interfaces.DaoStudentInterface;
 import org.example.univer.dao.mapper.StudentMapper;
-import org.example.univer.dao.models.Group;
-import org.example.univer.dao.models.Student;
+import org.example.univer.models.Group;
+import org.example.univer.models.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,14 +14,13 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
-public class JdbcStudent implements DaoStudentInterfaces {
-
-    private static final String SQL_UPDATE = "UPDATE students SET firstName=?, lastName=?, gender=?, address=?, email=?, phone=?, birthday=?, group_id=? WHERE id = ?";
-    private static final String SQL_DELETE = "DELETE FROM students WHERE id = ?";
-    private static final String SQL_GET_BY_ID = "SELECT * FROM students WHERE id = ?";
-    private static final String SQL_FIND_STUDENT_BY_GROUP_ID = "SELECT * FROM students WHERE group_id = ? ORDER BY id";
-    private static final String SQL_FIND_ALL = "SELECT * FROM students ORDER BY id";
-    private static final String SQL_CREATE = "INSERT INTO students (firstName, lastName, gender, address, email, phone, birthday, group_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+public class JdbcStudent implements DaoStudentInterface {
+    private static final String CREATE_STUDENT = "INSERT INTO students (firstName, lastName, gender, address, email, phone, birthday, group_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE_STUDENT = "UPDATE students SET firstName=?, lastName=?, gender=?, address=?, email=?, phone=?, birthday=?, group_id=? WHERE id = ?";
+    private static final String DELETE_STUDENT = "DELETE FROM students WHERE id = ?";
+    private static final String GET_BY_ID = "SELECT * FROM students WHERE id = ?";
+    private static final String FIND_STUDENT_BY_GROUP_ID = "SELECT * FROM students WHERE group_id = ? ORDER BY id";
+    private static final String FIND_ALL = "SELECT * FROM students ORDER BY id";
 
     private final JdbcTemplate jdbcTemplate;
     private StudentMapper studentMapper;
@@ -36,7 +35,7 @@ public class JdbcStudent implements DaoStudentInterfaces {
     public void create(Student student) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(CREATE_STUDENT, new String[]{"id"});
             ps.setString(1, student.getFirstName());
             ps.setString(2, student.getLastName());
             ps.setString(3, student.getGender());
@@ -48,13 +47,13 @@ public class JdbcStudent implements DaoStudentInterfaces {
 
             return ps;
         }, keyHolder);
-        // System.out.println(keyHolder.getKey());
+        student.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
     @Override
     public void update(Student student) {
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
+            PreparedStatement ps = connection.prepareStatement(UPDATE_STUDENT);
             ps.setString(1, student.getFirstName());
             ps.setString(2, student.getLastName());
             ps.setString(3, student.getGender());
@@ -70,21 +69,21 @@ public class JdbcStudent implements DaoStudentInterfaces {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(SQL_DELETE, id);
+        jdbcTemplate.update(DELETE_STUDENT, id);
     }
 
     @Override
     public Student findById(Long id) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_ID, studentMapper, id);
+        return jdbcTemplate.queryForObject(GET_BY_ID, studentMapper, id);
     }
 
     @Override
     public List<Student> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL, studentMapper);
+        return jdbcTemplate.query(FIND_ALL, studentMapper);
     }
 
-    public List<Student> findAllStudentByIdGroup(Group group) {
+    public List<Student> findAllStudentbyGroupId(Group group) {
         Long id = group.getId();
-        return jdbcTemplate.query(SQL_FIND_STUDENT_BY_GROUP_ID, studentMapper, id);
+        return jdbcTemplate.query(FIND_STUDENT_BY_GROUP_ID, studentMapper, id);
     }
 }

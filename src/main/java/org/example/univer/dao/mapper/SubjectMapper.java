@@ -1,6 +1,6 @@
 package org.example.univer.dao.mapper;
 
-import org.example.univer.dao.models.Subject;
+import org.example.univer.models.Subject;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 

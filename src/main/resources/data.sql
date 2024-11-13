@@ -44,12 +44,12 @@ INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-04 12:00:0
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-04 15:00:00','2024-02-04 16:00:00');
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-04 17:00:00','2024-02-04 19:00:00');
 
-INSERT INTO audience (room, size) VALUES ('204','40');
-INSERT INTO audience (room, size) VALUES ('402','20');
-INSERT INTO audience (room, size) VALUES ('105','60');
-INSERT INTO audience (room, size) VALUES ('101','40');
-INSERT INTO audience (room, size) VALUES ('307','25');
-INSERT INTO audience (room, size) VALUES ('304','45');
+INSERT INTO audience (room_number, capacity) VALUES ('204','40');
+INSERT INTO audience (room_number, capacity) VALUES ('402','20');
+INSERT INTO audience (room_number, capacity) VALUES ('105','60');
+INSERT INTO audience (room_number, capacity) VALUES ('101','40');
+INSERT INTO audience (room_number, capacity) VALUES ('307','25');
+INSERT INTO audience (room_number, capacity) VALUES ('304','45');
 
 INSERT INTO holiday (description, start_holiday, end_holiday) VALUES ('зимние каникулы','2024-01-01','2024-01-14');
 INSERT INTO holiday (description, start_holiday, end_holiday) VALUES ('летние каникулы','2024-07-01','2024-07-14');

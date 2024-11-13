@@ -1,8 +1,8 @@
 package org.example.univer.dao.jdbc;
 
-import org.example.univer.dao.interfaces.DaoCathedraInterfaces;
+import org.example.univer.dao.interfaces.DaoCathedraInterface;
 import org.example.univer.dao.mapper.CathedraMapper;
-import org.example.univer.dao.models.Cathedra;
+import org.example.univer.models.Cathedra;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,12 +14,12 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
-public class JdbcCathedra implements DaoCathedraInterfaces {
-    private static final String SQL_GET_BY_ID = "SELECT * FROM cathedra WHERE id = ?";
-    private static final String SQL_FIND_ALL = "SELECT * FROM cathedra";
-    private static final String SQL_CREATE = "INSERT INTO cathedra (name) VALUES (?)";
-    private static final String SQL_UPDATE = "UPDATE cathedra SET name=? WHERE id=?";
-    private static final String SQL_DELETE = "DELETE FROM cathedra WHERE id = ?";
+public class JdbcCathedra implements DaoCathedraInterface {
+    private static final String GET_BY_ID = "SELECT * FROM cathedra WHERE id = ?";
+    private static final String FIND_ALL = "SELECT * FROM cathedra";
+    private static final String CREATE_CATHEDRA = "INSERT INTO cathedra (name) VALUES (?)";
+    private static final String UPDATE_CATHEDRA = "UPDATE cathedra SET name=? WHERE id=?";
+    private static final String DELETE_CATHEDRA = "DELETE FROM cathedra WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private CathedraMapper cathedraMapper;
@@ -34,16 +34,17 @@ public class JdbcCathedra implements DaoCathedraInterfaces {
     public void create(Cathedra cathedra) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(CREATE_CATHEDRA, new String[]{"id"});
             ps.setString(1, cathedra.getName());
             return ps;
         }, keyHolder);
+        cathedra.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
     @Override
     public void update(Cathedra cathedra) {
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
+            PreparedStatement ps = connection.prepareStatement(UPDATE_CATHEDRA);
             ps.setString(1, cathedra.getName());
             ps.setLong(2, cathedra.getId());
             return ps;
@@ -52,17 +53,17 @@ public class JdbcCathedra implements DaoCathedraInterfaces {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(SQL_DELETE, id);
+        jdbcTemplate.update(DELETE_CATHEDRA, id);
     }
 
     @Override
     public Cathedra findById(Long id) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_ID, cathedraMapper, id);
+        return jdbcTemplate.queryForObject(GET_BY_ID, cathedraMapper, id);
     }
 
     @Override
     public List<Cathedra> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL, cathedraMapper);
+        return jdbcTemplate.query(FIND_ALL, cathedraMapper);
     }
 
 

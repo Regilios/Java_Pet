@@ -1,6 +1,6 @@
 package org.example.univer.dao.mapper;
 
-import org.example.univer.dao.models.LectureTime;
+import org.example.univer.models.LectureTime;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 

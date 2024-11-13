@@ -1,9 +1,9 @@
 package org.example.univer.dao.mapper;
 
 import org.example.univer.dao.jdbc.JdbcGroup;
-import org.example.univer.dao.models.Gender;
-import org.example.univer.dao.models.Group;
-import org.example.univer.dao.models.Student;
+import org.example.univer.models.Gender;
+import org.example.univer.models.Group;
+import org.example.univer.models.Student;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 

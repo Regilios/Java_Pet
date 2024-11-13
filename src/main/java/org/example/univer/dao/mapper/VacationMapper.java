@@ -1,8 +1,8 @@
 package org.example.univer.dao.mapper;
 
 import org.example.univer.dao.jdbc.JdbcTeacher;
-import org.example.univer.dao.models.Teacher;
-import org.example.univer.dao.models.Vacation;
+import org.example.univer.models.Teacher;
+import org.example.univer.models.Vacation;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 

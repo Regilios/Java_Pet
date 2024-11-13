@@ -1,8 +1,8 @@
 package org.example.univer.dao.jdbc;
 
-import org.example.univer.dao.interfaces.DaoLectureTimeInterfaces;
+import org.example.univer.dao.interfaces.DaoLectureTimeInterface;
 import org.example.univer.dao.mapper.LectureTimeMapper;
-import org.example.univer.dao.models.LectureTime;
+import org.example.univer.models.LectureTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,12 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
-public class JdbsLectureTime implements DaoLectureTimeInterfaces {
-    private static final String SQL_FIND_ALL = "SELECT * FROM lectionTime ORDER BY id";
-    private static final String SQL_GET_BY_ID = "SELECT * FROM lectionTime WHERE id = ?";
-    private static final String SQL_CREATE = "INSERT INTO lectionTime (start_lection, end_lection) VALUES (?, ?)";
-    private static final String SQL_DELETE = "DELETE FROM lectionTime WHERE id = ?";
-    private static final String SQL_UPDATE = "UPDATE lectionTime SET start_lection=?, end_lection=? WHERE id=?";
+public class JdbsLectureTime implements DaoLectureTimeInterface {
+    private static final String CREATE_LECTION_TIME = "INSERT INTO lectionTime (start_lection, end_lection) VALUES (?, ?)";
+    private static final String DELETE_LECTION_TIME = "DELETE FROM lectionTime WHERE id = ?";
+    private static final String UPDATE_LECTION_TIME = "UPDATE lectionTime SET start_lection=?, end_lection=? WHERE id=?";
+    private static final String FIND_ALL = "SELECT * FROM lectionTime ORDER BY id";
+    private static final String GET_BY_ID = "SELECT * FROM lectionTime WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private LectureTimeMapper lectureTimeMapper;
@@ -36,17 +36,18 @@ public class JdbsLectureTime implements DaoLectureTimeInterfaces {
     public void create(LectureTime lectureTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(CREATE_LECTION_TIME, new String[]{"id"});
             ps.setObject(1, LocalDateTime.parse(lectureTime.getStart(), formatter));
             ps.setObject(2, LocalDateTime.parse(lectureTime.getEnd(), formatter));
             return ps;
         }, keyHolder);
+        lectureTime.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
     @Override
     public void update(LectureTime lectureTime) {
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
+            PreparedStatement ps = connection.prepareStatement(UPDATE_LECTION_TIME);
             ps.setObject(1, LocalDateTime.parse(lectureTime.getStart(), formatter));
             ps.setObject(2, LocalDateTime.parse(lectureTime.getEnd(), formatter));
             ps.setLong(3, lectureTime.getId());
@@ -56,16 +57,16 @@ public class JdbsLectureTime implements DaoLectureTimeInterfaces {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(SQL_DELETE, id);
+        jdbcTemplate.update(DELETE_LECTION_TIME, id);
     }
 
     @Override
     public LectureTime findById(Long id) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_ID, lectureTimeMapper, id);
+        return jdbcTemplate.queryForObject(GET_BY_ID, lectureTimeMapper, id);
     }
 
     @Override
     public List<LectureTime> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL, lectureTimeMapper);
+        return jdbcTemplate.query(FIND_ALL, lectureTimeMapper);
     }
 }

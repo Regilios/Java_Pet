@@ -1,9 +1,10 @@
 package org.example.univer;
 
 import org.example.univer.config.SpringConfig;
-import org.example.univer.dao.formatter.Formatter;
+import org.example.univer.formatter.Formatter;
 import org.example.univer.dao.jdbc.*;
-import org.example.univer.dao.models.*;
+import org.example.univer.models.*;
+import org.example.univer.services.AudienceService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.time.LocalDate;
@@ -22,6 +23,8 @@ public class CheckFunction {
     private JdbcAudience jdbcAudience = context.getBean(JdbcAudience.class);
     private JdbcHoliday jdbcHoliday = context.getBean(JdbcHoliday.class);
     private JdbcLecture jdbcLecture = context.getBean(JdbcLecture.class);
+
+    private AudienceService audienceService = context.getBean(AudienceService.class);
 
     private Cathedra cathedra = context.getBean("cathedra", Cathedra.class);
     private Group grop = context.getBean("group", Group.class);
@@ -46,37 +49,33 @@ public class CheckFunction {
     List<Lecture> lectures = jdbcLecture.findAll();
 
     public void startCheck() {
-        System.out.println(formatter.formatListStudent(studentsList));
+//        System.out.println(formatter.formatListStudent(studentsList));
+//        System.out.println();
+//        System.out.println(formatter.formatGroupList(groupList));
+//        System.out.println();
+//        System.out.println(formatter.formatListTeacher(teacherList));
+//        System.out.println();
+//        System.out.println(formatter.formatListVacation(vacationList));
+//        System.out.println();
+//        System.out.println(formatter.formatListSubject(subjectList));
+//        System.out.println();
+//        System.out.println(formatter.formatListLectionTime(lectureTimes));
+//        System.out.println();
+//        System.out.println(formatter.formatAudience(audiences));
+//        System.out.println();
+//        System.out.println(formatter.formatListHoliday(holidays));
+//        System.out.println();
+//        System.out.println(formatter.formatListLecture(lectures));
+//        System.out.println();
+//        System.out.println(formatter.formatListLecture(getTimetableDay(jdbcStudent.findById(1L), LocalDate.parse("2024-02-02"))));
+//        System.out.println();
+//        System.out.println(formatter.formatListLecture(getTimetableDay(jdbcTeacher.findById(2L), LocalDate.parse("2024-02-03"))));
+//          Audience audience1 = jdbcAudience.findById(1L);
+//          audience1.setRoom(402);
+//          audienceService.update(audience1);
+//        System.out.println(jdbcAudience.findRoom(jdbcAudience.findById(1L)));
+        System.out.println(formatter.formatListLecture(jdbcLecture.getTimetable(jdbcStudent.findById(1L), LocalDate.parse("2024-02-02"))));
         System.out.println();
-        System.out.println(formatter.formatListGroup(groupList));
-        System.out.println();
-        System.out.println(formatter.formatListTeacher(teacherList));
-        System.out.println();
-        System.out.println(formatter.formatListVacation(vacationList));
-        System.out.println();
-        System.out.println(formatter.formatListSubject(subjectList));
-        System.out.println();
-        System.out.println(formatter.formatListLectionTime(lectureTimes));
-        System.out.println();
-        System.out.println(formatter.formatAudience(audiences));
-        System.out.println();
-        System.out.println(formatter.formatListHoliday(holidays));
-        System.out.println();
-        System.out.println(formatter.formatListLecture(lectures));
-        System.out.println();
-        System.out.println(formatter.formatListLecture(getTimetableDay(jdbcStudent.findById(1L), LocalDate.parse("2024-02-02"))));
-        System.out.println();
-        System.out.println(formatter.formatListLecture(getTimetableDay(jdbcTeacher.findById(2L), LocalDate.parse("2024-02-03"))));
-
-    }
-
-    public List<Lecture> getTimetableDay(Student student, LocalDate localDate) {
-        List<Lecture> lection_list = jdbcLecture.findLectionByGroupIdForStudent(student.getGroup().getId());
-        return lection_list.stream().filter(lecture -> lecture.getLocalTimeStart().getDayOfMonth() == localDate.getDayOfMonth()).collect(Collectors.toList());
-    }
-
-    public List<Lecture> getTimetableDay(Teacher teacher, LocalDate localDate) {
-        List<Lecture> lection_list = jdbcLecture.findLectionByGroupIdForTeacher(teacher.getId());
-        return lection_list.stream().filter(lecture -> lecture.getLocalTimeStart().getDayOfMonth() == localDate.getDayOfMonth()).collect(Collectors.toList());
+        System.out.println(formatter.formatListLecture(jdbcLecture.getTimetable(jdbcTeacher.findById(1L), LocalDate.parse("2024-02-02"))));
     }
 }

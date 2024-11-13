@@ -1,8 +1,8 @@
 package org.example.univer.dao.jdbc;
 
-import org.example.univer.dao.interfaces.DaoVacationInterfaces;
+import org.example.univer.dao.interfaces.DaoVacationInterface;
 import org.example.univer.dao.mapper.VacationMapper;
-import org.example.univer.dao.models.Vacation;
+import org.example.univer.models.Vacation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,12 +13,12 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
-public class JdbcVacation implements DaoVacationInterfaces {
-    private static final String SQL_FIND_ALL = "SELECT * FROM vacation ORDER BY id";
-    private static final String SQL_GET_BY_ID = "SELECT * FROM vacation WHERE id = ?";
-    private static final String SQL_CREATE = "INSERT INTO vacation (startjob, endjob, teacher_id) VALUES (?, ?, ?)";
-    private static final String SQL_DELETE = "DELETE FROM vacation WHERE id = ?";
-    private static final String SQL_UPDATE = "UPDATE vacation SET startjob=?, endjob=?, teacher_id=? WHERE id=?";
+public class JdbcVacation implements DaoVacationInterface {
+    private static final String CREATE_VACATION = "INSERT INTO vacation (startjob, endjob, teacher_id) VALUES (?, ?, ?)";
+    private static final String DELETE_VACATION = "DELETE FROM vacation WHERE id = ?";
+    private static final String UPDATE_VACATION = "UPDATE vacation SET startjob=?, endjob=?, teacher_id=? WHERE id=?";
+    private static final String FIND_ALL = "SELECT * FROM vacation ORDER BY id";
+    private static final String GET_BY_ID = "SELECT * FROM vacation WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private VacationMapper vacationMapper;
@@ -33,18 +33,19 @@ public class JdbcVacation implements DaoVacationInterfaces {
     public void create(Vacation vacation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(CREATE_VACATION, new String[]{"id"});
             ps.setObject(1, vacation.getStartJobLocal());
             ps.setObject(2, vacation.getEndJobLocal());
             ps.setLong(3, vacation.getTeacher().getId());
             return ps;
         }, keyHolder);
+        vacation.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
     @Override
     public void update(Vacation vacation) {
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
+            PreparedStatement ps = connection.prepareStatement(UPDATE_VACATION);
             ps.setObject(1, vacation.getStartJobLocal());
             ps.setObject(2, vacation.getEndJobLocal());
             ps.setLong(3, vacation.getTeacher().getId());
@@ -55,16 +56,16 @@ public class JdbcVacation implements DaoVacationInterfaces {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(SQL_DELETE, id);
+        jdbcTemplate.update(DELETE_VACATION, id);
     }
 
     @Override
     public Vacation findById(Long id) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_ID, vacationMapper, id);
+        return jdbcTemplate.queryForObject(GET_BY_ID, vacationMapper, id);
     }
 
     @Override
     public List<Vacation> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL, vacationMapper);
+        return jdbcTemplate.query(FIND_ALL, vacationMapper);
     }
 }

@@ -1,6 +1,6 @@
 package org.example.univer.dao.mapper;
 
-import org.example.univer.dao.models.Audience;
+import org.example.univer.models.Audience;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +13,8 @@ public class AudienceMapper implements RowMapper<Audience> {
     public Audience mapRow(ResultSet rs, int rowNum) throws SQLException {
         Audience audience = new Audience();
         audience.setId(rs.getLong("id"));
-        audience.setRoom(rs.getInt("room"));
-        audience.setSize(rs.getInt("size"));
+        audience.setRoom(rs.getInt("room_number"));
+        audience.setCapacity(rs.getInt("capacity"));
         return audience;
     }
 }

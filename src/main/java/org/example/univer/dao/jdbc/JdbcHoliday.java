@@ -1,8 +1,8 @@
 package org.example.univer.dao.jdbc;
 
-import org.example.univer.dao.interfaces.DaoHolidayInterfaces;
+import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.dao.mapper.HolidayMapper;
-import org.example.univer.dao.models.Holiday;
+import org.example.univer.models.Holiday;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,12 +13,12 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
-public class JdbcHoliday implements DaoHolidayInterfaces {
-    private static final String SQL_FIND_ALL = "SELECT * FROM holiday ORDER BY id";
-    private static final String SQL_GET_BY_ID = "SELECT * FROM holiday WHERE id = ?";
-    private static final String SQL_CREATE = "INSERT INTO holiday (description, start_holiday, end_holiday) VALUES (?, ?, ?)";
-    private static final String SQL_DELETE = "DELETE FROM holiday WHERE id = ?";
-    private static final String SQL_UPDATE = "UPDATE holiday SET description=?, start_holiday=?, end_holiday=? WHERE id=?";
+public class JdbcHoliday implements DaoHolidayInterface {
+    private static final String FIND_ALL = "SELECT * FROM holiday ORDER BY id";
+    private static final String GET_BY_ID = "SELECT * FROM holiday WHERE id = ?";
+    private static final String CREATE_HOLIDAY = "INSERT INTO holiday (description, start_holiday, end_holiday) VALUES (?, ?, ?)";
+    private static final String DELETE_HOLIDAY = "DELETE FROM holiday WHERE id = ?";
+    private static final String UPDATE_HOLIDAY = "UPDATE holiday SET description=?, start_holiday=?, end_holiday=? WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private HolidayMapper holidayMapper;
@@ -33,18 +33,19 @@ public class JdbcHoliday implements DaoHolidayInterfaces {
     public void create(Holiday holiday) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(CREATE_HOLIDAY, new String[]{"id"});
             ps.setString(1, holiday.getDesc());
             ps.setObject(2, holiday.getStartHolidayLocal());
             ps.setObject(3, holiday.getEndHolidayLocal());
             return ps;
         }, keyHolder);
+        holiday.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
     @Override
     public void update(Holiday holiday) {
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_UPDATE);
+            PreparedStatement ps = connection.prepareStatement(UPDATE_HOLIDAY);
             ps.setString(1, holiday.getDesc());
             ps.setObject(2, holiday.getStartHolidayLocal());
             ps.setObject(3, holiday.getEndHolidayLocal());
@@ -55,16 +56,16 @@ public class JdbcHoliday implements DaoHolidayInterfaces {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(SQL_DELETE, id);
+        jdbcTemplate.update(DELETE_HOLIDAY, id);
     }
 
     @Override
     public Holiday findById(Long id) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_ID, holidayMapper, id);
+        return jdbcTemplate.queryForObject(GET_BY_ID, holidayMapper, id);
     }
 
     @Override
     public List<Holiday> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL, holidayMapper);
+        return jdbcTemplate.query(FIND_ALL, holidayMapper);
     }
 }

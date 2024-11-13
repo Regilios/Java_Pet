@@ -1,6 +1,6 @@
 package org.example.univer.config;
 
-import org.example.univer.dao.models.*;
+import org.example.univer.models.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
