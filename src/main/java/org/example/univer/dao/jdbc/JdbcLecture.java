@@ -53,12 +53,12 @@ public class JdbcLecture implements DaoLectureInterface {
     public void update(Lecture lecture) {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(UPDATE_LECTURE);
-            ps.setLong(1, lecture.getId());
-            ps.setLong(2, lecture.getCathedra().getId());
-            ps.setLong(3, lecture.getTeacher().getId());
-            ps.setLong(4, lecture.getSubject().getId());
-            ps.setLong(5, lecture.getTime().getId());
-            ps.setLong(6, lecture.getAudience().getId());
+            ps.setLong(1, lecture.getCathedra().getId());
+            ps.setLong(2, lecture.getTeacher().getId());
+            ps.setLong(3, lecture.getSubject().getId());
+            ps.setLong(4, lecture.getTime().getId());
+            ps.setLong(5, lecture.getAudience().getId());
+            ps.setLong(6, lecture.getId());
             return ps;
         });
     }

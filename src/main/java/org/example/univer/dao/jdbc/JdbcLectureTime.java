@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
-public class JdbsLectureTime implements DaoLectureTimeInterface {
+public class JdbcLectureTime implements DaoLectureTimeInterface {
     private static final String CREATE_LECTION_TIME = "INSERT INTO lectionTime (start_lection, end_lection) VALUES (?, ?)";
     private static final String DELETE_LECTION_TIME = "DELETE FROM lectionTime WHERE id = ?";
     private static final String UPDATE_LECTION_TIME = "UPDATE lectionTime SET start_lection=?, end_lection=? WHERE id=?";
@@ -27,7 +27,7 @@ public class JdbsLectureTime implements DaoLectureTimeInterface {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
-    public JdbsLectureTime(JdbcTemplate jdbcTemplate, LectureTimeMapper lectureTimeMapper) {
+    public JdbcLectureTime(JdbcTemplate jdbcTemplate, LectureTimeMapper lectureTimeMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.lectureTimeMapper = lectureTimeMapper;
     }

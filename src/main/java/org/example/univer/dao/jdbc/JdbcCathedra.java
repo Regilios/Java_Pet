@@ -2,6 +2,7 @@ package org.example.univer.dao.jdbc;
 
 import org.example.univer.dao.interfaces.DaoCathedraInterface;
 import org.example.univer.dao.mapper.CathedraMapper;
+import org.example.univer.models.Audience;
 import org.example.univer.models.Cathedra;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class JdbcCathedra implements DaoCathedraInterface {
     private static final String CREATE_CATHEDRA = "INSERT INTO cathedra (name) VALUES (?)";
     private static final String UPDATE_CATHEDRA = "UPDATE cathedra SET name=? WHERE id=?";
     private static final String DELETE_CATHEDRA = "DELETE FROM cathedra WHERE id = ?";
+    private static final String FIND_ROOM = "SELECT COUNT(*) FROM cathedra WHERE name = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private CathedraMapper cathedraMapper;
@@ -66,5 +68,9 @@ public class JdbcCathedra implements DaoCathedraInterface {
         return jdbcTemplate.query(FIND_ALL, cathedraMapper);
     }
 
-
+    @Override
+    public boolean findRoom(Cathedra cathedra) {
+        Integer result = jdbcTemplate.queryForObject(FIND_ROOM, Integer.class, cathedra.getName());
+        return result != null && result > 0;
+    }
 }

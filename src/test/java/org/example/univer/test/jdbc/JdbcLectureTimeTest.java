@@ -1,7 +1,7 @@
 package org.example.univer.test.jdbc;
 
 import org.example.univer.config.TestSpringConfig;
-import org.example.univer.dao.jdbc.JdbsLectureTime;
+import org.example.univer.dao.jdbc.JdbcLectureTime;
 import org.example.univer.models.LectureTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,12 +26,12 @@ public class JdbcLectureTimeTest {
     @Autowired
     private JdbcTemplate template;
     @Autowired
-    private JdbsLectureTime jdbcLectureTime;
+    private JdbcLectureTime jdbcLectureTime;
     private final static String TABLE_NAME = "lectiontime";
     private DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Test
-    void checkCreatedTeacher() {
+    void checkCreatedLectureTime() {
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(19L);
         lectureTime.setStart(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
@@ -47,7 +47,7 @@ public class JdbcLectureTimeTest {
     }
 
     @Test
-    void checkUpdateTeacher() {
+    void checkUpdateLectureTime() {
         LectureTime lectureTime = jdbcLectureTime.findById(1L);
         lectureTime.setStart(LocalDateTime.parse("2024-04-05 10:00:00", formatter1));
         jdbcLectureTime.update(lectureTime);
@@ -56,7 +56,7 @@ public class JdbcLectureTimeTest {
     }
 
     @Test
-    void checkFindByIdTeacher() {
+    void checkFindByIdLectureTime() {
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(19L);
         lectureTime.setStart(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
@@ -67,7 +67,7 @@ public class JdbcLectureTimeTest {
     }
 
     @Test
-    void checkDeletedTeacher() {
+    void checkDeletedLectureTime() {
         int expected = countRowsInTable(template, TABLE_NAME) - 1;
         jdbcLectureTime.deleteById(1L);
 
@@ -75,7 +75,7 @@ public class JdbcLectureTimeTest {
     }
 
     @Test
-    void checkFindAllTeacher() {
+    void checkFindAllLectureTime() {
         int expected = countRowsInTable(template, TABLE_NAME);
         int actual = jdbcLectureTime.findAll().size();
 
