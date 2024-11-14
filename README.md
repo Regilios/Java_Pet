@@ -9,3 +9,4 @@ The program features updates:
 Stack updated:
 - PostgreSQL, H2
 - Spring JDBC
+- Test jdbc
