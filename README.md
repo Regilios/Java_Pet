@@ -1,12 +1,9 @@
 # University pet-project 
 
-App updated with Spring JDBC and PostgreSQL. DAO layer was created with own Row Mappers
+Updating the project with a service layer
 
-The program features updates:
-- working with real database
-- add H2 database for tests
+Current updates:
 
-Stack updated:
-- PostgreSQL, H2
-- Spring JDBC
-- Test jdbc
+- A service layer with basic business logic has been added
+- Tests for the service layer have been added
+- Unique application characteristics have been added for the service layer to change the program for a specific user
