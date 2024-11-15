@@ -150,6 +150,7 @@ public class Formatter {
     public String formatListLectionTime(List<LectureTime> list) {
         Integer maxSrartLection = getMaxCol(list, LectureTime::getStart);
         Integer maxEndlection = getMaxCol(list, LectureTime::getEnd);
+
         return list.stream().map(lectureTime -> format(
                 "ID: %-3s" +
                 "START LECTION: %-" + maxSrartLection + "s" + COLUMN +
@@ -164,7 +165,6 @@ public class Formatter {
         Integer maxDesc = getMaxCol(list, Holiday::getDesc);
         Integer maxStart = getMaxCol(list, Holiday::getStartHoliday);
         Integer maxEnd = getMaxCol(list, Holiday::getEndHoliday);
-
 
         return list.stream().map(holiday -> format(
                 "ID: %-3s" +
@@ -181,6 +181,7 @@ public class Formatter {
     public String formatAudience(List<Audience> list) {
         Integer maxRoom = getMaxCol(list, Audience::getRoomString);
         Integer maxSize = getMaxCol(list, Audience::getCapacityString);
+
         return list.stream().map(lectureTime -> format(
                 "ID: %-3s" +
                 "ROOM: %-" + maxRoom + "s" + COLUMN +

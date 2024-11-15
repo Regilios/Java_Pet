@@ -39,10 +39,6 @@ public class JdbcLectureTest {
     private JdbcAudience jdbcAudience;
     @Autowired
     private JdbcLectureTime jdbcLectureTime;
-    @Autowired
-    private JdbcLecture jdbcStudent;
-    @Autowired
-    private JdbcGroup jdbcGroup;
 
     private DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final static String TABLE_NAME = "lection";
