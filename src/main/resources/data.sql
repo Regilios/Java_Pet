@@ -18,10 +18,10 @@ INSERT INTO subject (name, description) VALUES ('Мировая магия','И�
 INSERT INTO subject (name, description) VALUES ('История магии','Изучение магии тёмных веков');
 INSERT INTO subject (name, description) VALUES ('Защита от тёмных исскуств','Практика и теория применения защитных заклинаний');
 
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-01-01','2035-01-14', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-07-01','2035-07-14', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-02-01','2035-02-14', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-08-01','2035-08-14', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-03-01','2024-03-10', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-11-01','2024-11-20', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-04-01','2024-04-10', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-08-01','2024-08-20', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
 
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-02 08:00:00','2024-02-02 10:00:00');
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-02 11:00:00','2024-02-02 13:00:00');

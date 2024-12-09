@@ -20,7 +20,8 @@ public class JdbcLectureTime implements DaoLectureTimeInterface {
     private static final String DELETE_LECTION_TIME = "DELETE FROM lectionTime WHERE id = ?";
     private static final String UPDATE_LECTION_TIME = "UPDATE lectionTime SET start_lection=?, end_lection=? WHERE id=?";
     private static final String FIND_ALL = "SELECT * FROM lectionTime ORDER BY id";
-    private static final String GET_BY_ID = "SELECT * FROM lectionTime WHERE id = ?";
+    private static final String FIND_LECTIONTIME = "SELECT COUNT(*) FROM lectionTime WHERE start_lection=? AND end_lection=?";
+    private static final String GET_BY_ID = "SELECT * FROM lectionTime WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private LectureTimeMapper lectureTimeMapper;
@@ -68,5 +69,11 @@ public class JdbcLectureTime implements DaoLectureTimeInterface {
     @Override
     public List<LectureTime> findAll() {
         return jdbcTemplate.query(FIND_ALL, lectureTimeMapper);
+    }
+
+    @Override
+    public boolean isSingle(LectureTime lectureTime) {
+        Integer result = jdbcTemplate.queryForObject(FIND_LECTIONTIME, Integer.class, lectureTime.getStartLocal(), lectureTime.getEndLocal());
+        return result != null && result > 0;
     }
 }

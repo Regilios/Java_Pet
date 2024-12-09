@@ -17,11 +17,12 @@ import java.util.Objects;
 public class JdbcTeacher implements DaoTeacherInterface {
     private static final String CREATE_TEACHER = "INSERT INTO teacher (firstName, lastName, gender, address, email, phone, birthday, cathedra_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_TEACHER = "UPDATE teacher SET firstName=?, lastName=?, gender=?, address=?, email=?, phone=?, birthday=?, cathedra_id=? WHERE id = ?";
-    private static final String DELETE_TEACHER = "DELETE FROM teacher WHERE id = ?";
-    private static final String GET_BY_ID = "SELECT * FROM teacher WHERE id = ?";
+    private static final String DELETE_TEACHER = "DELETE FROM teacher WHERE id=?";
+    private static final String GET_BY_ID = "SELECT * FROM teacher WHERE id=?";
     private static final String FIND_ALL = "SELECT * FROM teacher ORDER BY id";
+    private static final String FIND_TEACHER = "SELECT COUNT(*) FROM teacher WHERE  firstName=? AND lastName=? AND gender=? AND birthday=?";
     private static final String ADD_SUBJECT_TEACHER = "INSERT INTO teacher_subject (teacher_id, subject_id) VALUES (?, ?)";
-    private static final String REMOVE_SUBJECT_TEACHER = "DELETE FROM teacher_subject WHERE teacher_id = ? AND subject_id = ?";
+    private static final String REMOVE_SUBJECT_TEACHER = "DELETE FROM teacher_subject WHERE teacher_id=? AND subject_id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private TeacherMapper teacherMapper;
@@ -100,5 +101,11 @@ public class JdbcTeacher implements DaoTeacherInterface {
     @Override
     public List<Teacher> findAll() {
         return jdbcTemplate.query(FIND_ALL, teacherMapper);
+    }
+
+    @Override
+    public boolean isSingle(Teacher teacher) {
+        Integer result = jdbcTemplate.queryForObject(FIND_TEACHER, Integer.class, teacher.getFirstName(), teacher.getLastName(), teacher.getGender(), teacher.getBirthday());
+        return result != null && result > 0;
     }
 }

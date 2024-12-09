@@ -2,9 +2,7 @@ package org.example.univer.dao.jdbc;
 
 import org.example.univer.dao.interfaces.DaoLectureInterface;
 import org.example.univer.dao.mapper.LectureMapper;
-import org.example.univer.models.Lecture;
-import org.example.univer.models.Student;
-import org.example.univer.models.Teacher;
+import org.example.univer.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,12 +16,14 @@ import java.util.List;
 @Component
 public class JdbcLecture implements DaoLectureInterface {
     private static final String FIND_ALL = "SELECT * FROM lection ORDER BY id";
-    private static final String GET_BY_ID = "SELECT * FROM lection WHERE id = ?";
+    private static final String FIND_LECTURE = "SELECT COUNT(*) FROM lection WHERE teacher_id=? AND subject_id=? AND lecture_time_id=? AND audience_id=?";
+    private static final String GET_BY_ID = "SELECT * FROM lection WHERE id=?";
     private static final String CREATE_LECTURE = "INSERT INTO lection (cathedra_id, teacher_id, subject_id, lecture_time_id, audience_id) VALUES (?, ?, ?, ?, ?)";
-    private static final String DELETE_LECTURE = "DELETE FROM lection WHERE id = ?";
+    private static final String DELETE_LECTURE = "DELETE FROM lection WHERE id=?";
     private static final String UPDATE_LECTURE = "UPDATE lection SET cathedra_id=?, teacher_id=?, subject_id=?, lecture_time_id=?, audience_id=? WHERE id=?";
-    private static final String GET_TIMETEBALE_TEACHER = "SELECT t1.* FROM lection t1 JOIN lectiontime t2 ON t1.lecture_time_id = t2.id WHERE t1.teacher_id = ? AND EXTRACT(DAY FROM t2.start_lection) = ? AND EXTRACT(MONTH FROM t2.start_lection) = ?";
-    private static final String GET_TIMETEBALE_STUDENT = "SELECT t1.* FROM lection t1 JOIN lectiontime t2 ON t1.lecture_time_id = t2.id JOIN group_lection g ON t1.id = g.lection_id WHERE g.group_id = ? AND EXTRACT(DAY FROM t2.start_lection) = ? AND EXTRACT(MONTH FROM t2.start_lection) = ?";
+    private static final String GET_TIMETEBALE_TEACHER = "SELECT t1.* FROM lection t1 JOIN lectiontime t2 ON t1.lecture_time_id = t2.id WHERE t1.teacher_id = ? AND EXTRACT(DAY FROM t2.start_lection)=? AND EXTRACT(MONTH FROM t2.start_lection)=?";
+    private static final String GET_TIMETEBALE_STUDENT = "SELECT t1.* FROM lection t1 JOIN lectiontime t2 ON t1.lecture_time_id = t2.id JOIN group_lection g ON t1.id = g.lection_id WHERE g.group_id=? AND EXTRACT(DAY FROM t2.start_lection)=? AND EXTRACT(MONTH FROM t2.start_lection)=?";
+    private static final String  SELECT_BY_AUDIENCE_DATE_LECTURE_TIME = "SELECT COUNT(*) FROM lection WHERE audience_id=? AND lecture_time_id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private LectureMapper lectureMapper;
@@ -78,8 +78,7 @@ public class JdbcLecture implements DaoLectureInterface {
         return jdbcTemplate.query(FIND_ALL, lectureMapper);
     }
 
-    public List<Lecture> getTimetable(Student student, LocalDate localDate) {
-
+    public List<Lecture> getTimetableStudent(Student student, LocalDate localDate) {
         return jdbcTemplate.query(GET_TIMETEBALE_STUDENT, ps -> {
             ps.setLong(1, student.getGroup().getId());
             ps.setInt(2, localDate.getDayOfMonth());
@@ -87,11 +86,23 @@ public class JdbcLecture implements DaoLectureInterface {
         }, lectureMapper);
     }
 
-    public List<Lecture> getTimetable(Teacher teacher, LocalDate localDate) {
+    public List<Lecture> getTimetableTeacher(Teacher teacher, LocalDate localDate) {
         return jdbcTemplate.query(GET_TIMETEBALE_TEACHER, ps -> {
             ps.setLong(1, teacher.getId());
             ps.setInt(2, localDate.getDayOfMonth());
             ps.setInt(3, localDate.getMonthValue());
         }, lectureMapper);
+    }
+
+    @Override
+    public boolean isSingle(Lecture lecture) {
+        Integer result = jdbcTemplate.queryForObject(FIND_LECTURE, Integer.class, lecture.getTeacher().getId(), lecture.getSubject().getId(), lecture.getTime().getId() ,lecture.getAudience().getId());
+        return result != null && result > 0;
+    }
+
+    @Override
+    public boolean findByAudienceDateAndLectureTime(Audience audience, LectureTime time) {
+        Integer result = jdbcTemplate.queryForObject(SELECT_BY_AUDIENCE_DATE_LECTURE_TIME, Integer.class, audience.getId(), time.getId());
+        return result != null && result > 0;
     }
 }

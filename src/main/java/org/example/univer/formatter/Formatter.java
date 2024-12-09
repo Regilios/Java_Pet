@@ -178,7 +178,7 @@ public class Formatter {
         )).collect(Collectors.joining(System.lineSeparator()));
     }
 
-    public String formatAudience(List<Audience> list) {
+    public String formatListAudience(List<Audience> list) {
         Integer maxRoom = getMaxCol(list, Audience::getRoomString);
         Integer maxSize = getMaxCol(list, Audience::getCapacityString);
 
@@ -202,6 +202,17 @@ public class Formatter {
                 lectureTime.getEnd()
         );
     }
+    public String formatSubject(Subject subject) {
+        return String.format(
+                "ID: %-3s" +
+                "NAME: %s" + COLUMN +
+                "DESCRIPTION: %s",
+                subject.getId(),
+                subject.getName(),
+                subject.getDescription()
+        );
+    }
+
 
     public String formatTeacher(Teacher teacher) {
         return String.format(

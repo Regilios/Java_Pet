@@ -14,12 +14,12 @@ import java.util.List;
 
 @Component
 public class JdbcAudience implements DaoAudienceInterface {
-    private static final String GET_BY_ID = "SELECT * FROM audience WHERE id = ?";
-    private static final String FIND_ROOM = "SELECT COUNT(*) FROM audience WHERE room_number = ?";
+    private static final String GET_BY_ID = "SELECT * FROM audience WHERE id=?";
+    private static final String FIND_ROOM = "SELECT COUNT(*) FROM audience WHERE room_number=?";
     private static final String FIND_ALL = "SELECT * FROM audience";
     private static final String CREATE_AUDEINCE = "INSERT INTO audience (room_number, capacity) VALUES (?, ?)";
     private static final String UPDATE_AUDEINCE = "UPDATE audience SET room_number=?, capacity=? WHERE id=?";
-    private static final String DELETE_AUDEINCE = "DELETE FROM audience WHERE id = ?";
+    private static final String DELETE_AUDEINCE = "DELETE FROM audience WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private AudienceMapper audienceMapper;
@@ -69,7 +69,7 @@ public class JdbcAudience implements DaoAudienceInterface {
     }
 
     @Override
-    public boolean findRoom(Audience audience) {
+    public boolean isSingle(Audience audience) {
         Integer result = jdbcTemplate.queryForObject(FIND_ROOM, Integer.class, audience.getRoom());
         return result != null && result > 0;
     }

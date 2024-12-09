@@ -33,7 +33,7 @@ public class JdbcStudentTest {
     private final static String TABLE_NAME = "students";
 
     @Test
-    void checkCreatedGroup() {
+    void checkCreatedStudent() {
         Student student = new Student();
         student.setId(7L);
         student.setFirstName("Pavel");
@@ -63,7 +63,7 @@ public class JdbcStudentTest {
     }
 
     @Test
-    void checkFindByIdGroup() {
+    void checkFindByIdStudent() {
         Student student = new Student();
         student.setId(7L);
         student.setFirstName("Pavel");

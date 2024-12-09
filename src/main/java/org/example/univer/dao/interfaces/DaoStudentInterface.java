@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface DaoStudentInterface extends DaoInterfaces<Student> {
      List<Student> findAllStudentbyGroupId(Group group);
+
+     boolean isSingle(Student student);
+
+     Integer checkGroupSize(Student student);
 }

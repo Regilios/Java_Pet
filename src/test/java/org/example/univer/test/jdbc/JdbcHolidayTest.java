@@ -29,12 +29,12 @@ public class JdbcHolidayTest {
     private final static String TABLE_NAME = "holiday";
 
     @Test
-    void checkCreatedTeacher() {
+    void checkCreatedHoliday() {
         Holiday holiday = new Holiday();
         holiday.setId(3L);
         holiday.setDesc("test");
         holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
-        holiday.setEndHoliday(LocalDate.parse("2024-01-10"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
         jdbcHoliday.create(holiday);
 
         Holiday holiday1 = jdbcHoliday.findById(3L);
@@ -46,16 +46,18 @@ public class JdbcHolidayTest {
     }
 
     @Test
-    void checkUpdateTeacher() {
+    void checkUpdateHoliday() {
         Holiday holiday = jdbcHoliday.findById(1L);
         holiday.setDesc("1111");
+        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
         jdbcHoliday.update(holiday);
 
         assertEquals("1111", jdbcHoliday.findById(1L).getDesc());
     }
 
     @Test
-    void checkFindByIdTeacher() {
+    void checkFindByIdHoliday() {
         Holiday holiday = new Holiday();
         holiday.setId(3L);
         holiday.setDesc("test");
@@ -67,7 +69,7 @@ public class JdbcHolidayTest {
     }
 
     @Test
-    void checkDeletedTeacher() {
+    void checkDeletedHoliday() {
         int expected = countRowsInTable(template, TABLE_NAME) - 1;
         jdbcHoliday.deleteById(1L);
 
@@ -75,7 +77,7 @@ public class JdbcHolidayTest {
     }
 
     @Test
-    void checkFindAllTeacher() {
+    void checkFindAllHoliday() {
         int expected = countRowsInTable(template, TABLE_NAME);
         int actual = jdbcHoliday.findAll().size();
 

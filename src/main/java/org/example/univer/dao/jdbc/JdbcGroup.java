@@ -16,11 +16,12 @@ import java.util.Objects;
 @Component
 public class JdbcGroup implements DaoGroupInterface {
     private static final String FIND_ALL = "SELECT * FROM groups ORDER BY id";
-    private static final String GET_BY_ID = "SELECT * FROM groups WHERE id = ?";
+    private static final String FIND_GROUP = "SELECT COUNT(*) FROM groups WHERE name=?";
+    private static final String GET_BY_ID = "SELECT * FROM groups WHERE id=?";
     private static final String CREATE_GROUP = "INSERT INTO groups (name, cathedra_id) VALUES (?, ?)";
     private static final String GROUP_ADD_LECTION = "INSERT INTO group_lection (group_id, lection_id) VALUES (?, ?)";
-    private static final String DELETE_GROUP= "DELETE FROM groups WHERE id = ?";
-    private static final String GROUP_DELETE_LECTION = "DELETE FROM group_lection WHERE group_id = ? AND lection_id=?";
+    private static final String DELETE_GROUP= "DELETE FROM groups WHERE id=?";
+    private static final String GROUP_DELETE_LECTION = "DELETE FROM group_lection WHERE group_id=? AND lection_id=?";
     private static final String UPDATE_GROUP = "UPDATE groups SET name=?, cathedra_id=? WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -44,6 +45,7 @@ public class JdbcGroup implements DaoGroupInterface {
         group.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
+    @Override
     public void addLection(Long groupId, Long lectionId) {
         if (Objects.isNull(groupId)) {
             throw new IllegalArgumentException("ID группы не может иметь значение null");
@@ -58,6 +60,11 @@ public class JdbcGroup implements DaoGroupInterface {
             ps.setLong(2, lectionId);
             return ps;
         }, keyHolder);
+    }
+
+    @Override
+    public void removeLection(Long groupId, Long lectionId) {
+        jdbcTemplate.update(GROUP_DELETE_LECTION, groupId, lectionId);
     }
 
     @Override
@@ -76,10 +83,6 @@ public class JdbcGroup implements DaoGroupInterface {
         jdbcTemplate.update(DELETE_GROUP, id);
     }
 
-    public void removeLection(Long groupId, Long lectionId) {
-        jdbcTemplate.update(GROUP_DELETE_LECTION, groupId, lectionId);
-    }
-
     @Override
     public Group findById(Long id) {
         return jdbcTemplate.queryForObject(GET_BY_ID, groupMapper, id);
@@ -88,5 +91,11 @@ public class JdbcGroup implements DaoGroupInterface {
     @Override
     public List<Group> findAll() {
         return jdbcTemplate.query(FIND_ALL, groupMapper);
+    }
+
+    @Override
+    public boolean isSingle(Group group) {
+        Integer result = jdbcTemplate.queryForObject(FIND_GROUP, Integer.class, group.getName());
+        return result != null && result > 0;
     }
 }

@@ -15,10 +15,11 @@ import java.util.List;
 @Component
 public class JdbcVacation implements DaoVacationInterface {
     private static final String CREATE_VACATION = "INSERT INTO vacation (startjob, endjob, teacher_id) VALUES (?, ?, ?)";
-    private static final String DELETE_VACATION = "DELETE FROM vacation WHERE id = ?";
+    private static final String DELETE_VACATION = "DELETE FROM vacation WHERE id=?";
     private static final String UPDATE_VACATION = "UPDATE vacation SET startjob=?, endjob=?, teacher_id=? WHERE id=?";
     private static final String FIND_ALL = "SELECT * FROM vacation ORDER BY id";
-    private static final String GET_BY_ID = "SELECT * FROM vacation WHERE id = ?";
+    private static final String FIND_VACATION = "SELECT * FROM vacation WHERE startjob=? AND endjob=? AND teacher_id=?";
+    private static final String GET_BY_ID = "SELECT * FROM vacation WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private VacationMapper vacationMapper;
@@ -67,5 +68,11 @@ public class JdbcVacation implements DaoVacationInterface {
     @Override
     public List<Vacation> findAll() {
         return jdbcTemplate.query(FIND_ALL, vacationMapper);
+    }
+
+    @Override
+    public boolean isSingle(Vacation vacation) {
+        Integer result = jdbcTemplate.queryForObject(FIND_VACATION, Integer.class, vacation.getStartJobLocal(), vacation.getEndJobLocal(), vacation.getTeacher().getId());
+        return result != null && result > 0;
     }
 }

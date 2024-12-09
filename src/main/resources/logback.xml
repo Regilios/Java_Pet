@@ -1,0 +1,15 @@
+<configuration>
+    <!-- Консольный вывод -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} - %highlight([%p]) - %cyan(%logger{36}) - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Уровень логгирования -->
+    <root level="debug">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

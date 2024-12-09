@@ -27,7 +27,7 @@ public class JdbcAudienceTest {
     private final static String TABLE_NAME = "audience";
 
     @Test
-    void checkCreatedTeacher() {
+    void checkCreatedAudience() {
         Audience audience = new Audience();
         audience.setId(7L);
         audience.setRoom(1);
@@ -43,7 +43,7 @@ public class JdbcAudienceTest {
     }
 
     @Test
-    void checkUpdateTeacher() {
+    void checkUpdateAudience() {
         Audience audience = jdbcAudience.findById(1L);
         audience.setRoom(402);
         jdbcAudience.update(audience);
@@ -52,7 +52,7 @@ public class JdbcAudienceTest {
     }
 
     @Test
-    void checkFindByIdTeacher() {
+    void checkFindByIdAudience() {
         Audience audience = new Audience();
         audience.setId(7L);
         audience.setRoom(1);
@@ -63,7 +63,7 @@ public class JdbcAudienceTest {
     }
 
     @Test
-    void checkDeletedTeacher() {
+    void checkDeletedAudience() {
         int expected = countRowsInTable(template, TABLE_NAME) - 1;
         jdbcAudience.deleteById(1L);
 
@@ -71,7 +71,7 @@ public class JdbcAudienceTest {
     }
 
     @Test
-    void checkFindAllTeacher() {
+    void checkFindAllAudience() {
         int expected = countRowsInTable(template, TABLE_NAME);
         int actual = jdbcAudience.findAll().size();
 

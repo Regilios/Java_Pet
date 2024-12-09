@@ -33,6 +33,7 @@ public class JdbcSubjectTest {
         subject.setId(5L);
         subject.setName("test");
         subject.setDescription("test");
+
         jdbcSubject.create(subject);
         Subject subject1 = jdbcSubject.findById(5L);
 

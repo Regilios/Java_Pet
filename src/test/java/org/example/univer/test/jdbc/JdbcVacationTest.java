@@ -34,8 +34,8 @@ public class JdbcVacationTest {
     void checkCreatedVacation() {
         Vacation vacation = new Vacation();
         vacation.setId(5L);
-        vacation.setStartJob(LocalDate.parse("2024-02-01"));
-        vacation.setEndJob(LocalDate.parse("2035-02-01"));
+        vacation.setStartJob(LocalDate.parse("2024-07-01"));
+        vacation.setEndJob(LocalDate.parse("2024-07-14"));
         vacation.setTeacher(jdbcTeacher.findById(1L));
         jdbcVacation.create(vacation);
 

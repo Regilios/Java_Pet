@@ -1,21 +1,27 @@
 package org.example.univer.test.jdbc;
 
+import org.example.univer.config.SpringConfig;
 import org.example.univer.config.TestSpringConfig;
 import org.example.univer.dao.jdbc.*;
+import org.example.univer.formatter.Formatter;
 import org.example.univer.models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 import static junit.framework.Assert.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
@@ -44,7 +50,7 @@ public class JdbcLectureTest {
     private final static String TABLE_NAME = "lection";
 
     @Test
-    void checkCreatedLection() {
+    void checkCreatedLecture() {
         Lecture lecture = new Lecture();
         lecture.setId(17L);
         lecture.setCathedra(jdbcCathedra.findById(1L));
@@ -60,7 +66,7 @@ public class JdbcLectureTest {
     }
 
     @Test
-    void checkUpdateLection() {
+    void checkUpdateLecture() {
         Lecture lecture = jdbcLecture.findById(1L);
         lecture.setTeacher(jdbcTeacher.findById(2L));
         jdbcLecture.update(lecture);
@@ -69,7 +75,7 @@ public class JdbcLectureTest {
     }
 
     @Test
-    void checkFindByIdLection() {
+    void checkFindByIdLecture() {
         Lecture lecture = new Lecture();
         lecture.setId(17L);
         lecture.setCathedra(jdbcCathedra.findById(1L));
@@ -83,7 +89,7 @@ public class JdbcLectureTest {
     }
 
     @Test
-    void checkDeletedLection() {
+    void checkDeletedLecture() {
         int expected = countRowsInTable(template, TABLE_NAME) - 1;
         jdbcLecture.deleteById(1L);
 
@@ -91,7 +97,7 @@ public class JdbcLectureTest {
     }
 
     @Test
-    void checkFindAllLection() {
+    void checkFindAllLecture() {
         int expected = countRowsInTable(template, TABLE_NAME);
         int actual = jdbcLecture.findAll().size();
 
@@ -144,7 +150,6 @@ public class JdbcLectureTest {
         lecture.setAudience(audience);
         jdbcLecture.create(lecture);
 
-
-        assertEquals(jdbcLecture.findById(1L), jdbcLecture.getTimetable(jdbcTeacher.findById(1L), LocalDate.parse("2024-02-02")).get(0));
+        assertEquals(jdbcLecture.findById(1L), jdbcLecture.getTimetableTeacher(jdbcTeacher.findById(1L), LocalDate.parse("2024-02-02")).get(0));
     }
 }
