@@ -18,7 +18,7 @@ public class JdbcVacation implements DaoVacationInterface {
     private static final String DELETE_VACATION = "DELETE FROM vacation WHERE id=?";
     private static final String UPDATE_VACATION = "UPDATE vacation SET startjob=?, endjob=?, teacher_id=? WHERE id=?";
     private static final String FIND_ALL = "SELECT * FROM vacation ORDER BY id";
-    private static final String FIND_VACATION = "SELECT * FROM vacation WHERE startjob=? AND endjob=? AND teacher_id=?";
+    private static final String FIND_VACATION = "SELECT COUNT(*) FROM vacation WHERE startjob=? AND endjob=? AND teacher_id=?";
     private static final String GET_BY_ID = "SELECT * FROM vacation WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;

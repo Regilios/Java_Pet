@@ -3,6 +3,7 @@ package org.example.univer.test.jdbc;
 import org.example.univer.config.TestSpringConfig;
 import org.example.univer.dao.jdbc.JdbcSubject;
 import org.example.univer.models.Subject;
+import org.example.univer.models.Teacher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -77,5 +79,25 @@ public class JdbcSubjectTest {
         int actual = jdbcSubject.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleSubject() {
+        Subject subject = new Subject();
+        subject.setId(5L);
+        subject.setName("test");
+        subject.setDescription("test");
+
+        assertFalse(jdbcSubject.isSingle(subject));
+    }
+
+    @Test
+    void checkTeacherAssignedSubject() {
+        Subject subject = new Subject();
+        subject.setId(100L);
+        Teacher teacher = new Teacher();
+        teacher.setId(5L);
+
+        assertFalse(jdbcSubject.checkTeacherAssignedSubject(teacher, subject));
     }
 }

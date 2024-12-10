@@ -20,7 +20,7 @@ public class JdbcStudent implements DaoStudentInterface {
     private static final String DELETE_STUDENT = "DELETE FROM students WHERE id=?";
     private static final String GET_BY_ID = "SELECT * FROM students WHERE id=?";
     private static final String FIND_STUDENT_BY_GROUP_ID = "SELECT * FROM students WHERE group_id=? ORDER BY id";
-    private static final String FIND_HOW_MANY_STUDENT_IN_GROUP = "SELECT COUNT(*) FROM students WHERE group_id=? ORDER BY id";
+    private static final String FIND_HOW_MANY_STUDENT_IN_GROUP = "SELECT COUNT(*) FROM students WHERE group_id=?";
     private static final String FIND_STUDENT = "SELECT COUNT(*) FROM students WHERE firstname=? AND lastname=? AND address=? AND email=? AND birthday=? AND group_id=?";
     private static final String FIND_ALL = "SELECT * FROM students ORDER BY id";
 
@@ -84,10 +84,11 @@ public class JdbcStudent implements DaoStudentInterface {
         return jdbcTemplate.query(FIND_ALL, studentMapper);
     }
 
-    public List<Student> findAllStudentbyGroupId(Group group) {
+    public List<Student> findAllStudentByGroupId(Group group) {
         Long id = group.getId();
         return jdbcTemplate.query(FIND_STUDENT_BY_GROUP_ID, studentMapper, id);
     }
+
     @Override
     public boolean isSingle(Student student) {
         Integer result = jdbcTemplate.queryForObject(FIND_STUDENT, Integer.class, student.getFirstName(), student.getLastName(), student.getAddres(), student.getEmail(), student.getBirthday(), student.getGroup().getId());

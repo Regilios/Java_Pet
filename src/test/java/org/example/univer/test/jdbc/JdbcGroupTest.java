@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -88,5 +89,15 @@ public class JdbcGroupTest {
         int actual = jdbcGroup.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleGroup() {
+        Group group = new Group();
+        group.setId(3L);
+        group.setNameGroup("test");
+        group.setCathedra(jdbcCathedra.findById(1L));
+
+        assertFalse(jdbcGroup.isSingle(group));
     }
 }

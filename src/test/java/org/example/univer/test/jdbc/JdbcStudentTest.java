@@ -15,8 +15,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -93,5 +97,37 @@ public class JdbcStudentTest {
         int actual = jdbcStudent.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleStudent() {
+        Student student = new Student();
+        student.setId(7L);
+        student.setFirstName("Pavel");
+        student.setLastName("Yarinov");
+        student.setGender(Gender.MALE);
+        student.setAddres("Armany str 24");
+        student.setEmail("pavel@gmail.com");
+        student.setPhone("8978474666");
+        student.setBirthday(LocalDate.of(1991,10,17));
+        student.setGroup(jdbcGroup.findById(2L));
+
+        assertFalse(jdbcStudent.isSingle(student));
+    }
+
+    @Test
+    void checkGroupSize() {
+        Student student = new Student();
+        student.setGroup(jdbcGroup.findById(1L));
+        List<Student> groupList = jdbcStudent.findAll().stream().filter(x-> x.getGroup().getId().equals(1L)).collect(Collectors.toList());
+
+        assertEquals(Optional.of(groupList.size()), Optional.of(jdbcStudent.checkGroupSize(student)));
+    }
+
+    @Test
+    void checkFindAllStudentByGroupId() {
+        List<Student> groupList = jdbcStudent.findAll().stream().filter(x-> x.getGroup().getId().equals(1L)).collect(Collectors.toList());
+
+        assertEquals(groupList, jdbcStudent.findAllStudentByGroupId(jdbcGroup.findById(1L)));
     }
 }

@@ -149,7 +149,6 @@ public class LectureService {
 
     private boolean isTeacherSubject(Lecture lecture) {
         logger.debug("Check that the teacher has assigned a subject");
-        // lecture.getTeacher().getSubject().contains(lecture.getSubject());
         return daoSubjectInterface.checkTeacherAssignedSubject(lecture.getTeacher(), lecture.getSubject());
     }
 

@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 public class JdbcHoliday implements DaoHolidayInterface {
     private static final String FIND_ALL = "SELECT * FROM holiday ORDER BY id";
-    private static final String FIND_HOLIDAY = "SELECT COUNT(*) FROM holiday WHERE decription=?";
+    private static final String FIND_HOLIDAY = "SELECT COUNT(*) FROM holiday WHERE description=?";
     private static final String FIND_HOLIDAY_BY_DATE = "SELECT COUNT(*) FROM holiday WHERE ? BETWEEN start_holiday AND end_holiday";
     private static final String GET_BY_ID = "SELECT * FROM holiday WHERE id=?";
     private static final String CREATE_HOLIDAY = "INSERT INTO holiday (description, start_holiday, end_holiday) VALUES (?, ?, ?)";

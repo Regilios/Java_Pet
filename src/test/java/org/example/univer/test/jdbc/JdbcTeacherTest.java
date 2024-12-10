@@ -1,4 +1,5 @@
 package org.example.univer.test.jdbc;
+
 import org.example.univer.config.TestSpringConfig;
 import org.example.univer.dao.jdbc.JdbcCathedra;
 import org.example.univer.dao.jdbc.JdbcTeacher;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -93,5 +95,21 @@ public class JdbcTeacherTest {
         int actual = jdbcTeacher.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleTeacher() {
+        Teacher teacher = new Teacher();
+        teacher.setId(3L);
+        teacher.setFirstName("test");
+        teacher.setLastName("test2");
+        teacher.setGender(Gender.MALE);
+        teacher.setAddres("test");
+        teacher.setEmail("test@test");
+        teacher.setPhone("test");
+        teacher.setBirthday(LocalDate.parse("1983-02-01"));
+        teacher.setCathedra(jdbcCathedra.findById(1L));
+
+        assertFalse(jdbcTeacher.isSingle(teacher));
     }
 }

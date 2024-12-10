@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -80,5 +81,15 @@ public class JdbcLectureTimeTest {
         int actual = jdbcLectureTime.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleLectureTime() {
+        LectureTime lectureTime = new LectureTime();
+        lectureTime.setId(19L);
+        lectureTime.setStart(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEnd(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+
+        assertFalse(jdbcLectureTime.isSingle(lectureTime));
     }
 }

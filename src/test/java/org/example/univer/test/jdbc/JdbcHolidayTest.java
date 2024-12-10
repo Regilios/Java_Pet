@@ -13,8 +13,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -82,5 +85,21 @@ public class JdbcHolidayTest {
         int actual = jdbcHoliday.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleHoliday() {
+        Holiday holiday = new Holiday();
+        holiday.setId(3L);
+        holiday.setDesc("test");
+        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
+
+        assertFalse(jdbcHoliday.isSingle(holiday));
+    }
+
+    @Test
+    void checkLectureDoesNotFallOnHoliday() {
+        assertTrue(jdbcHoliday.lectureDoesNotFallOnHoliday(LocalDateTime.parse("2024-01-07T00:00:00")));
     }
 }

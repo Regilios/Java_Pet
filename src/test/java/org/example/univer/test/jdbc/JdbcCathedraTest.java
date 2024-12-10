@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -73,5 +74,14 @@ public class JdbcCathedraTest {
         int actual = jdbcCathedra.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleCathedra() {
+        Cathedra cathedra = new Cathedra();
+        cathedra.setId(2L);
+        cathedra.setName("test");
+
+        assertFalse(jdbcCathedra.isSingle(cathedra));
     }
 }

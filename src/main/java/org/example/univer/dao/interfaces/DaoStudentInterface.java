@@ -6,7 +6,7 @@ import org.example.univer.models.Student;
 import java.util.List;
 
 public interface DaoStudentInterface extends DaoInterfaces<Student> {
-     List<Student> findAllStudentbyGroupId(Group group);
+     List<Student> findAllStudentByGroupId(Group group);
 
      boolean isSingle(Student student);
 

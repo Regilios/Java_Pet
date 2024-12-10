@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -76,5 +77,15 @@ public class JdbcAudienceTest {
         int actual = jdbcAudience.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleAudience() {
+        Audience audience = new Audience();
+        audience.setId(7L);
+        audience.setRoom(1);
+        audience.setCapacity(100);
+
+        assertFalse(jdbcAudience.isSingle(audience));
     }
 }

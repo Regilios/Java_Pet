@@ -13,8 +13,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -82,5 +85,16 @@ public class JdbcVacationTest {
         int actual = jdbcVacation.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleVacation() {
+        Vacation vacation = new Vacation();
+        vacation.setId(5L);
+        vacation.setStartJob(LocalDate.parse("2024-02-01"));
+        vacation.setEndJob(LocalDate.parse("2024-09-14"));
+        vacation.setTeacher(jdbcTeacher.findById(1L));
+
+        assertFalse(jdbcVacation.isSingle(vacation));
     }
 }

@@ -1,29 +1,22 @@
 package org.example.univer.test.jdbc;
 
-import org.example.univer.config.SpringConfig;
 import org.example.univer.config.TestSpringConfig;
 import org.example.univer.dao.jdbc.*;
-import org.example.univer.formatter.Formatter;
-import org.example.univer.models.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.example.univer.models.Lecture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Collectors;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
@@ -105,51 +98,25 @@ public class JdbcLectureTest {
     }
 
     @Test
-    void checkGetTimetableStudent() {
-        LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(1L);
-        lectureTime.setStart(LocalDateTime.parse("2024-02-02 14:00:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2024-02-02 16:00:00", formatter1));
-        jdbcLectureTime.create(lectureTime);
-
-        Cathedra cathedra = new Cathedra();
-        cathedra.setId(1L);
-        cathedra.setName("test");
-        jdbcCathedra.create(cathedra);
-
-        Teacher teacher = new Teacher();
-        teacher.setId(1L);
-        teacher.setFirstName("test");
-        teacher.setLastName("test2");
-        teacher.setGender(Gender.MALE);
-        teacher.setAddres("test");
-        teacher.setEmail("test@test");
-        teacher.setPhone("test");
-        teacher.setBirthday(LocalDate.parse("1983-02-01"));
-        teacher.setCathedra(cathedra);
-        jdbcTeacher.create(teacher);
-
-        Subject subject = new Subject();
-        subject.setId(1L);
-        subject.setName("test");
-        subject.setDescription("test");
-        jdbcSubject.create(subject);
-
-        Audience audience = new Audience();
-        audience.setId(1L);
-        audience.setRoom(1);
-        audience.setCapacity(100);
-        jdbcAudience.create(audience);
-
-        Lecture lecture = new Lecture();
-        lecture.setId(1L);
-        lecture.setCathedra(cathedra);
-        lecture.setTeacher(teacher);
-        lecture.setSubject(subject);
-        lecture.setTime(lectureTime);
-        lecture.setAudience(audience);
-        jdbcLecture.create(lecture);
-
+    void checkGetTimetableTeacher() {
         assertEquals(jdbcLecture.findById(1L), jdbcLecture.getTimetableTeacher(jdbcTeacher.findById(1L), LocalDate.parse("2024-02-02")).get(0));
+    }
+
+    @Test
+    void checkIsSingleLecture() {
+        Lecture lecture = new Lecture();
+        lecture.setId(17L);
+        lecture.setCathedra(jdbcCathedra.findById(1L));
+        lecture.setTeacher(jdbcTeacher.findById(2L));
+        lecture.setSubject(jdbcSubject.findById(3L));
+        lecture.setTime(jdbcLectureTime.findById(4L));
+        lecture.setAudience(jdbcAudience.findById(4L));
+
+        assertFalse(jdbcLecture.isSingle(lecture));
+    }
+
+    @Test
+    void checkFindByAudienceDateAndLectureTime() {
+        assertFalse(jdbcLecture.findByAudienceDateAndLectureTime(jdbcAudience.findById(4L),jdbcLectureTime.findById(4L)));
     }
 }
