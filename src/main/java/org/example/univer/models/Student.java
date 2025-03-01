@@ -9,7 +9,7 @@ public class Student extends Person implements Serializable {
     private Long id;
     private Group group;
 
-    public Student(String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday, Long id, Group group) {
+    public Student(Long id, String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday, Group group) {
         super(firstName, lastName, gender, address, email, phone, birthday);
         this.id = id;
         this.group = group;
@@ -38,6 +38,8 @@ public class Student extends Person implements Serializable {
     public void setGroup(Group group) {
         this.group = group;
     }
+
+
 
     @Override
     public boolean equals(Object o) {

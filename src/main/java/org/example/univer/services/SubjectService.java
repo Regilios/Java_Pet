@@ -1,6 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.dao.interfaces.DaoSubjectInterface;
+import org.example.univer.exeption.*;
 import org.example.univer.models.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class SubjectService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(subject)) {
-                    throw new IllegalArgumentException("Невозможно создать передмет! Предмет с такими параметрами уже существует!");
+                    throw new InvalidParameterException("Невозможно создать передмет! Предмет с такими параметрами уже существует!");
                 }
                 validateCommon(subject, "создать");
                 break;
@@ -48,7 +49,7 @@ public class SubjectService {
 
     private void validateCommon(Subject subject, String action) {
         if (!descriptionNotEmpty(subject)) {
-            throw new IllegalArgumentException("Невозможно " + action + " предмет! Описание не заполнено и не может быть меньше чем: "+minSizeDescription+" символов!");
+            throw new SubjectExeption("Невозможно " + action + " предмет! Описание не заполнено и не может быть меньше чем: "+minSizeDescription+" символов!");
         }
     }
 
@@ -58,10 +59,21 @@ public class SubjectService {
             validate(subject, SubjectService.ValidationContext.METHOD_CREATE);
             daoSubjectInterface.create(subject);
             logger.debug("Subject created");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (SubjectExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта предмета: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект предмета не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта предмета: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта предмета", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект предмета не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта предмета", e);
         }
     }
 
@@ -71,10 +83,21 @@ public class SubjectService {
             validate(subject, SubjectService.ValidationContext.METHOD_UPDATE);
             daoSubjectInterface.update(subject);
             logger.debug("Subject updated");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (SubjectExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта предмета: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект предмета не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта предмета: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта предмета", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект предмета не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта предмета", e);
         }
     }
     public void deleteById(Long id) {
@@ -95,6 +118,12 @@ public class SubjectService {
     public boolean isSingle(Subject subject) {
         logger.debug("Check subject is single");
         return daoSubjectInterface.isSingle(subject);
+    }
+
+
+    public List<Subject> getSubjectById(Long teacher_id) {
+        logger.debug("Get list subject by id");
+        return daoSubjectInterface.getSubjectById(teacher_id);
     }
 
     private boolean descriptionNotEmpty(Subject subject) {

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Edit Holiday</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5 mb-3">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+            </div>
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <form id="form1" th:method="PATCH" th:action="@{/holidays/{id}(id=${holiday.getId()})}"
+                      th:object="${holiday}">
+                    <div class="mb-3">
+                        <label class="form-label" for="desc">Description</label>
+                        <input class="form-control" type="text" th:field="*{desc}" id="desc"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="start_holiday">Start holiday</label>
+                        <input class="form-control" type="date" th:field="*{start_holiday}" id="start_holiday"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="end_holiday">End holiday</label>
+                        <input class="form-control" type="date" th:field="*{end_holiday}" id="end_holiday"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary" value="Update holiday">Update holiday</button>
+                </form>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/holidays">Back to all holidays</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

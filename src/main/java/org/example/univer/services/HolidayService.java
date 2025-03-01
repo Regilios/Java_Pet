@@ -1,6 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.dao.interfaces.DaoHolidayInterface;
+import org.example.univer.exeption.*;
 import org.example.univer.models.Holiday;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class HolidayService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(holiday)) {
-                    throw new IllegalArgumentException("Невозможно создать каникулы! Каникулы с названием: " + holiday.getDesc() + " уже существуют!");
+                    throw new InvalidParameterException("Невозможно создать каникулы! Каникулы с названием: " + holiday.getDesc() + " уже существуют!");
                 }
                 validateCommon(holiday, "создать");
                 break;
@@ -54,11 +55,11 @@ public class HolidayService {
     }
 
     private void validateCommon(Holiday holiday, String action) {
-        if (!holiday.getStartHolidayLocal().getDayOfWeek().equals(DayOfWeek.valueOf(startDayHoliday))) {
-            throw new IllegalArgumentException("Невозможно " + action + " каникулы! Каникулы должны начинаться с " + startDayHoliday + "!");
+        if (!holiday.getStart_holiday().getDayOfWeek().equals(DayOfWeek.valueOf(startDayHoliday))) {
+            throw new HolidaysExeption("Невозможно " + action + " каникулы! Каникулы должны начинаться с " + startDayHoliday + "!");
         }
-        if (ChronoUnit.DAYS.between(holiday.getStartHolidayLocal(), holiday.getEndHolidayLocal()) > maxDayHoliday) {
-            throw new IllegalArgumentException("Невозможно " + action + " каникулы! Каникулы не должны превышать заданное количество дней отдыха: " + maxDayHoliday + "!");
+        if (ChronoUnit.DAYS.between(holiday.getStart_holiday(), holiday.getEnd_holiday()) > maxDayHoliday) {
+            throw new HolidaysExeption("Невозможно " + action + " каникулы! Каникулы не должны превышать заданное количество дней отдыха: " + maxDayHoliday + "!");
         }
     }
 
@@ -68,11 +69,23 @@ public class HolidayService {
             validate(holiday, ValidationContext.METHOD_CREATE);
             daoHolidayInterface.create(holiday);
             logger.debug("Holiday created");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (HolidaysExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта праздника: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект праздника не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта праздника: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта праздника", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект праздника не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта праздника", e);
         }
+        logger.debug("Holiday created");
     }
 
     public void update(Holiday holiday) {
@@ -81,11 +94,23 @@ public class HolidayService {
             validate(holiday, ValidationContext.METHOD_UPDATE);
             daoHolidayInterface.update(holiday);
             logger.debug("Holiday updated");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (HolidaysExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта праздника: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект праздника не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта праздника: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта праздника", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект праздника не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта праздника", e);
         }
+        logger.debug("Holiday updated");
     }
 
     public void deleteById(Long id) {

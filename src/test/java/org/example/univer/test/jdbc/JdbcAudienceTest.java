@@ -8,18 +8,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestSpringConfig.class)
+@ContextConfiguration(classes = {TestSpringConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcAudienceTest {
     @Autowired
     private JdbcTemplate template;
@@ -30,12 +30,11 @@ public class JdbcAudienceTest {
     @Test
     void checkCreatedAudience() {
         Audience audience = new Audience();
-        audience.setId(7L);
         audience.setRoom(1);
         audience.setCapacity(100);
         jdbcAudience.create(audience);
 
-        Audience audience1 = jdbcAudience.findById(7L);
+        Audience audience1 = jdbcAudience.findById(audience.getId());
 
         assertEquals(audience, audience1);
         assertEquals(audience.getId(), audience1.getId());
@@ -55,12 +54,11 @@ public class JdbcAudienceTest {
     @Test
     void checkFindByIdAudience() {
         Audience audience = new Audience();
-        audience.setId(7L);
         audience.setRoom(1);
         audience.setCapacity(100);
         jdbcAudience.create(audience);
 
-        assertEquals(jdbcAudience.findById(7L), audience);
+        assertEquals(jdbcAudience.findById(audience.getId()), audience);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcGroup;
+import org.example.univer.exeption.InvalidParameterException;
 import org.example.univer.models.Group;
 import org.example.univer.services.GroupService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -29,13 +32,12 @@ public class GroupServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(groupService, "minLengthNameAudience", 3);
+        ReflectionTestUtils.setField(groupService, "minLengthNameGroup", 3);
     }
     @Test
     void create_groupNameMore3_createGroup() {
         Group group = new Group();
-        group.setId(1L);
-        group.setNameGroup("Абривель");
+        group.setName("Абривель");
 
         when(mockJdbcGroup.isSingle(group)).thenReturn(false);
         groupService.create(group);
@@ -46,11 +48,10 @@ public class GroupServiceTest {
     @Test
     void create_groupNameLess3_throwException() {
         Group group = new Group();
-        group.setId(1L);
-        group.setNameGroup("Аб");
+        group.setName("Аб");
 
         when(mockJdbcGroup.isSingle(group)).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(InvalidParameterException.class, () -> {
             groupService.validate(group, GroupService.ValidationContext.METHOD_CREATE);
             groupService.create(group);
         });
@@ -61,7 +62,6 @@ public class GroupServiceTest {
     @Test
     void isSingle_groupIsSingle_true() {
         Group group = new Group();
-        group.setId(1L);
 
         when(mockJdbcGroup.isSingle(group)).thenReturn(true);
         assertTrue(groupService.isSingle(group));
@@ -79,7 +79,7 @@ public class GroupServiceTest {
     @Test
     void findById_findGroup_found() {
         Group group = new Group();
-        group.setId(1L);
+
         when(mockJdbcGroup.findById(1L)).thenReturn(group);
         Group result = groupService.findById(1L);
 
@@ -91,6 +91,8 @@ public class GroupServiceTest {
         List<Group> groupsList = List.of(new Group(), new Group());
 
         when(mockJdbcGroup.findAll()).thenReturn(groupsList);
+        assertThat(groupsList, is(not(empty())));
+        assertThat(groupsList.size(), is(greaterThan(0)));
         List<Group> result = groupService.findAll();
 
         assertEquals(groupsList, result);

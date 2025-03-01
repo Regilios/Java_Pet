@@ -1,6 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.dao.interfaces.DaoCathedraInterface;
+import org.example.univer.exeption.*;
 import org.example.univer.models.Cathedra;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class CathedraService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(cathedra)) {
-                    throw new IllegalArgumentException("Невозможно создать кафедру! Кафедра с именем: " + cathedra.getName() + " уже существует.");
+                    throw new InvalidParameterException("Невозможно создать кафедру! Кафедра с именем: " + cathedra.getName() + " уже существует.");
                 }
                 validateCommon(cathedra, "создать");
                 break;
@@ -49,13 +50,13 @@ public class CathedraService {
 
     private void validateCommon(Cathedra cathedra, String action) {
         if (cathedra.getName() == null) {
-            throw new IllegalArgumentException("Наименование кафедры не может быть null.");
+            throw new CathedraExeption("Наименование кафедры не может быть null.");
         }
         if (cathedra.getName().length() > maxLengthNameCathedra) {
-            throw new IllegalArgumentException("Невозможно " + action + " кафедру! Наименование кафедры больше допустимой длины: " + maxLengthNameCathedra + ".");
+            throw new CathedraExeption("Невозможно " + action + " кафедру! Наименование кафедры больше допустимой длины: " + maxLengthNameCathedra + ".");
         }
         if (!cathedra.getName().startsWith(startSymbolNameCathedra)) {
-            throw new IllegalArgumentException("Невозможно " + action + " кафедру! Наименование кафедры не начинается с символа: " + startSymbolNameCathedra + ".");
+            throw new CathedraExeption("Невозможно " + action + " кафедру! Наименование кафедры не начинается с символа: " + startSymbolNameCathedra + ".");
         }
     }
 
@@ -65,10 +66,21 @@ public class CathedraService {
             validate(cathedra, ValidationContext.METHOD_CREATE);
             daoCathedraInterface.create(cathedra);
             logger.debug("Cathedra created");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (CathedraExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта праздника: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект кафедры не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта кафедры: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта кафедры", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект кафедры не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта кафедры", e);
         }
         logger.debug("Cathedra created");
     }
@@ -78,10 +90,21 @@ public class CathedraService {
         try {
             validate(cathedra, ValidationContext.METHOD_UPDATE);
             daoCathedraInterface.update(cathedra);
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (CathedraExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта праздника: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект кафедры не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта кафедры: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта кафедры", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект кафедры не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта кафедры", e);
         }
         logger.debug("Cathedra updated");
     }

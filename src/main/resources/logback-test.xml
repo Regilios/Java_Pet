@@ -1,5 +1,0 @@
-<configuration>
-    <root level="OFF"> <!-- Отключаем все логи -->
-        <appender-ref ref="STDOUT"/>
-    </root>
-</configuration>

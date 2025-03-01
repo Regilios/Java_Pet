@@ -1,6 +1,5 @@
 package org.example.univer.models;
 
-import javax.security.auth.Subject;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,8 +13,8 @@ public class Teacher extends Person implements Serializable {
     private Cathedra cathedra;
     private List<Vacation> vacation = new ArrayList<>();
 
-    public Teacher(String firstName, String lastName, Gender gender, String addres, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subject, List<Vacation> vacation) {
-        super(firstName, lastName, gender, addres, email, phone, birthday);
+    public Teacher(String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subject, List<Vacation> vacation) {
+        super(firstName, lastName, gender, address, email, phone, birthday);
         this.id = id;
         this.cathedra = cathedra;
         this.subject = subject;

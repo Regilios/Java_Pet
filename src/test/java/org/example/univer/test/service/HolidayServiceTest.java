@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcHoliday;
+import org.example.univer.exeption.HolidaysExeption;
 import org.example.univer.models.Holiday;
 import org.example.univer.services.HolidayService;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -36,10 +36,9 @@ public class HolidayServiceTest {
     @Test
     void create_holiday10dayStartMonday_createHoliday() {
         Holiday holiday = new Holiday();
-        holiday.setId(1L);
         holiday.setDesc("test");
-        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
-        holiday.setEndHoliday(LocalDate.parse("2024-01-14"));
+        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
+        holiday.setEnd_holiday(LocalDate.parse("2024-01-14"));
 
         when(mockJdbcHoliday.isSingle(holiday)).thenReturn(false);
         holidayService.create(holiday);
@@ -50,13 +49,12 @@ public class HolidayServiceTest {
     @Test
     void create_holiday10dayStartThursday_throwException() {
         Holiday holiday = new Holiday();
-        holiday.setId(1L);
         holiday.setDesc("test");
-        holiday.setStartHoliday(LocalDate.parse("2024-01-02"));
-        holiday.setEndHoliday(LocalDate.parse("2024-01-14"));
+        holiday.setStart_holiday(LocalDate.parse("2024-01-02"));
+        holiday.setEnd_holiday(LocalDate.parse("2024-01-14"));
 
         when(mockJdbcHoliday.isSingle(holiday)).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(HolidaysExeption.class, () -> {
             holidayService.validate(holiday, HolidayService.ValidationContext.METHOD_CREATE);
             holidayService.create(holiday);
         });
@@ -66,7 +64,6 @@ public class HolidayServiceTest {
     @Test
     void isSingle_holidayIsSingle_true() {
         Holiday holiday = new Holiday();
-        holiday.setId(1L);
 
         when(mockJdbcHoliday.isSingle(holiday)).thenReturn(true);
         assertTrue(holidayService.isSingle(holiday));
@@ -84,7 +81,7 @@ public class HolidayServiceTest {
     @Test
     void findById_findHoliday_found() {
         Holiday holiday = new Holiday();
-        holiday.setId(1L);
+
         when(mockJdbcHoliday.findById(1L)).thenReturn(holiday);
         Holiday result = holidayService.findById(1L);
 

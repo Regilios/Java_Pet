@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Show subject by id</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Family</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><a th:text="${subject.getId()}">Id</a></td>
+                        <td><a th:text="${subject.getName()}">Name</a></td>
+                        <td><a th:text="${subject.getDescription()}">Description</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/subjects">Back to all subjects</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

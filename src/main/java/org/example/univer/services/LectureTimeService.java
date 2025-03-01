@@ -1,6 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.dao.interfaces.DaoLectureTimeInterface;
+import org.example.univer.exeption.*;
 import org.example.univer.models.LectureTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class LectureTimeService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lectureTime)) {
-                    throw new IllegalArgumentException("Невозможно создать время для лекции! Время с: " + lectureTime.getStart() + " по " + lectureTime.getEnd() + "уже существует!");
+                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStart_lection() + " по " + lectureTime.getEnd_lection() + "уже существует!");
                 }
                 validateCommon(lectureTime, "создать");
                 break;
@@ -48,10 +49,10 @@ public class LectureTimeService {
 
     private void validateCommon(LectureTime lectureTime, String action) {
         if (!isTimeLectionCorrect(lectureTime)) {
-            throw new IllegalArgumentException("Невозможно " + action + " время для лекции! Начало лекции не может быть позднее её окончания!");
+            throw new LectureTimeExeption("Невозможно " + action + " время для лекции! Начало лекции не может быть позднее её окончания!");
         }
         if (!timeLectionIsNotLessAssignedTime(lectureTime)) {
-            throw new IllegalArgumentException("Невозможно " + action +  "время для лекции! Временой отрезок не может быть меньше: " + minimumLectureTimeMinutes);
+            throw new LectureTimeExeption("Невозможно " + action +  "время для лекции! Временой отрезок не может быть меньше: " + minimumLectureTimeMinutes);
         }
     }
 
@@ -62,10 +63,21 @@ public class LectureTimeService {
             validate(lectureTime, ValidationContext.METHOD_CREATE);
             daoLectureTimeInterface.create(lectureTime);
             logger.debug("LectionTime created");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (LectureTimeExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта времени-лекции: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект времени-лекции не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта времени-лекции: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта времени-лекции", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект времени-лекции не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта времени-лекции", e);
         }
     }
 
@@ -75,10 +87,21 @@ public class LectureTimeService {
             validate(lectureTime, ValidationContext.METHOD_UPDATE);
             daoLectureTimeInterface.update(lectureTime);
             logger.debug("LectionTime updated");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (LectureTimeExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта времени-лекции: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект времени-лекции не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта времени-лекции: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта времени-лекции", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект времени-лекции не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта времени-лекции", e);
         }
     }
 

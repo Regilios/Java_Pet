@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcStudent;
+import org.example.univer.exeption.StudentExeption;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Group;
 import org.example.univer.models.Student;
@@ -36,14 +37,12 @@ public class StundetServiceTest {
     @Test
     void create_studentThereIsFreePlaceInGroup_createStudent() {
         Group group = new Group();
-        group.setId(1L);
 
         Student student = new Student();
-        student.setId(7L);
         student.setFirstName("Pavel");
         student.setLastName("Yarinov");
         student.setGender(Gender.MALE);
-        student.setAddres("Armany str 24");
+        student.setAddress("Armany str 24");
         student.setEmail("pavel@gmail.com");
         student.setPhone("8978474666");
         student.setBirthday(LocalDate.of(1991,10,17));
@@ -59,14 +58,12 @@ public class StundetServiceTest {
     @Test
     void create_studentThereIsNotFreePlaceInGroup_throwException() {
         Group group = new Group();
-        group.setId(1L);
 
         Student student = new Student();
-        student.setId(7L);
         student.setFirstName("Pavel");
         student.setLastName("Yarinov");
         student.setGender(Gender.MALE);
-        student.setAddres("Armany str 24");
+        student.setAddress("Armany str 24");
         student.setEmail("pavel@gmail.com");
         student.setPhone("8978474666");
         student.setBirthday(LocalDate.of(1991,10,17));
@@ -75,7 +72,7 @@ public class StundetServiceTest {
         when(mockJdbcStudent.isSingle(student)).thenReturn(false);
         when(mockJdbcStudent.checkGroupSize(student)).thenReturn(6);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(StudentExeption.class, () -> {
             studentService.validate(student, StudentService.ValidationContext.METHOD_CREATE);
             studentService.create(student);
         });
@@ -85,7 +82,6 @@ public class StundetServiceTest {
     @Test
     void isSingle_studentIsSingle_true() {
         Student student = new Student();
-        student.setId(1L);
 
         when(mockJdbcStudent.isSingle(student)).thenReturn(true);
         assertTrue(studentService.isSingle(student));

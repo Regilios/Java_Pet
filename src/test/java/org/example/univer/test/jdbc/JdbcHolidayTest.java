@@ -8,22 +8,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestSpringConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcHolidayTest {
     @Autowired
     private JdbcTemplate template;
@@ -34,13 +32,12 @@ public class JdbcHolidayTest {
     @Test
     void checkCreatedHoliday() {
         Holiday holiday = new Holiday();
-        holiday.setId(3L);
         holiday.setDesc("test");
-        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
-        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
+        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
+        holiday.setEnd_holiday(LocalDate.parse("2024-01-30"));
         jdbcHoliday.create(holiday);
 
-        Holiday holiday1 = jdbcHoliday.findById(3L);
+        Holiday holiday1 = jdbcHoliday.findById(holiday.getId());
 
         assertEquals(holiday, holiday1);
         assertEquals(holiday.getId(), holiday1.getId());
@@ -52,8 +49,8 @@ public class JdbcHolidayTest {
     void checkUpdateHoliday() {
         Holiday holiday = jdbcHoliday.findById(1L);
         holiday.setDesc("1111");
-        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
-        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
+        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
+        holiday.setEnd_holiday(LocalDate.parse("2024-01-30"));
         jdbcHoliday.update(holiday);
 
         assertEquals("1111", jdbcHoliday.findById(1L).getDesc());
@@ -62,13 +59,13 @@ public class JdbcHolidayTest {
     @Test
     void checkFindByIdHoliday() {
         Holiday holiday = new Holiday();
-        holiday.setId(3L);
+
         holiday.setDesc("test");
-        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
-        holiday.setEndHoliday(LocalDate.parse("2024-01-10"));
+        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
+        holiday.setEnd_holiday(LocalDate.parse("2024-01-10"));
         jdbcHoliday.create(holiday);
 
-        assertEquals(jdbcHoliday.findById(3L), holiday);
+        assertEquals(jdbcHoliday.findById(holiday.getId()), holiday);
     }
 
     @Test
@@ -90,10 +87,10 @@ public class JdbcHolidayTest {
     @Test
     void checkIsSingleHoliday() {
         Holiday holiday = new Holiday();
-        holiday.setId(3L);
+
         holiday.setDesc("test");
-        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
-        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
+        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
+        holiday.setEnd_holiday(LocalDate.parse("2024-01-30"));
 
         assertFalse(jdbcHoliday.isSingle(holiday));
     }

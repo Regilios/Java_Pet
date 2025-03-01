@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Add Student</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5 mb-3">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+            </div>
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <form id="form1" th:method="POST" th:action="@{/students}" th:object="${student}">
+                    <div class="mb-3">
+                        <label class="form-label" for="firstName">firstName</label>
+                        <input class="form-control" type="text" th:field="*{firstName}" id="firstName"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="lastName">lastName</label>
+                        <input class="form-control" type="text" th:field="*{lastName}" id="lastName"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="gender">gender</label>
+                        <select class="form-select" name="gender" id="gender" required>
+                            <option th:each="genderOpt : ${T(org.example.univer.models.Gender).values()}"
+                                    th:value="${genderOpt}"
+                                    th:field="*{gender}"
+                                    th:text="${genderOpt}">Gender
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="address">address</label>
+                        <input class="form-control" type="text" th:field="*{address}" id="address"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">email</label>
+                        <input class="form-control" type="text" th:field="*{email}" id="email"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="phone">phone</label>
+                        <input class="form-control" type="text" th:field="*{phone}" id="phone"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="birthday">birthday</label>
+                        <input class="form-control" type="date" th:field="*{birthday}" id="birthday"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="group">Group:</label>
+                        <select class="form-select" name="group" id="group" th:field="*{group.id}">
+                            <option value="" disabled selected>Select a group</option>
+                            <option th:each="anyGroup : ${groups}"
+                                    th:field="*{group.id}"
+                                    th:value="${anyGroup.id}"
+                                    th:text="${anyGroup.name}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" value="add student">add student</button>
+                </form>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/students">Back to all students</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

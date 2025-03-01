@@ -1,6 +1,6 @@
 # University pet-project 
 
-Updating the project with a service layer
+Updating the project with a service layer and web
 
 Current updates:
 

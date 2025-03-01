@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Add subject</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5 mb-3">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+            </div>
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <form th:method="POST" th:action="@{/subjects}" th:object="${subject}">
+                    <div class="mb-3">
+                        <label class="form-label" for="name">name</label>
+                        <input class="form-control" type="text" th:field="*{name}" id="name"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="description">description</label>
+                        <input class="form-control" type="text" th:field="*{description}" id="description"/>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" value="add student">add subject</button>
+                </form>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/subjects">Back to all subjects</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

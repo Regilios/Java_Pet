@@ -9,18 +9,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestSpringConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcSubjectTest {
     @Autowired
     private JdbcTemplate template;
@@ -32,12 +32,11 @@ public class JdbcSubjectTest {
     @Test
     void checkCreatedSubject() {
         Subject subject = new Subject();
-        subject.setId(5L);
+
         subject.setName("test");
         subject.setDescription("test");
-
         jdbcSubject.create(subject);
-        Subject subject1 = jdbcSubject.findById(5L);
+        Subject subject1 = jdbcSubject.findById(subject.getId());
 
         assertEquals(subject, subject1);
         assertEquals(subject.getId(), subject1.getId());
@@ -57,12 +56,12 @@ public class JdbcSubjectTest {
     @Test
     void checkFindByIdSubject() {
         Subject subject = new Subject();
-        subject.setId(5L);
+
         subject.setName("test");
         subject.setDescription("test");
         jdbcSubject.create(subject);
 
-        assertEquals(jdbcSubject.findById(5L), subject);
+        assertEquals(jdbcSubject.findById(subject.getId()), subject);
     }
 
     @Test
@@ -84,7 +83,7 @@ public class JdbcSubjectTest {
     @Test
     void checkIsSingleSubject() {
         Subject subject = new Subject();
-        subject.setId(5L);
+
         subject.setName("test");
         subject.setDescription("test");
 
@@ -94,7 +93,7 @@ public class JdbcSubjectTest {
     @Test
     void checkTeacherAssignedSubject() {
         Subject subject = new Subject();
-        subject.setId(100L);
+        subject.setId(1000L);
         Teacher teacher = new Teacher();
         teacher.setId(5L);
 

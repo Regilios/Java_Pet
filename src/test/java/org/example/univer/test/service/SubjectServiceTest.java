@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcSubject;
+import org.example.univer.exeption.SubjectExeption;
 import org.example.univer.models.Subject;
 import org.example.univer.services.SubjectService;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,6 @@ public class SubjectServiceTest {
     @Test
     void create_subjectDescriptionNotEmpty_createCathedra() {
         Subject subject = new Subject();
-        subject.setId(1L);
         subject.setName("Test");
         subject.setDescription("Test Test Test Test Test Test Test");
         when(mockJdbcSubject.isSingle(subject)).thenReturn(false);
@@ -46,12 +46,11 @@ public class SubjectServiceTest {
     @Test
     void create_subjectDescriptionNotEmpty_throwException() {
         Subject subject = new Subject();
-        subject.setId(1L);
         subject.setName("Test");
         subject.setDescription("");
         when(mockJdbcSubject.isSingle(subject)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(SubjectExeption.class, () -> {
             subjectService.validate(subject, SubjectService.ValidationContext.METHOD_CREATE);
             subjectService.create(subject);
         });
@@ -61,7 +60,6 @@ public class SubjectServiceTest {
     @Test
     void isSingle_subjectIsSingle_true() {
         Subject subject = new Subject();
-        subject.setId(1L);
 
         when(mockJdbcSubject.isSingle(subject)).thenReturn(true);
         assertTrue(subjectService.isSingle(subject));
@@ -79,7 +77,6 @@ public class SubjectServiceTest {
     @Test
     void findById_findSubject_found() {
         Subject subject = new Subject();
-        subject.setId(1L);
 
         when(mockJdbcSubject.findById(1L)).thenReturn(subject);
         Subject result = subjectService.findById(1L);

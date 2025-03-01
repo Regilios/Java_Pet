@@ -1,5 +1,7 @@
 package org.example.univer.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,7 +10,9 @@ import java.util.Objects;
 public class Vacation implements Serializable {
     private static final long serialVersionUID = 2595365395005712101L;
     private Long id;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startJob;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endJob;
     private Teacher teacher;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM, yyyy");
@@ -38,7 +42,7 @@ public class Vacation implements Serializable {
         return startJob.format(formatter);
     }
 
-    public LocalDate getStartJobLocal() {
+    public LocalDate getStartJob() {
         return startJob;
     }
 
@@ -50,7 +54,7 @@ public class Vacation implements Serializable {
         return endJob.format(formatter);
     }
 
-    public LocalDate getEndJobLocal() {
+    public LocalDate getEndJob() {
         return endJob;
     }
 

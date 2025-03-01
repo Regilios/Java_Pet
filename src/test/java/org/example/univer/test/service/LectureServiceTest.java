@@ -1,6 +1,9 @@
 package org.example.univer.test.service;
 
-import org.example.univer.dao.jdbc.*;
+import org.example.univer.dao.jdbc.JdbcHoliday;
+import org.example.univer.dao.jdbc.JdbcLecture;
+import org.example.univer.dao.jdbc.JdbcSubject;
+import org.example.univer.exeption.LectureExeption;
 import org.example.univer.models.*;
 import org.example.univer.services.LectureService;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -43,44 +45,33 @@ public class LectureServiceTest {
     @Test
     void create_LectureWidthCorrectData_createLecture() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(1L);
-
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
-
         Subject subject = new Subject();
-        subject.setId(1L);
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(19L);
-        lectureTime.setStart(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
-
+        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
-        audience.setId(7L);
         audience.setRoom(1);
         audience.setCapacity(100);
 
         Lecture lecture = new Lecture();
-        lecture.setId(17L);
-
         lecture.setCathedra(cathedra);
         lecture.setTeacher(teacher);
         lecture.setSubject(subject);
         lecture.setTime(lectureTime);
         lecture.setAudience(audience);
 
-
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStart(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEnd(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStart_lection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEnd_lection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         when(mockJdbcLecture.isSingle(lecture)).thenReturn(false);
         when(mockJdbcHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(false);
         when(mockJdbcSubject.checkTeacherAssignedSubject(teacher, subject)).thenReturn(true);
-        when(mockJdbcLecture.findByAudienceDateAndLectureTime(lecture.getAudience(), lecture.getTime())).thenReturn(false);
-        when(mockJdbcLecture.getTimetableTeacher(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()))).thenReturn(List.of(new Lecture() {{
+        when(mockJdbcLecture.findByAudienceDateAndLectureTimeForCreate(lecture.getAudience(), lecture.getTime())).thenReturn(false);
+        when(mockJdbcLecture.getTimetableTeacherForCreate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()))).thenReturn(List.of(new Lecture() {{
             setTime(mockLectureTime);
         }}));
 
@@ -92,15 +83,13 @@ public class LectureServiceTest {
     @Test
     void create_LectureWidthIncorrectLectionTime_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(19L);
-        lectureTime.setStart(LocalDateTime.parse("2025-02-02 08:30:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2025-02-02 20:30:00", formatter1));
+        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 08:30:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 20:30:00", formatter1));
 
         Lecture lecture = new Lecture();
-        lecture.setId(17L);
         lecture.setTime(lectureTime);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(LectureExeption.class, () -> {
             lectureService.validate(lecture, LectureService.ValidationContext.METHOD_CREATE);
             lectureService.create(lecture);
         });
@@ -110,17 +99,15 @@ public class LectureServiceTest {
     @Test
     void create_LectureOnHolidays_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(19L);
-        lectureTime.setStart(LocalDateTime.parse("2024-01-02 08:30:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2024-01-02 10:30:00", formatter1));
+        lectureTime.setStart_lection(LocalDateTime.parse("2024-01-02 08:30:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2024-01-02 10:30:00", formatter1));
 
         Lecture lecture = new Lecture();
-        lecture.setId(17L);
         lecture.setTime(lectureTime);
 
         when(mockJdbcHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(true);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(LectureExeption.class, () -> {
             lectureService.validate(lecture, LectureService.ValidationContext.METHOD_CREATE);
             lectureService.create(lecture);
         });
@@ -130,18 +117,13 @@ public class LectureServiceTest {
     @Test
     void create_TeacherDoesNotTeachSubject_throwException() {
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
-
         Subject subject = new Subject();
-        subject.setId(4L);
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(19L);
-        lectureTime.setStart(LocalDateTime.parse("2025-02-02 10:30:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2025-02-02 12:30:00", formatter1));
+        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 10:30:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 12:30:00", formatter1));
 
         Lecture lecture = new Lecture();
-        lecture.setId(17L);
         lecture.setTeacher(teacher);
         lecture.setSubject(subject);
         lecture.setTime(lectureTime);
@@ -149,7 +131,7 @@ public class LectureServiceTest {
         when(mockJdbcHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(false);
         when(mockJdbcSubject.checkTeacherAssignedSubject(lecture.getTeacher(), lecture.getSubject())).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(LectureExeption.class, () -> {
             lectureService.validate(lecture, LectureService.ValidationContext.METHOD_CREATE);
             lectureService.create(lecture);
         });
@@ -160,35 +142,26 @@ public class LectureServiceTest {
     @Test
     void create_AudienceNotFree_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(1L);
-        lectureTime.setStart(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStart_lection(LocalDateTime.parse("2035-02-02 14:30:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2035-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
-        audience.setId(1L);
         audience.setRoom(1);
         audience.setCapacity(100);
 
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
-
         Subject subject = new Subject();
-        subject.setId(1L);
 
         Lecture lecture = new Lecture();
-        lecture.setId(17L);
-
         lecture.setTime(lectureTime);
         lecture.setAudience(audience);
         lecture.setSubject(subject);
         lecture.setTeacher(teacher);
 
         when(mockJdbcLecture.isSingle(lecture)).thenReturn(false);
-        when(mockJdbcHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(false);
-        when(mockJdbcSubject.checkTeacherAssignedSubject(teacher, subject)).thenReturn(true);
-        when(mockJdbcLecture.findByAudienceDateAndLectureTime(lecture.getAudience(), lecture.getTime())).thenReturn(true);
+        when(mockJdbcLecture.findByAudienceDateAndLectureTimeForCreate(lecture.getAudience(), lecture.getTime())).thenReturn(true);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(LectureExeption.class, () -> {
             lectureService.validate(lecture, LectureService.ValidationContext.METHOD_CREATE);
             lectureService.create(lecture);
         });
@@ -199,7 +172,6 @@ public class LectureServiceTest {
     @Test
     void isSingle_lectureIsSingle_true() {
         Lecture lecture = new Lecture();
-        lecture.setId(17L);
 
         when(mockJdbcLecture.isSingle(lecture)).thenReturn(true);
         assertTrue(lectureService.isSingle(lecture));
@@ -218,7 +190,6 @@ public class LectureServiceTest {
     @Test
     void findById_findLecture_found() {
         Lecture lecture = new Lecture();
-        lecture.setId(1L);
 
         when(mockJdbcLecture.findById(1L)).thenReturn(lecture);
         Lecture result = lectureService.findById(1L);

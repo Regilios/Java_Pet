@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Show group by id</h1>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Cathedra</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><a th:text="${group.getId()}">Id</a></td>
+                        <td><a th:text="${group.getName()}">Name</a></td>
+                        <td><a th:text="${group?.getCathedra()?.getName()}">Cathedra</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/groups">Back to all groups</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

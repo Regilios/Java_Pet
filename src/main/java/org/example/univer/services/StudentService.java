@@ -1,12 +1,15 @@
 package org.example.univer.services;
 
 import org.example.univer.dao.interfaces.DaoStudentInterface;
+import org.example.univer.exeption.*;
 import org.example.univer.models.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +36,7 @@ public class StudentService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(student)) {
-                    throw new IllegalArgumentException("Невозможно создать студента! Студент с такими параметрами уже существует!");
+                    throw new InvalidParameterException("Невозможно создать студента! Студент с такими параметрами уже существует!");
                 }
                 validateCommon(student, "создать");
                 break;
@@ -48,7 +51,7 @@ public class StudentService {
 
     private void validateCommon(Student student, String action) {
         if (!checkGroupSize(student)) {
-            throw new IllegalArgumentException("Невозможно " + action + " студента! Группа заполнена!");
+            throw new StudentExeption("Невозможно " + action + " студента! Группа заполнена!");
         }
     }
 
@@ -58,10 +61,21 @@ public class StudentService {
             validate(student, ValidationContext.METHOD_CREATE);
             daoStudentInterface.create(student);
             logger.debug("Student created");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (StudentExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта студента: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект студента не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта студента: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта студента", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект студента не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта студента", e);
         }
     }
 
@@ -71,10 +85,21 @@ public class StudentService {
             validate(student, ValidationContext.METHOD_UPDATE);
             daoStudentInterface.update(student);
             logger.debug("Student updated");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (StudentExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта студента: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект студента не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта студента: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта студента", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект студента не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта студента", e);
         }
     }
 
@@ -96,6 +121,11 @@ public class StudentService {
     public List<Student> findAll() {
         logger.debug("Find all students");
         return daoStudentInterface.findAll();
+    }
+
+    public Page<Student> findAll(Pageable pageable) {
+        logger.debug("Find all audiences paginated");
+        return daoStudentInterface.findPaginatedStudents(pageable);
     }
 
     public boolean isSingle(Student student) {

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Show teacher by id</h1>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Family</th>
+                        <th>Gender</th>
+                        <th>Address</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Birthday</th>
+                        <th>Cathedra</th>
+                        <th>Subject</th>
+                        <th>Vacation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="${teacher.getId()}">Id</td>
+                        <td th:text="${teacher.getFirstName()}">Name</td>
+                        <td th:text="${teacher.getLastName()}">Family</td>
+                        <td th:text="${teacher.getGender()}">gender</td>
+                        <td th:text="${teacher.getAddress()}">address</td>
+                        <td th:text="${teacher.getEmail()}">email</td>
+                        <td th:text="${teacher.getPhone()}">phone</td>
+                        <td th:text="${teacher.getBirthday()}">birthday</td>
+                        <td th:text="${teacher?.getCathedra()?.getName()}">cathedra</td>
+                        <td>
+                            <ul th:each="subject : ${subjects}">
+                                <li th:text="${subject.name}"></li>
+                            </ul>
+                        </td>
+                        <td><a th:href="@{/teachers/{id}/vacations(id=${teacher.getId()})}">Vacations</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/teachers">Back to all teachers</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

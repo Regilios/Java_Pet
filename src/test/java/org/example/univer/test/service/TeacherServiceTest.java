@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcTeacher;
+import org.example.univer.exeption.TeacherExeption;
 import org.example.univer.models.Cathedra;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Teacher;
@@ -12,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -37,14 +37,12 @@ public class TeacherServiceTest {
     @Test
     void create_teacherGenderCorrect_createTeacher() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(1L);
 
         Teacher teacher = new Teacher();
-        teacher.setId(3L);
         teacher.setFirstName("test");
         teacher.setLastName("test2");
         teacher.setGender(Gender.FEMALE);
-        teacher.setAddres("test");
+        teacher.setAddress("test");
         teacher.setEmail("test@test");
         teacher.setPhone("test");
         teacher.setBirthday(LocalDate.parse("1983-02-01"));
@@ -59,14 +57,12 @@ public class TeacherServiceTest {
     @Test
     void create_teacherGenderNotCorrect_throwException() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(1L);
 
         Teacher teacher = new Teacher();
-        teacher.setId(3L);
         teacher.setFirstName("test");
         teacher.setLastName("test2");
         teacher.setGender(Gender.MALE);
-        teacher.setAddres("test");
+        teacher.setAddress("test");
         teacher.setEmail("test@test");
         teacher.setPhone("test");
         teacher.setBirthday(LocalDate.parse("1983-02-01"));
@@ -74,7 +70,7 @@ public class TeacherServiceTest {
 
         when(mockJdbcTeacher.isSingle(teacher)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(TeacherExeption.class, () -> {
             teacherService.validate(teacher, TeacherService.ValidationContext.METHOD_CREATE);
             teacherService.create(teacher);
         });
@@ -84,7 +80,6 @@ public class TeacherServiceTest {
     @Test
     void isSingle_teacherIsSingle_true() {
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
 
         when(mockJdbcTeacher.isSingle(teacher)).thenReturn(true);
         assertTrue(teacherService.isSingle(teacher));
@@ -102,7 +97,6 @@ public class TeacherServiceTest {
     @Test
     void findById_findStudent_found() {
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
 
         when(mockJdbcTeacher.findById(1L)).thenReturn(teacher);
         Teacher result = teacherService.findById(1L);

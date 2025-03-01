@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcCathedra;
+import org.example.univer.exeption.CathedraExeption;
 import org.example.univer.models.Cathedra;
 import org.example.univer.services.CathedraService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +36,6 @@ public class CathedraServiceTest {
     @Test
     void create_cathedraStartSymbolA_createCathedra() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(2L);
         cathedra.setName("Андромеда");
 
         when(mockJdbcCathedra.isSingle(cathedra)).thenReturn(false);
@@ -47,11 +47,10 @@ public class CathedraServiceTest {
     @Test
     void create_cathedraStartSymbolA_throwException() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(2L);
         cathedra.setName("Персиваль");
         when(mockJdbcCathedra.isSingle(cathedra)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(CathedraExeption.class, () -> {
             cathedraService.validate(cathedra, CathedraService.ValidationContext.METHOD_CREATE);
             cathedraService.create(cathedra);
         });
@@ -61,7 +60,6 @@ public class CathedraServiceTest {
     @Test
     void isSingle_cathedraIsSingle_true() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(1L);
 
         when(mockJdbcCathedra.isSingle(cathedra)).thenReturn(true);
         assertTrue(cathedraService.isSingle(cathedra));
@@ -79,7 +77,6 @@ public class CathedraServiceTest {
     @Test
     void findById_findCathedra_found() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(1L);
 
         when(mockJdbcCathedra.findById(1L)).thenReturn(cathedra);
         Cathedra result = cathedraService.findById(1L);

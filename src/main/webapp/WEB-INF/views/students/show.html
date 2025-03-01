@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Show student by id</h1>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Family</th>
+                        <th>Gender</th>
+                        <th>Address</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Birthday</th>
+                        <th>Group</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><a th:text="${student.getId()}">Id</a></td>
+                        <td><a th:text="${student.getFirstName()}">Name</a></td>
+                        <td><a th:text="${student.getLastName()}">Family</a></td>
+                        <td><a th:text="${student.getGender()}">gender</a></td>
+                        <td><a th:text="${student.getAddress()}">address</a></td>
+                        <td><a th:text="${student.getEmail()}">email</a></td>
+                        <td><a th:text="${student.getPhone()}">phone</a></td>
+                        <td><a th:text="${student.getBirthday()}">birthday</a></td>
+                        <td><a th:text="${student?.getGroup()?.getName()}">group</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/students">Back to all students</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

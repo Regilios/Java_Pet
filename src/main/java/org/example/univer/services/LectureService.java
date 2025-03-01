@@ -3,12 +3,17 @@ package org.example.univer.services;
 import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.dao.interfaces.DaoLectureInterface;
 import org.example.univer.dao.interfaces.DaoSubjectInterface;
+import org.example.univer.exeption.*;
+import org.example.univer.models.Group;
 import org.example.univer.models.Lecture;
+import org.example.univer.models.Teacher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -16,12 +21,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LectureService {
     private DaoLectureInterface daoLectureInterface;
     private DaoHolidayInterface daoHolidayInterface;
     private DaoSubjectInterface daoSubjectInterface;
+
+
+    private GroupService groupService;
 
     @Value("#{${startLectionDay}}")
     private String startLection;
@@ -39,10 +48,11 @@ public class LectureService {
     }
 
     @Autowired
-    public LectureService(DaoLectureInterface daoLectureInterface, DaoHolidayInterface daoHolidayInterface, DaoSubjectInterface daoSubjectInterface) {
+    public LectureService(DaoLectureInterface daoLectureInterface, DaoHolidayInterface daoHolidayInterface, DaoSubjectInterface daoSubjectInterface, GroupService groupService) {
         this.daoLectureInterface = daoLectureInterface;
         this.daoHolidayInterface = daoHolidayInterface;
         this.daoSubjectInterface = daoSubjectInterface;
+        this.groupService = groupService;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(LectureService.class);
@@ -56,11 +66,23 @@ public class LectureService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lecture)) {
-                    throw new IllegalArgumentException("Невозможно создать лекцию! Лекция с такими параметрами уже существует!");
+                    throw new InvalidParameterException("Невозможно создать лекцию! Лекция с такими параметрами уже существует!");
+                }
+                if (isAudienceFreeForCreate(lecture)) {
+                    throw new LectureExeption("Невозможно создать лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStart_lection());
+                }
+                if (!isTeacherBusyForCreate(lecture)) {
+                    throw new LectureExeption("Невозможно создать лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStart_lection());
                 }
                 validateCommon(lecture, "создать");
                 break;
             case METHOD_UPDATE:
+                if (isAudienceFreeForUpdate(lecture)) {
+                    throw new LectureExeption("Невозможно обновить лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStart_lection());
+                }
+                if (!isTeacherBusyForUpdate(lecture)) {
+                    throw new LectureExeption("Невозможно обновить лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStart_lection());
+                }
                 validateCommon(lecture, "обновить");
                 break;
             default:
@@ -71,19 +93,13 @@ public class LectureService {
 
     private void validateCommon(Lecture lecture, String action) {
         if (!beginningAndEndLectureCorrect(lecture)) {
-            throw new IllegalArgumentException("Невозможно " + action + " лекцию! Начало лекции не должно быть раньше: " + startLectionDay + " а конец лекции не позднее: " + endLectionDay);
+            throw new LectureExeption("Невозможно " + action + " лекцию! Начало лекции не должно быть раньше: " + startLectionDay + " а конец лекции не позднее: " + endLectionDay);
         }
         if (lectureNotOnHoliday(lecture)) {
-            throw new IllegalArgumentException("Невозможно " + action + " лекцию! Лекция не может быть в праздник.");
+            throw new LectureExeption("Невозможно " + action + " лекцию! Лекция не может быть в праздник.");
         }
         if (!isTeacherSubject(lecture)) {
-            throw new IllegalArgumentException("Невозможно " + action + " лекцию! Учитель не ведёт заданный предмет.");
-        }
-        if (isAudienceFree(lecture)) {
-            throw new IllegalArgumentException("Невозможно " + action + " лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStart());
-        }
-        if (!isTeacherBusy(lecture)) {
-            throw new IllegalArgumentException("Невозможно " + action + " лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStart());
+            throw new LectureExeption("Невозможно " + action + " лекцию! Учитель не ведёт заданный предмет.");
         }
     }
 
@@ -93,10 +109,21 @@ public class LectureService {
             validate(lecture, ValidationContext.METHOD_CREATE);
             daoLectureInterface.create(lecture);
             logger.debug("Lecture created");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (LectureExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта лекции: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект лекции не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта лекции: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта лекции", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект лекции не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта лекции", e);
         }
     }
 
@@ -104,12 +131,28 @@ public class LectureService {
         logger.debug("Start update holiday");
         try {
             validate(lecture, ValidationContext.METHOD_UPDATE);
-            daoLectureInterface.update(lecture);
+            Lecture lectureOld = findById(lecture.getId());
+            List<Group> group = daoLectureInterface.getListGroupForLecture(lectureOld.getId()).stream()
+                    .map(groupService::findById)
+                    .collect(Collectors.toList());
+            lectureOld.setGroup(group);
+            daoLectureInterface.update(lecture, lectureOld);
             logger.debug("Lecture updated");
-        } catch (NullPointerException | IllegalArgumentException | EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
+        } catch (LectureExeption e) {
+            logger.error("Ошибка: {}", e.getMessage(), e);
+            throw e;
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException при создании объекта лекции: {}", e.getMessage(), e);
+            throw new NullEntityException("Объект лекции не может быть null", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("IllegalArgumentException при создании объекта лекции: {}", e.getMessage(), e);
+            throw new InvalidParameterException("Неправильный аргумент для создания объекта лекции", e);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
+            throw new EntityNotFoundException("Объект лекции не найден", e);
         } catch (Exception e) {
-            System.out.println("Неизвестная ошибка: " + e.getMessage());
+            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
+            throw new ServiceException("Неизвестная ошибка при создании объекта лекции", e);
         }
     }
 
@@ -119,13 +162,39 @@ public class LectureService {
     }
 
     public Lecture findById(Long id) {
-        logger.debug("Find audience width id: {}", id);
+        logger.debug("Find lecture width id: {}", id);
         return daoLectureInterface.findById(id);
     }
 
     public List<Lecture> findAll() {
-        logger.debug("Find all audiences");
+        logger.debug("Find all lectures");
         return daoLectureInterface.findAll();
+    }
+
+    public List<Lecture> findAllWithGroup() {
+        logger.debug("Find all lectures with groups");
+        List<Lecture> list = daoLectureInterface.findAll();
+        list.stream().forEach(elem -> {
+            List<Long> groupIds = daoLectureInterface.getListGroupForLecture(elem.getId());
+            List<Group> groups = groupService.getGroupById(groupIds);
+            elem.setGroup(groups);
+        });
+        return list;
+    }
+
+    public Page<Lecture> findAllWithGroup(Pageable pageable) {
+        logger.debug("Find all lectures with groups");
+        Page<Lecture> list = daoLectureInterface.findPaginatedLecture(pageable);
+        list.stream().forEach(elem -> {
+            List<Long> groupIds = daoLectureInterface.getListGroupForLecture(elem.getId());
+            List<Group> groups = groupService.getGroupById(groupIds);
+            elem.setGroup(groups);
+        });
+        return list;
+    }
+
+    public List<Long> getListGroupForLecture(Long id) {
+        return daoLectureInterface.getListGroupForLecture(id);
     }
 
     public boolean isSingle(Lecture lecture) {
@@ -152,14 +221,29 @@ public class LectureService {
         return daoSubjectInterface.checkTeacherAssignedSubject(lecture.getTeacher(), lecture.getSubject());
     }
 
-    private boolean isAudienceFree(Lecture lecture) {
-        logger.debug("Сheck that the audience is free at this time");
-        return daoLectureInterface.findByAudienceDateAndLectureTime(lecture.getAudience(), lecture.getTime());
+    private boolean isAudienceFreeForCreate(Lecture lecture) {
+        logger.debug("Сheck that the audience is free at this time for create");
+        return daoLectureInterface.findByAudienceDateAndLectureTimeForCreate(lecture.getAudience(), lecture.getTime());
     }
 
-    private boolean isTeacherBusy(Lecture lecture) {
-        logger.debug("Check if the teacher is busy on the current date");
-        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacher(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()));
+    private boolean isAudienceFreeForUpdate(Lecture lecture) {
+        logger.debug("Сheck that the audience is free at this time for update");
+        return daoLectureInterface.findByAudienceDateAndLectureTimeForUpdate(lecture.getAudience(), lecture.getTime(), lecture.getId());
+    }
+
+    private boolean isTeacherBusyForCreate(Lecture lecture) {
+        logger.debug("Check if the teacher is busy on the current date for create");
+        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForCreate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()));
         return lectureList.stream().filter(lecture1 -> lecture1.getTime().getStartLocal().equals(lecture.getTime().getStartLocal())).findAny().isEmpty();
+    }
+
+    private boolean isTeacherBusyForUpdate(Lecture lecture) {
+        logger.debug("Check if the teacher is busy on the current date for create");
+        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForUpdate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()), lecture);
+        return lectureList.stream().filter(lecture1 -> lecture1.getTime().getStartLocal().equals(lecture.getTime().getStartLocal())).findAny().isEmpty();
+    }
+
+    public List<Lecture> findByTeacherIdAndPeriod(Teacher teacher, LocalDate start, LocalDate end) {
+        return daoLectureInterface.findLecturesByTeacherAndPeriod(teacher, start, end);
     }
 }

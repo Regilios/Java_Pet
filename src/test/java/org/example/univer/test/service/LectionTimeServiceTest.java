@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcLectureTime;
+import org.example.univer.exeption.LectureTimeExeption;
 import org.example.univer.models.LectureTime;
 import org.example.univer.services.LectureTimeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,9 +37,8 @@ public class LectionTimeServiceTest {
     @Test
     void create_lectionTimeDuration30min_and_correctTime_createLectionTime() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(1L);
-        lectureTime.setStart(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2024-02-01 16:30:00", formatter1));
+        lectureTime.setStart_lection(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2024-02-01 16:30:00", formatter1));
 
         when(mockJdbcLectureTime.isSingle(lectureTime)).thenReturn(false);
         lectureTimeService.create(lectureTime);
@@ -49,12 +49,11 @@ public class LectionTimeServiceTest {
     @Test
     void create_lectionTimeDuration20min_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(1L);
-        lectureTime.setStart(LocalDateTime.parse("2024-02-01 14:00:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2024-02-01 14:20:00", formatter1));
+        lectureTime.setStart_lection(LocalDateTime.parse("2024-02-01 14:00:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2024-02-01 14:20:00", formatter1));
 
         when(mockJdbcLectureTime.isSingle(lectureTime)).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(LectureTimeExeption.class, () -> {
             lectureTimeService.validate(lectureTime, LectureTimeService.ValidationContext.METHOD_CREATE);
             lectureTimeService.create(lectureTime);
         });
@@ -64,12 +63,11 @@ public class LectionTimeServiceTest {
     @Test
     void create_lectionTimeDuration30min_and_notCorrectTimePeriod_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(1L);
-        lectureTime.setStart(LocalDateTime.parse("2024-02-01 15:00:00", formatter1));
-        lectureTime.setEnd(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
+        lectureTime.setStart_lection(LocalDateTime.parse("2024-02-01 15:00:00", formatter1));
+        lectureTime.setEnd_lection(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
 
         when(mockJdbcLectureTime.isSingle(lectureTime)).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(LectureTimeExeption.class, () -> {
             lectureTimeService.validate(lectureTime, LectureTimeService.ValidationContext.METHOD_CREATE);
             lectureTimeService.create(lectureTime);
         });
@@ -79,7 +77,6 @@ public class LectionTimeServiceTest {
     @Test
     void isSingle_lecytionTimeIsSingle_true() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(1L);
 
         when(mockJdbcLectureTime.isSingle(lectureTime)).thenReturn(true);
         assertTrue(lectureTimeService.isSingle(lectureTime));
@@ -97,7 +94,7 @@ public class LectionTimeServiceTest {
     @Test
     void findById_findLectionTime_found() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setId(1L);
+
         when(mockJdbcLectureTime.findById(1L)).thenReturn(lectureTime);
         LectureTime result = lectureTimeService.findById(1L);
 

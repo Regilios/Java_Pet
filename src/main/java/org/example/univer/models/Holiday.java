@@ -1,5 +1,7 @@
 package org.example.univer.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +11,9 @@ public class Holiday implements Serializable {
     private static final long serialVersionUID = 3884262256218360709L;
     private Long id;
     private String desc;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate start_holiday;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate end_holiday;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
 
@@ -22,27 +26,28 @@ public class Holiday implements Serializable {
 
     public Holiday() {}
 
-    public String getStartHoliday() {
-        return start_holiday.format(formatter);
-    }
-
-    public LocalDate getStartHolidayLocal() {
+    public LocalDate getStart_holiday() {
         return start_holiday;
     }
 
-    public void setStartHoliday(LocalDate start_holiday) {
+    public void setStart_holiday(LocalDate start_holiday) {
         this.start_holiday = start_holiday;
     }
 
-    public String getEndHoliday() {
-        return end_holiday.format(formatter);
+    public String getStartHolidayLocal() {
+        return start_holiday.format(formatter);
     }
 
-    public LocalDate getEndHolidayLocal() {
+
+    public LocalDate getEnd_holiday() {
         return end_holiday;
     }
 
-    public void setEndHoliday(LocalDate end_holiday) {
+    public String getEndHolidayLocal() {
+        return end_holiday.format(formatter);
+    }
+
+    public void setEnd_holiday(LocalDate end_holiday) {
         this.end_holiday = end_holiday;
     }
 

@@ -10,20 +10,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestSpringConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcVacationTest {
     @Autowired
     private JdbcTemplate template;
@@ -33,42 +33,43 @@ public class JdbcVacationTest {
     private JdbcTeacher jdbcTeacher;
     private final static String TABLE_NAME = "vacation";
 
+
     @Test
     void checkCreatedVacation() {
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
+
         vacation.setStartJob(LocalDate.parse("2024-07-01"));
         vacation.setEndJob(LocalDate.parse("2024-07-14"));
         vacation.setTeacher(jdbcTeacher.findById(1L));
         jdbcVacation.create(vacation);
 
-        Vacation vacation1 = jdbcVacation.findById(5L);
+        Vacation vacation1 = jdbcVacation.findById(vacation.getId());
 
         assertEquals(vacation, vacation1);
         assertEquals(vacation.getId(), vacation1.getId());
-        assertEquals(vacation.getStartJobLocal(), vacation1.getStartJobLocal());
-        assertEquals(vacation.getEndJobLocal(), vacation1.getEndJobLocal());
+        assertEquals(vacation.getStartJob(), vacation1.getStartJob());
+        assertEquals(vacation.getEndJob(), vacation1.getEndJob());
     }
 
     @Test
     void checkUpdateVacation() {
         Vacation vacation = jdbcVacation.findById(1L);
-        vacation.setTeacher(jdbcTeacher.findById(1L));
+        vacation.setTeacher(jdbcTeacher.findById(2L));
         jdbcVacation.update(vacation);
 
-        assertEquals(jdbcTeacher.findById(1L), jdbcVacation.findById(1L).getTeacher());
+        assertEquals(jdbcTeacher.findById(2L).getId(), jdbcVacation.findById(1L).getTeacher().getId());
     }
 
     @Test
     void checkFindByIdVacation() {
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
+
         vacation.setStartJob(LocalDate.parse("2024-02-01"));
         vacation.setEndJob(LocalDate.parse("2035-02-01"));
         vacation.setTeacher(jdbcTeacher.findById(1L));
         jdbcVacation.create(vacation);
 
-        assertEquals(jdbcVacation.findById(5L), vacation);
+        assertEquals(jdbcVacation.findById(vacation.getId()), vacation);
     }
 
     @Test
@@ -90,7 +91,7 @@ public class JdbcVacationTest {
     @Test
     void checkIsSingleVacation() {
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
+
         vacation.setStartJob(LocalDate.parse("2024-02-01"));
         vacation.setEndJob(LocalDate.parse("2024-09-14"));
         vacation.setTeacher(jdbcTeacher.findById(1L));

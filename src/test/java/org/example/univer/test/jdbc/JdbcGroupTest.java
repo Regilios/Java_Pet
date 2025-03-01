@@ -9,18 +9,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestSpringConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcGroupTest {
 
     @Autowired
@@ -34,11 +36,10 @@ public class JdbcGroupTest {
     @Test
     void checkCreatedGroup() {
         Group group = new Group();
-        group.setId(3L);
-        group.setNameGroup("test");
+        group.setName("test");
         group.setCathedra(jdbcCathedra.findById(1L));
         jdbcGroup.create(group);
-        Group checkGroup = jdbcGroup.findById(3L);
+        Group checkGroup = jdbcGroup.findById(group.getId());
 
         assertEquals(group, checkGroup);
         assertEquals(group.getId(), checkGroup.getId());
@@ -49,7 +50,7 @@ public class JdbcGroupTest {
     @Test
     void checkUpdateGroup() {
         Group group = jdbcGroup.findById(1L);
-        group.setNameGroup("test");
+        group.setName("test");
         jdbcGroup.update(group);
 
         assertEquals("test", jdbcGroup.findById(1L).getName());
@@ -58,25 +59,17 @@ public class JdbcGroupTest {
     @Test
     void checkFindByIdGroup() {
         Group group = new Group();
-        group.setId(3L);
-        group.setNameGroup("test");
+        group.setName("test");
         group.setCathedra(jdbcCathedra.findById(1L));
         jdbcGroup.create(group);
 
-        assertEquals(jdbcGroup.findById(3L), group);
+        assertThat(group, is(notNullValue()));
+        assertThat(group.getId(), is(equalTo(group.getId())));
+        assertEquals(jdbcGroup.findById(group.getId()), group);
     }
 
     @Test
     void checkDeletedGroup() {
-//        Group group = new Group();
-//        group.setId(3L);
-//        group.setNameGroup("test");
-//        group.setCathedra(jdbcCathedra.findById(1L).getCathedra());
-//        jdbcGroup.create(group);
-//        jdbcGroup.deleteById(3L);
-//        Boolean present = Optional.of(jdbcGroup.findById(3L)).isPresent();
-//        Assertions.assertFalse(present);
-
         int expected = countRowsInTable(template, TABLE_NAME) - 1;
         jdbcGroup.deleteById(2L);
 
@@ -94,8 +87,7 @@ public class JdbcGroupTest {
     @Test
     void checkIsSingleGroup() {
         Group group = new Group();
-        group.setId(3L);
-        group.setNameGroup("test");
+        group.setName("test");
         group.setCathedra(jdbcCathedra.findById(1L));
 
         assertFalse(jdbcGroup.isSingle(group));

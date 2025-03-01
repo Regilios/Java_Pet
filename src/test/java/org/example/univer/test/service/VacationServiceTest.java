@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcVacation;
+import org.example.univer.exeption.VacationExeption;
 import org.example.univer.models.Teacher;
 import org.example.univer.models.Vacation;
 import org.example.univer.services.VacationService;
@@ -36,10 +37,8 @@ public class VacationServiceTest {
     @Test
     void create_vacationCorrectData_createTeacher() {
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
 
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
         vacation.setStartJob(LocalDate.parse("2024-07-01"));
         vacation.setEndJob(LocalDate.parse("2024-07-14"));
         vacation.setTeacher(teacher);
@@ -53,17 +52,15 @@ public class VacationServiceTest {
     @Test
     void create_vacationNotCorrectData_throwException() {
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
 
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
         vacation.setStartJob(LocalDate.parse("2024-07-11"));
         vacation.setEndJob(LocalDate.parse("2024-07-01"));
         vacation.setTeacher(teacher);
 
         when(mockJdbcVacation.isSingle(vacation)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(VacationExeption.class, () -> {
             vacationService.validate(vacation, VacationService.ValidationContext.METHOD_CREATE);
             vacationService.create(vacation);
         });
@@ -73,17 +70,15 @@ public class VacationServiceTest {
     @Test
     void create_exceedingMaximumNumberVacationDays_throwException() {
         Teacher teacher = new Teacher();
-        teacher.setId(1L);
 
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
         vacation.setStartJob(LocalDate.parse("2024-07-01"));
         vacation.setEndJob(LocalDate.parse("2024-07-30"));
         vacation.setTeacher(teacher);
 
         when(mockJdbcVacation.isSingle(vacation)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(VacationExeption.class, () -> {
             vacationService.validate(vacation, VacationService.ValidationContext.METHOD_CREATE);
             vacationService.create(vacation);
         });
@@ -93,7 +88,6 @@ public class VacationServiceTest {
     @Test
     void isSingle_vacationIsSingle_true() {
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
 
         when(mockJdbcVacation.isSingle(vacation)).thenReturn(true);
         assertTrue(vacationService.isSingle(vacation));
@@ -111,7 +105,6 @@ public class VacationServiceTest {
     @Test
     void findById_findVacation_found() {
         Vacation vacation = new Vacation();
-        vacation.setId(5L);
 
         when(mockJdbcVacation.findById(1L)).thenReturn(vacation);
         Vacation result = vacationService.findById(1L);

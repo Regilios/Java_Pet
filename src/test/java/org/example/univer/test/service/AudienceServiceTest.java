@@ -1,6 +1,7 @@
 package org.example.univer.test.service;
 
 import org.example.univer.dao.jdbc.JdbcAudience;
+import org.example.univer.exeption.AudienceExeption;
 import org.example.univer.models.Audience;
 import org.example.univer.services.AudienceService;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,6 @@ public class AudienceServiceTest {
     @Test
     void create_audienceCapacity50_createAudience() {
         Audience audience = new Audience();
-        audience.setId(1L);
         audience.setRoom(1);
         audience.setCapacity(50);
 
@@ -49,13 +49,12 @@ public class AudienceServiceTest {
     @Test
     void create_audienceCapacity200_throwException() {
         Audience audience = new Audience();
-        audience.setId(1L);
         audience.setRoom(1);
         audience.setCapacity(200);
 
         when(mockJdbcAudience.isSingle(audience)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(AudienceExeption.class, () -> {
             audienceService.validate(audience, AudienceService.ValidationContext.METHOD_CREATE);
             audienceService.create(audience);
         });
@@ -65,7 +64,6 @@ public class AudienceServiceTest {
     @Test
     void isSingle_audienceIsSingle_true() {
         Audience audience = new Audience();
-        audience.setId(1L);
 
         when(mockJdbcAudience.isSingle(audience)).thenReturn(true);
         assertTrue(audienceService.isSingle(audience));
@@ -83,7 +81,6 @@ public class AudienceServiceTest {
     @Test
     void findById_findAudience_found() {
         Audience audience = new Audience();
-        audience.setId(1L);
 
         when(mockJdbcAudience.findById(1L)).thenReturn(audience);
         Audience result = audienceService.findById(1L);
