@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import javax.sql.DataSource;
 
 @Configuration
+@Profile("jdbc")
 @ComponentScan("org.example.univer")
 @PropertySource("classpath*:postgress.properties")
 public class SpringConfig {
@@ -26,10 +27,11 @@ public class SpringConfig {
     @Value("${password}")
     private String password;
 
-    @Value("schema.sql")
+    @Value("classpath:schema.sql")
     Resource init;
-    @Value("data.sql")
+    @Value("classpath:data.sql")
     Resource data;
+
 
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {

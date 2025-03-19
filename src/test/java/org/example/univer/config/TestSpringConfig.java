@@ -13,6 +13,9 @@ import javax.sql.DataSource;
 public class TestSpringConfig {
     @Bean
     public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder().addDefaultScripts().setType(EmbeddedDatabaseType.H2).build();
+        return new EmbeddedDatabaseBuilder()
+                .addDefaultScripts()
+                .setType(EmbeddedDatabaseType.H2)
+                .build();
     }
 }

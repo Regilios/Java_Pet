@@ -11,18 +11,19 @@ public class Lecture implements Serializable {
     private Long id;
     private LectureTime time;
     private Teacher teacher;
-    private List<Group> groups = new ArrayList<>();
+    private List<Group> group = new ArrayList<>();
     private Audience audience;
     private Subject subject;
     private Cathedra cathedra;
 
-    public Lecture(Long id, Cathedra cathedra, Teacher teacher, Subject subject, LectureTime time, Audience audience) {
+    public Lecture(Long id, Cathedra cathedra, Teacher teacher, Subject subject, LectureTime time, Audience audience, List<Group> group) {
         this.id = id;
         this.time = time;
         this.teacher = teacher;
         this.cathedra = cathedra;
         this.audience = audience;
         this.subject = subject;
+        this.group = group;
     }
 
     public Lecture() {
@@ -44,22 +45,6 @@ public class Lecture implements Serializable {
         this.time = time;
     }
 
-    public String getTimeStart() {
-        return time.getStart();
-    }
-
-    public LocalDateTime getLocalTimeStart() {
-        return time.getStartLocal();
-    }
-
-    public String getTimeEnd() {
-        return time.getEnd();
-    }
-
-    public LocalDateTime getLocalTimeEnd() {
-        return time.getEndLocal();
-    }
-
     public Teacher getTeacher() {
         return teacher;
     }
@@ -68,40 +53,16 @@ public class Lecture implements Serializable {
         this.teacher = teacher;
     }
 
-    public String getTeacherFirstName() {
-        return teacher.getFirstName();
+    public List<Group> getGroup() {
+        return group;
     }
 
-    public String getTeacherLastName() {
-        return teacher.getLastName();
-    }
-
-    public Cathedra getCathedra() {
-        return cathedra;
-    }
-
-    public void setCathedra(Cathedra cathedra) {
-        this.cathedra = cathedra;
-    }
-
-    public String getCathedraName() {
-        return cathedra.getName();
-    }
-
-    public List<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
+    public void setGroup(List<Group> group) {
+        this.group = group;
     }
 
     public Audience getAudience() {
         return audience;
-    }
-
-    public String getAudienceRoom() {
-        return audience.getRoomString();
     }
 
     public void setAudience(Audience audience) {
@@ -112,24 +73,66 @@ public class Lecture implements Serializable {
         return subject;
     }
 
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public Cathedra getCathedra() {
+        return cathedra;
+    }
+
+    public void setCathedra(Cathedra cathedra) {
+        this.cathedra = cathedra;
+    }
+
+    public String getTimeStart() {
+        return time.getStart_lection();
+    }
+
+    public LocalDateTime getLocalTimeStart() {
+        return time.getStartLocal();
+    }
+
+    public String getTimeEnd() {
+        return time.getEnd_lection();
+    }
+
+    public LocalDateTime getLocalTimeEnd() {
+        return time.getEndLocal();
+    }
+
+    public String getTeacherFirstName() {
+        return teacher.getFirstName();
+    }
+
+    public String getTeacherLastName() {
+        return teacher.getLastName();
+    }
+
+    public String getCathedraName() {
+        return cathedra.getName();
+    }
+
+    public String getAudienceRoom() {
+        return audience.getRoomString();
+    }
+
     public String getSubjectName() {
         return subject.getName();
     }
 
-    public void setSubject(Subject subject) {
-        this.subject = subject;
-    }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Lecture lecture = (Lecture) o;
-        return Objects.equals(id, lecture.id) && Objects.equals(time, lecture.time) && Objects.equals(teacher, lecture.teacher) && Objects.equals(groups, lecture.groups) && Objects.equals(audience, lecture.audience) && Objects.equals(subject, lecture.subject) && Objects.equals(cathedra, lecture.cathedra);
+        return Objects.equals(id, lecture.id) && Objects.equals(time, lecture.time) && Objects.equals(teacher, lecture.teacher) && Objects.equals(group, lecture.group) && Objects.equals(audience, lecture.audience) && Objects.equals(subject, lecture.subject) && Objects.equals(cathedra, lecture.cathedra);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, time, teacher, groups, audience, subject, cathedra);
+        return Objects.hash(id, time, teacher, group, audience, subject, cathedra);
     }
 }

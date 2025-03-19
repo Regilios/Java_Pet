@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Add Group</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5 mb-3">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+            </div>
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <form id="form1" th:method="POST" th:action="@{/groups}" th:object="${group}">
+                    <div class="mb-3">
+                        <label class="form-label" for="name">name</label>
+                        <input class="form-control" type="text" th:field="*{name}" id="name"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="cathedra">Cathedra:</label>
+                        <select class="form-select" name="cathedra" id="cathedra" th:field="*{cathedra.id}">
+                            <option value="" disabled selected>Select a cathedra</option>
+                            <option th:each="anyCathedras : ${cathedras}"
+                                    th:field="*{cathedra.id}"
+                                    th:value="${anyCathedras?.id}"
+                                    th:text="${anyCathedras?.name}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" value="add group">add group</button>
+                </form>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/groups">Back to all groups</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

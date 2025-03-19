@@ -1,5 +1,6 @@
 package org.example.univer.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -10,7 +11,9 @@ public abstract class Person {
     private String address;
     private String email;
     private String phone;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
+
 
     public Person(String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday) {
         this.firstName = firstName;
@@ -40,20 +43,24 @@ public abstract class Person {
         this.lastName = lastName;
     }
 
-    public String getGender() {
-        return gender.toString();
+    public Gender getGender() {
+        return gender;
     }
 
     public void setGender(Gender gender) {
         this.gender = gender;
     }
 
-    public String getAddres() {
+    public String getGenderString() {
+        return gender.toString();
+    }
+
+    public String getAddress() {
         return address;
     }
 
-    public void setAddres(String addres) {
-        this.address = addres;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getEmail() {

@@ -19,12 +19,12 @@ public class HolidayMapper implements RowMapper<Holiday> {
 
         Date holidayStart = rs.getDate("start_holiday");
         if (Objects.nonNull(holidayStart)) {
-            holiday.setStartHoliday(holidayStart.toLocalDate());
+            holiday.setStart_holiday(holidayStart.toLocalDate());
         }
 
         Date holidayEnd = rs.getDate("end_holiday");
         if (Objects.nonNull(holidayEnd)) {
-            holiday.setEndHoliday(holidayEnd.toLocalDate());
+            holiday.setEnd_holiday(holidayEnd.toLocalDate());
         }
         return holiday;
     }

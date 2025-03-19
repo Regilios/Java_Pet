@@ -1,6 +1,5 @@
 package org.example.univer.dao.mapper;
 
-import org.example.univer.dao.jdbc.JdbcGroup;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Group;
 import org.example.univer.models.Student;
@@ -13,11 +12,6 @@ import java.time.LocalDate;
 
 @Component
 public class StudentMapper implements RowMapper<Student> {
-    private JdbcGroup jdbcGroup;
-
-    public StudentMapper(JdbcGroup jdbcGroup) {
-        this.jdbcGroup = jdbcGroup;
-    }
 
     public Student mapRow(ResultSet rs, int rowNum) throws SQLException {
         Student student = new Student();
@@ -25,7 +19,7 @@ public class StudentMapper implements RowMapper<Student> {
         student.setFirstName(rs.getString("firstName"));
         student.setLastName(rs.getString("lastName"));
         student.setGender(Gender.valueOf(rs.getString("gender")));
-        student.setAddres(rs.getString("address"));
+        student.setAddress(rs.getString("address"));
         student.setEmail(rs.getString("email"));
         student.setPhone(rs.getString("phone"));
         student.setBirthday(rs.getObject("birthday", LocalDate.class));
@@ -33,9 +27,15 @@ public class StudentMapper implements RowMapper<Student> {
         Long localGroupId = rs.getLong("group_id");
 
         if (!rs.wasNull()) {
-            Group group = jdbcGroup.findById(localGroupId);
+            Group group = new Group();
+            group.setId(localGroupId);
+            group.setName(rs.getString("group_name"));
             student.setGroup(group);
+        } else {
+            student.setGroup(null);
         }
+
         return student;
+
     }
 }

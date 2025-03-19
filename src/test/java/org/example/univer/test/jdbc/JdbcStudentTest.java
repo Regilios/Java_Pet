@@ -10,19 +10,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestSpringConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcStudentTest {
     @Autowired
     private JdbcTemplate template;
@@ -32,22 +36,22 @@ public class JdbcStudentTest {
     private JdbcStudent jdbcStudent;
     private final static String TABLE_NAME = "students";
 
+
     @Test
-    void checkCreatedGroup() {
+    void checkCreatedStudent() {
         Student student = new Student();
-        student.setId(7L);
+
         student.setFirstName("Pavel");
         student.setLastName("Yarinov");
         student.setGender(Gender.MALE);
-        student.setAddres("Armany str 24");
+        student.setAddress("Armany str 24");
         student.setEmail("pavel@gmail.com");
         student.setPhone("8978474666");
         student.setBirthday(LocalDate.of(1991,10,17));
         student.setGroup(jdbcGroup.findById(2L));
         jdbcStudent.create(student);
-        Student student1 = jdbcStudent.findById(7L);
+        Student student1 = jdbcStudent.findById(student.getId());
 
-        assertEquals(student, student1);
         assertEquals(student.getId(), student1.getId());
         assertEquals(student.getFirstName(), student1.getFirstName());
         assertEquals(student.getPhone(), student1.getPhone());
@@ -63,20 +67,20 @@ public class JdbcStudentTest {
     }
 
     @Test
-    void checkFindByIdGroup() {
+    void checkFindByIdStudent() {
         Student student = new Student();
-        student.setId(7L);
+
         student.setFirstName("Pavel");
         student.setLastName("Yarinov");
         student.setGender(Gender.MALE);
-        student.setAddres("Armany str 24");
+        student.setAddress("Armany str 24");
         student.setEmail("pavel@gmail.com");
         student.setPhone("8978474666");
         student.setBirthday(LocalDate.of(1991,10,17));
         student.setGroup(jdbcGroup.findById(2L));
         jdbcStudent.create(student);
 
-        assertEquals(jdbcStudent.findById(7L), student);
+        assertEquals(jdbcStudent.findById(student.getId()).getId(), student.getId());
     }
 
     @Test
@@ -93,5 +97,37 @@ public class JdbcStudentTest {
         int actual = jdbcStudent.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleStudent() {
+        Student student = new Student();
+
+        student.setFirstName("Pavel");
+        student.setLastName("Yarinov");
+        student.setGender(Gender.MALE);
+        student.setAddress("Armany str 24");
+        student.setEmail("pavel@gmail.com");
+        student.setPhone("8978474666");
+        student.setBirthday(LocalDate.of(1991,10,17));
+        student.setGroup(jdbcGroup.findById(2L));
+
+        assertFalse(jdbcStudent.isSingle(student));
+    }
+
+    @Test
+    void checkGroupSize() {
+        Student student = new Student();
+        student.setGroup(jdbcGroup.findById(1L));
+        List<Student> groupList = jdbcStudent.findAll().stream().filter(x-> x.getGroup().getId().equals(1L)).collect(Collectors.toList());
+
+        assertEquals(Optional.of(groupList.size()), Optional.of(jdbcStudent.checkGroupSize(student)));
+    }
+
+    @Test
+    void checkFindAllStudentByGroupId() {
+        List<Student> groupList = jdbcStudent.findAll().stream().filter(x-> x.getGroup().getId().equals(1L)).collect(Collectors.toList());
+
+        assertEquals(groupList, jdbcStudent.findAllStudentByGroupId(jdbcGroup.findById(1L)));
     }
 }

@@ -31,7 +31,7 @@ public class Group implements Serializable {
         return name;
     }
 
-    public void setNameGroup(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 

@@ -26,8 +26,13 @@ public class VacationMapper implements RowMapper<Vacation> {
 
         Long localTeacherId = rs.getLong("teacher_id");
         if (!rs.wasNull()) {
-            Teacher teacher = jdbcTeacher.findById(localTeacherId);
+            Teacher teacher = new Teacher();
+            teacher.setId(localTeacherId);
+            teacher.setFirstName(rs.getString("firstname"));
+            teacher.setLastName(rs.getString("lastname"));
             vacation.setTeacher(teacher);
+        } else {
+            vacation.setTeacher(null);
         }
         return vacation;
     }

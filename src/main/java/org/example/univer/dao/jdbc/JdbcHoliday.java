@@ -10,14 +10,17 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 public class JdbcHoliday implements DaoHolidayInterface {
     private static final String FIND_ALL = "SELECT * FROM holiday ORDER BY id";
-    private static final String GET_BY_ID = "SELECT * FROM holiday WHERE id = ?";
+    private static final String FIND_HOLIDAY = "SELECT COUNT(*) FROM holiday WHERE description=?";
+    private static final String FIND_HOLIDAY_BY_DATE = "SELECT COUNT(*) FROM holiday WHERE ? BETWEEN start_holiday AND end_holiday";
+    private static final String GET_BY_ID = "SELECT * FROM holiday WHERE id=?";
     private static final String CREATE_HOLIDAY = "INSERT INTO holiday (description, start_holiday, end_holiday) VALUES (?, ?, ?)";
-    private static final String DELETE_HOLIDAY = "DELETE FROM holiday WHERE id = ?";
+    private static final String DELETE_HOLIDAY = "DELETE FROM holiday WHERE id=?";
     private static final String UPDATE_HOLIDAY = "UPDATE holiday SET description=?, start_holiday=?, end_holiday=? WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,8 +38,8 @@ public class JdbcHoliday implements DaoHolidayInterface {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(CREATE_HOLIDAY, new String[]{"id"});
             ps.setString(1, holiday.getDesc());
-            ps.setObject(2, holiday.getStartHolidayLocal());
-            ps.setObject(3, holiday.getEndHolidayLocal());
+            ps.setObject(2, holiday.getStart_holiday());
+            ps.setObject(3, holiday.getEnd_holiday());
             return ps;
         }, keyHolder);
         holiday.setId((long) keyHolder.getKeyList().get(0).get("id"));
@@ -47,8 +50,8 @@ public class JdbcHoliday implements DaoHolidayInterface {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(UPDATE_HOLIDAY);
             ps.setString(1, holiday.getDesc());
-            ps.setObject(2, holiday.getStartHolidayLocal());
-            ps.setObject(3, holiday.getEndHolidayLocal());
+            ps.setObject(2, holiday.getStart_holiday());
+            ps.setObject(3, holiday.getEnd_holiday());
             ps.setLong(4, holiday.getId());
             return ps;
         });
@@ -67,5 +70,17 @@ public class JdbcHoliday implements DaoHolidayInterface {
     @Override
     public List<Holiday> findAll() {
         return jdbcTemplate.query(FIND_ALL, holidayMapper);
+    }
+
+    @Override
+    public boolean isSingle(Holiday holiday) {
+        Integer result = jdbcTemplate.queryForObject(FIND_HOLIDAY, Integer.class, holiday.getDesc());
+        return result != null && result > 0;
+    }
+
+    @Override
+    public boolean lectureDoesNotFallOnHoliday(LocalDateTime date) {
+        Integer result = jdbcTemplate.queryForObject(FIND_HOLIDAY_BY_DATE, Integer.class, date);
+        return result != null && result > 0;
     }
 }

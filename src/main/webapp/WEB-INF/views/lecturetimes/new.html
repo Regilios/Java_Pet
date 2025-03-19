@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Add lectureTime</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5 mb-3">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+            </div>
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <form th:method="POST" th:action="@{/lecturetimes}" th:object="${lectureTime}">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label" for="start_date">Start Date</label>
+                            <input class="form-control" type="date"
+                                   th:value="*{startLocal != null ? startLocal.toLocalDate() : ''}" id="start_date"
+                                   name="start_date"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="start_time">Start Time</label>
+                            <input class="form-control" type="time"
+                                   th:value="*{startLocal != null ? startLocal.toLocalTime() : ''}" id="start_time"
+                                   name="start_time"/>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label" for="end_date">End Date</label>
+                            <input class="form-control" type="date"
+                                   th:value="*{endLocal != null ? endLocal.toLocalDate() : ''}" id="end_date"
+                                   name="end_date"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="end_time">End Time</label>
+                            <input class="form-control" type="time"
+                                   th:value="*{endLocal != null ? endLocal.toLocalTime() : ''}" id="end_time"
+                                   name="end_time"/>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add LectureTime</button>
+                </form>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/lecturetimes">Back to all lectureTimes</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

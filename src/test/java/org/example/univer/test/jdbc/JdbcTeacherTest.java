@@ -1,4 +1,5 @@
 package org.example.univer.test.jdbc;
+
 import org.example.univer.config.TestSpringConfig;
 import org.example.univer.dao.jdbc.JdbcCathedra;
 import org.example.univer.dao.jdbc.JdbcTeacher;
@@ -9,19 +10,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestSpringConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcTeacherTest {
     @Autowired
     private JdbcTemplate template;
@@ -34,18 +36,18 @@ public class JdbcTeacherTest {
     @Test
     void checkCreatedTeacher() {
         Teacher teacher = new Teacher();
-        teacher.setId(3L);
+
         teacher.setFirstName("test");
         teacher.setLastName("test2");
         teacher.setGender(Gender.MALE);
-        teacher.setAddres("test");
+        teacher.setAddress("test");
         teacher.setEmail("test@test");
         teacher.setPhone("test");
         teacher.setBirthday(LocalDate.parse("1983-02-01"));
         teacher.setCathedra(jdbcCathedra.findById(1L));
         jdbcTeacher.create(teacher);
 
-        Teacher teacher1 = jdbcTeacher.findById(3L);
+        Teacher teacher1 = jdbcTeacher.findById(teacher.getId());
 
         assertEquals(teacher, teacher1);
         assertEquals(teacher.getId(), teacher1.getId());
@@ -65,18 +67,18 @@ public class JdbcTeacherTest {
     @Test
     void checkFindByIdTeacher() {
         Teacher teacher = new Teacher();
-        teacher.setId(3L);
+
         teacher.setFirstName("test");
         teacher.setLastName("test2");
         teacher.setGender(Gender.MALE);
-        teacher.setAddres("test");
+        teacher.setAddress("test");
         teacher.setEmail("test@test");
         teacher.setPhone("test");
         teacher.setBirthday(LocalDate.parse("1983-02-01"));
         teacher.setCathedra(jdbcCathedra.findById(1L));
         jdbcTeacher.create(teacher);
 
-        assertEquals(jdbcTeacher.findById(3L), teacher);
+        assertEquals(jdbcTeacher.findById(teacher.getId()), teacher);
     }
 
     @Test
@@ -93,5 +95,21 @@ public class JdbcTeacherTest {
         int actual = jdbcTeacher.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleTeacher() {
+        Teacher teacher = new Teacher();
+
+        teacher.setFirstName("test");
+        teacher.setLastName("test2");
+        teacher.setGender(Gender.MALE);
+        teacher.setAddress("test");
+        teacher.setEmail("test@test");
+        teacher.setPhone("test");
+        teacher.setBirthday(LocalDate.parse("1983-02-01"));
+        teacher.setCathedra(jdbcCathedra.findById(1L));
+
+        assertFalse(jdbcTeacher.isSingle(teacher));
     }
 }

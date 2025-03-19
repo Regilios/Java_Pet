@@ -8,17 +8,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestSpringConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
+@ActiveProfiles("jdbc")
 public class JdbcCathedraTest {
     @Autowired
     private JdbcTemplate template;
@@ -29,11 +30,10 @@ public class JdbcCathedraTest {
     @Test
     void checkCreatedCathedra() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(2L);
         cathedra.setName("test");
 
         jdbcCathedra.create(cathedra);
-        Cathedra cathedra1 = jdbcCathedra.findById(2L);
+        Cathedra cathedra1 = jdbcCathedra.findById(cathedra.getId());
 
         assertEquals(cathedra, cathedra1);
         assertEquals(cathedra.getId(), cathedra1.getId());
@@ -52,11 +52,10 @@ public class JdbcCathedraTest {
     @Test
     void checkFindByIdCathedra() {
         Cathedra cathedra = new Cathedra();
-        cathedra.setId(2L);
         cathedra.setName("test");
         jdbcCathedra.create(cathedra);
 
-        assertEquals(jdbcCathedra.findById(2L), cathedra);
+        assertEquals(jdbcCathedra.findById(cathedra.getId()), cathedra);
     }
 
     @Test
@@ -73,5 +72,13 @@ public class JdbcCathedraTest {
         int actual = jdbcCathedra.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkIsSingleCathedra() {
+        Cathedra cathedra = new Cathedra();
+        cathedra.setName("test");
+
+        assertFalse(jdbcCathedra.isSingle(cathedra));
     }
 }

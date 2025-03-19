@@ -1,6 +1,5 @@
 package org.example.univer.dao.mapper;
 
-import org.example.univer.dao.jdbc.JdbcCathedra;
 import org.example.univer.models.Cathedra;
 import org.example.univer.models.Group;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,23 +10,22 @@ import java.sql.SQLException;
 
 @Component
 public class GroupMapper implements RowMapper<Group> {
-    private JdbcCathedra jdbcCathedra;
-
-    public GroupMapper(JdbcCathedra jdbcCathedra) {
-        this.jdbcCathedra = jdbcCathedra;
-    }
-
     @Override
     public Group mapRow(ResultSet rs, int rowNum) throws SQLException {
         Group group = new Group();
         group.setId(rs.getLong("id"));
-        group.setNameGroup(rs.getString("name"));
+        group.setName(rs.getString("name"));
 
-        Long localCathedraId = rs.getLong("cathedra_id");
+        Long cathedraId = rs.getLong("cathedra_id");
         if (!rs.wasNull()) {
-            Cathedra cathedra = jdbcCathedra.findById(localCathedraId);
+            Cathedra cathedra = new Cathedra();
+            cathedra.setId(cathedraId);
+            cathedra.setName(rs.getString("cathedra_name"));
             group.setCathedra(cathedra);
+        } else {
+            group.setCathedra(null);
         }
+
         return group;
     }
 }

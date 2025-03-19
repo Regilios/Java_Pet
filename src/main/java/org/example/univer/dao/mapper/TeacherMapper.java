@@ -1,6 +1,5 @@
 package org.example.univer.dao.mapper;
 
-import org.example.univer.dao.jdbc.JdbcCathedra;
 import org.example.univer.models.Cathedra;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Teacher;
@@ -13,12 +12,6 @@ import java.time.LocalDate;
 
 @Component
 public class TeacherMapper implements RowMapper<Teacher> {
-    private JdbcCathedra jdbcCathedra;
-
-    public TeacherMapper(JdbcCathedra jdbcCathedra) {
-        this.jdbcCathedra = jdbcCathedra;
-    }
-
     @Override
     public Teacher mapRow(ResultSet rs, int rowNum) throws SQLException {
         Teacher teacher = new Teacher();
@@ -26,15 +19,19 @@ public class TeacherMapper implements RowMapper<Teacher> {
         teacher.setFirstName(rs.getString("firstName"));
         teacher.setLastName(rs.getString("lastName"));
         teacher.setGender(Gender.valueOf(rs.getString("gender")));
-        teacher.setAddres(rs.getString("address"));
+        teacher.setAddress(rs.getString("address"));
         teacher.setEmail(rs.getString("email"));
         teacher.setPhone(rs.getString("phone"));
         teacher.setBirthday(rs.getObject("birthday", LocalDate.class));
 
-        Long localCathderaId = rs.getLong("cathedra_id");
+        Long cathedraId = rs.getLong("cathedra_id");
         if (!rs.wasNull()) {
-            Cathedra cathedra = jdbcCathedra.findById(localCathderaId);
+            Cathedra cathedra = new Cathedra();
+            cathedra.setId(cathedraId);
+            cathedra.setName(rs.getString("cathedra_name"));
             teacher.setCathedra(cathedra);
+        } else {
+            teacher.setCathedra(null);
         }
         return teacher;
     }

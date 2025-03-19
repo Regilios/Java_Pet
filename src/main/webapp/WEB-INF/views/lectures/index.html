@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>All Lectures</h1>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Subject</th>
+                        <th>Lecture Time</th>
+                        <th>Audience</th>
+                        <th>Group</th>
+                        <th>Show</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lecture: ${lectures.content}">
+                        <td th:text="${lecture.getId()}">Id</td>
+                        <td th:text="${lecture.getSubject().getName()}">Subject</td>
+                        <td th:text="${lecture.getTimeStart()} + ' ' + ${lecture.getTimeEnd()}">Time</td>
+                        <td th:text="${lecture.getAudience().getRoom()}">Room</td>
+                        <td>
+                            <ul th:each="group : ${lecture.getGroup()}">
+                                <li th:text="${group?.name}">Group</li>
+                            </ul>
+                        </td>
+                        <td><a class="btn btn-primary" th:href="@{/lectures/{id}(id=${lecture.getId()})}">show</a></td>
+                        <td>
+                            <a class="btn btn-outline-primary" th:href="@{/lectures/{id}/edit(id=${lecture.getId()})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
+                                    <path fill-rule="evenodd"
+                                          d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"></path>
+                                </svg>
+                                edit</a>
+                        </td>
+                        <td>
+                            <form th:method="DELETE" th:action="@{/lectures/{id}(id=${lecture.getId()})}">
+                                <button class="btn btn-danger" type="submit" value="Delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"></path>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Pagination" th:if="${lectures.totalPages > 0}">
+                <ul class="pagination justify-content-center font-weight-bold">
+                    <li class="page-item" th:classappend="${lectures.number eq 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/lectures?page={id}(id=${lectures.number lt 2 ? 1 : lectures.number})}"
+                           aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${i eq lectures.number + 1} ? 'active'"
+                        th:each="i : ${#numbers.sequence( 1, lectures.totalPages, 1)}">
+                        <a class="page-link" th:href="@{/lectures?page={id}(id=${i})}"
+                           th:text="${i}" th:title="${'Page '+ i}" data-toggle="tooltip">Page number
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${lectures.number + 1 eq lectures.totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/lectures?page={id}(id=${lectures.number + 2})}"
+                           aria-label="Next" title="Next Page" data-toggle="tooltip">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/">Back to main</a>
+                <a class="btn btn-primary" href="lectures/new">Add lecture</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

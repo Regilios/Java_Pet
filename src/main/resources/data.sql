@@ -2,6 +2,7 @@ INSERT INTO cathedra (name) VALUES ('General magic');
 
 INSERT INTO groups (name, cathedra_id) VALUES ('Этонсель',(SELECT id FROM cathedra WHERE name='General magic'));
 INSERT INTO groups (name, cathedra_id) VALUES ('Ардор',(SELECT id FROM cathedra WHERE name='General magic'));
+INSERT INTO groups (name, cathedra_id) VALUES ('Moria',(SELECT id FROM cathedra WHERE name='General magic'));
 
 INSERT INTO students (firstName, lastName, gender, address, email, phone, birthday, group_id) VALUES ('Bob','Peterson','MALE','45 May-dwell House','bob@mail.ru','89942342349','1991-01-01',(SELECT id FROM groups WHERE name='Этонсель'));
 INSERT INTO students (firstName, lastName, gender, address, email, phone, birthday, group_id) VALUES ('Margaret','Techer','FEMALE','69 South Street','margaret@mail.ru','8213123123723','1992-10-09',(SELECT id FROM groups WHERE name='Этонсель'));
@@ -17,11 +18,12 @@ INSERT INTO subject (name, description) VALUES ('Универсальная ма
 INSERT INTO subject (name, description) VALUES ('Мировая магия','Изучение мировой магии и мира духов');
 INSERT INTO subject (name, description) VALUES ('История магии','Изучение магии тёмных веков');
 INSERT INTO subject (name, description) VALUES ('Защита от тёмных исскуств','Практика и теория применения защитных заклинаний');
+INSERT INTO subject (name, description) VALUES ('Алхимия','Основы алхимии, базовые концепты зельеварения');
 
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-01-01','2035-01-14', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-07-01','2035-07-14', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-02-01','2035-02-14', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
-INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-08-01','2035-08-14', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-03-01','2024-03-10', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-11-01','2024-11-20', (SELECT id FROM teacher WHERE firstName='Жанна' AND lastName='Матвиенко'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-04-01','2024-04-10', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
+INSERT INTO vacation (startJob, endJob, teacher_id) VALUES ('2024-08-01','2024-08-20', (SELECT id FROM teacher WHERE firstName='Виктор' AND lastName='Лызлов'));
 
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-02 08:00:00','2024-02-02 10:00:00');
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-02 11:00:00','2024-02-02 13:00:00');
@@ -44,12 +46,16 @@ INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-04 12:00:0
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-04 15:00:00','2024-02-04 16:00:00');
 INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2024-02-04 17:00:00','2024-02-04 19:00:00');
 
+INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2025-02-04 10:00:00','2024-02-05 11:00:00');
+INSERT INTO lectionTime (start_lection, end_lection) VALUES ('2025-02-04 12:00:00','2024-02-05 13:00:00');
+
 INSERT INTO audience (room_number, capacity) VALUES ('204','40');
 INSERT INTO audience (room_number, capacity) VALUES ('402','20');
 INSERT INTO audience (room_number, capacity) VALUES ('105','60');
 INSERT INTO audience (room_number, capacity) VALUES ('101','40');
 INSERT INTO audience (room_number, capacity) VALUES ('307','25');
 INSERT INTO audience (room_number, capacity) VALUES ('304','45');
+INSERT INTO audience (room_number, capacity) VALUES ('306','45');
 
 INSERT INTO holiday (description, start_holiday, end_holiday) VALUES ('зимние каникулы','2024-01-01','2024-01-14');
 INSERT INTO holiday (description, start_holiday, end_holiday) VALUES ('летние каникулы','2024-07-01','2024-07-14');
@@ -177,6 +183,7 @@ INSERT INTO teacher_subject (teacher_id, subject_id) VALUES ((SELECT id FROM tea
                                                              (SELECT id FROM subject WHERE name='Защита от тёмных исскуств'));
 
 INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Этонсель'), 1);
+INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Ардор'), 1);
 INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Этонсель'), 2);
 INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Ардор'), 3);
 INSERT INTO group_lection (group_id, lection_id) VALUES ((SELECT id FROM groups WHERE name='Ардор'), 4);

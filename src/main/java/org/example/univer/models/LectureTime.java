@@ -1,5 +1,7 @@
 package org.example.univer.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,7 +10,9 @@ import java.util.Objects;
 public class LectureTime implements Serializable {
     private static final long serialVersionUID = 4670760351992342275L;
     private Long id;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime start_lection;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime end_lection;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -28,7 +32,7 @@ public class LectureTime implements Serializable {
         this.id = id;
     }
 
-    public String getStart() {
+    public String getStart_lection() {
         return start_lection.format(formatter);
     }
 
@@ -36,11 +40,11 @@ public class LectureTime implements Serializable {
         return start_lection;
     }
 
-    public void setStart(LocalDateTime start_lection) {
+    public void setStart_lection(LocalDateTime start_lection) {
         this.start_lection = start_lection;
     }
 
-    public String getEnd() {
+    public String getEnd_lection() {
         return end_lection.format(formatter);
     }
 
@@ -48,7 +52,7 @@ public class LectureTime implements Serializable {
         return end_lection;
     }
 
-    public void setEnd(LocalDateTime end_lection) {
+    public void setEnd_lection(LocalDateTime end_lection) {
         this.end_lection = end_lection;
     }
 

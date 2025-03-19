@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{common/header :: header('Title')}">
+</head>
+<body>
+<main class="main mt-5 px-lg-6">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <h1>Add holiday</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5 mb-3">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+            </div>
+            <div class="col-12 col-md order-md-0 text-center text-md-start">
+                <form th:method="POST" th:action="@{/lectures}" th:object="${lecture}">
+                    <div class="mb-3">
+                        <label class="form-label" for="cathedra">Select cathedra: </label>
+                        <select class="form-control" id="cathedra" name="cathedra" th:field="*{cathedra.id}" required>
+                            <option th:each="anyCathedra : ${cathedras}"
+                                    th:field="*{cathedra.id}"
+                                    th:value="${anyCathedra?.id}"
+                                    th:text="${anyCathedra?.name}">Cathedra name
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="teacher">Select teacher: </label>
+                        <select class="form-control" id="teacher" name="teacher" th:field="*{teacher.id}" required>
+                            <option th:each="anyTeacher : ${teachers}"
+                                    th:field="*{teacher.id}"
+                                    th:value="${anyTeacher?.id}"
+                                    th:text="${anyTeacher?.firstName} + ' ' + ${anyTeacher?.lastName}">Teacher name
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="audience">Choose audience: </label>
+                        <select class="form-control" id="audience" name="audience" th:field="*{audience.id}" required>
+                            <option th:each="anyAudience : ${audiences}"
+                                    th:field="*{audience.id}"
+                                    th:value="${anyAudience?.id}"
+                                    th:text="${anyAudience?.room}">Room
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="subject">Choose subject: </label>
+                        <select class="form-control" id="subject" name="subject" th:field="*{subject.id}" required>
+                            <option th:each="anySubject : ${subjects}"
+                                    th:field="*{subject.id}"
+                                    th:value="${anySubject?.id}"
+                                    th:text="${anySubject?.name}">Subject name
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="lectureTime">Choose time: </label>
+                        <select class="form-control" id="lectureTime" name="lectureTime" th:field="*{time.id}" required>
+                            <option th:each="anyTime : ${times}"
+                                    th:field="*{time.id}"
+                                    th:value="${anyTime?.id}"
+                                    th:text="${anyTime?.startLocal} + ' - ' + ${anyTime?.endLocal}">start
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="groups">Choose group(s): </label>
+                        <select class="form-control" id="groups" name="groups" multiple required>
+                            <option th:each="group : ${groups}"
+                                    th:value="${group.id}"
+                                    th:text="${group.name}">
+                            </option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" value="add student">add lecture</button>
+                </form>
+            </div>
+            <div class="col-12 mt-5">
+                <a class="btn btn-outline-primary" href="/lectures">Back to all lectures</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

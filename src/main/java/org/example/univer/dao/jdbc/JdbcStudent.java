@@ -5,6 +5,9 @@ import org.example.univer.dao.mapper.StudentMapper;
 import org.example.univer.models.Group;
 import org.example.univer.models.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,10 +20,14 @@ import java.util.List;
 public class JdbcStudent implements DaoStudentInterface {
     private static final String CREATE_STUDENT = "INSERT INTO students (firstName, lastName, gender, address, email, phone, birthday, group_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_STUDENT = "UPDATE students SET firstName=?, lastName=?, gender=?, address=?, email=?, phone=?, birthday=?, group_id=? WHERE id = ?";
-    private static final String DELETE_STUDENT = "DELETE FROM students WHERE id = ?";
-    private static final String GET_BY_ID = "SELECT * FROM students WHERE id = ?";
-    private static final String FIND_STUDENT_BY_GROUP_ID = "SELECT * FROM students WHERE group_id = ? ORDER BY id";
-    private static final String FIND_ALL = "SELECT * FROM students ORDER BY id";
+    private static final String DELETE_STUDENT = "DELETE FROM students WHERE id=?";
+    private static final String SELECT_BY_PAGE = "SELECT s.*, g.name AS group_name FROM students s JOIN groups g ON s.group_id = g.id LIMIT ? OFFSET ?";
+    private static final String COUNT_ALL = "SELECT COUNT(*) FROM students";
+    private static final String GET_BY_ID = "SELECT s.*, g.name AS group_name FROM students s JOIN groups g ON s.group_id = g.id WHERE s.id=?";
+    private static final String FIND_STUDENT_BY_GROUP_ID = "SELECT s.*, g.name AS group_name FROM students s JOIN groups g ON s.group_id = g.id WHERE g.id=? ORDER BY id";
+    private static final String FIND_HOW_MANY_STUDENT_IN_GROUP = "SELECT COUNT(*) FROM students WHERE group_id=?";
+    private static final String FIND_STUDENT = "SELECT COUNT(*) FROM students WHERE firstname=? AND lastname=? AND address=? AND email=? AND birthday=? AND group_id=?";
+    private static final String FIND_ALL = "SELECT s.*, g.name AS group_name FROM students s JOIN groups g ON s.group_id = g.id ORDER BY id";
 
     private final JdbcTemplate jdbcTemplate;
     private StudentMapper studentMapper;
@@ -38,8 +45,8 @@ public class JdbcStudent implements DaoStudentInterface {
             PreparedStatement ps = connection.prepareStatement(CREATE_STUDENT, new String[]{"id"});
             ps.setString(1, student.getFirstName());
             ps.setString(2, student.getLastName());
-            ps.setString(3, student.getGender());
-            ps.setString(4, student.getAddres());
+            ps.setString(3, student.getGender().toString());
+            ps.setString(4, student.getAddress());
             ps.setString(5, student.getEmail());
             ps.setString(6, student.getPhone());
             ps.setObject(7, student.getBirthday());
@@ -56,8 +63,8 @@ public class JdbcStudent implements DaoStudentInterface {
             PreparedStatement ps = connection.prepareStatement(UPDATE_STUDENT);
             ps.setString(1, student.getFirstName());
             ps.setString(2, student.getLastName());
-            ps.setString(3, student.getGender());
-            ps.setString(4, student.getAddres());
+            ps.setString(3, student.getGender().toString());
+            ps.setString(4, student.getAddress());
             ps.setString(5, student.getEmail());
             ps.setString(6, student.getPhone());
             ps.setObject(7, student.getBirthday());
@@ -82,8 +89,28 @@ public class JdbcStudent implements DaoStudentInterface {
         return jdbcTemplate.query(FIND_ALL, studentMapper);
     }
 
-    public List<Student> findAllStudentbyGroupId(Group group) {
+    @Override
+    public Page<Student> findPaginatedStudents(Pageable pageable) {
+        int total = jdbcTemplate.queryForObject(COUNT_ALL, Integer.class);
+        List<Student> students = jdbcTemplate.query(SELECT_BY_PAGE, studentMapper, pageable.getPageSize(), pageable.getOffset());
+
+        return new PageImpl<>(students, pageable, total);
+    }
+
+    public List<Student> findAllStudentByGroupId(Group group) {
         Long id = group.getId();
         return jdbcTemplate.query(FIND_STUDENT_BY_GROUP_ID, studentMapper, id);
+    }
+
+    @Override
+    public boolean isSingle(Student student) {
+        Integer result = jdbcTemplate.queryForObject(FIND_STUDENT, Integer.class, student.getFirstName(), student.getLastName(), student.getAddress(), student.getEmail(), student.getBirthday(), student.getGroup().getId());
+        return result != null && result > 0;
+    }
+
+    @Override
+    public Integer checkGroupSize(Student student) {
+        Integer result = jdbcTemplate.queryForObject(FIND_HOW_MANY_STUDENT_IN_GROUP, Integer.class, student.getGroup().getId());
+        return result;
     }
 }

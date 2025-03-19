@@ -12,15 +12,17 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class JdbcGroup implements DaoGroupInterface {
-    private static final String FIND_ALL = "SELECT * FROM groups ORDER BY id";
-    private static final String GET_BY_ID = "SELECT * FROM groups WHERE id = ?";
+    private static final String FIND_ALL = "SELECT g.*, c.name AS cathedra_name FROM groups g JOIN cathedra c ON g.cathedra_id = c.id ORDER BY id";
+    private static final String FIND_GROUP = "SELECT COUNT(*) FROM groups WHERE name=?";
+    private static final String GET_BY_ID = "SELECT g.*, c.name AS cathedra_name FROM groups g JOIN cathedra c ON g.cathedra_id = c.id WHERE g.id=?";
     private static final String CREATE_GROUP = "INSERT INTO groups (name, cathedra_id) VALUES (?, ?)";
     private static final String GROUP_ADD_LECTION = "INSERT INTO group_lection (group_id, lection_id) VALUES (?, ?)";
-    private static final String DELETE_GROUP= "DELETE FROM groups WHERE id = ?";
-    private static final String GROUP_DELETE_LECTION = "DELETE FROM group_lection WHERE group_id = ? AND lection_id=?";
+    private static final String DELETE_GROUP= "DELETE FROM groups WHERE id=?";
+    private static final String GROUP_DELETE_LECTION = "DELETE FROM group_lection WHERE group_id=? AND lection_id=?";
     private static final String UPDATE_GROUP = "UPDATE groups SET name=?, cathedra_id=? WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -44,7 +46,8 @@ public class JdbcGroup implements DaoGroupInterface {
         group.setId((long) keyHolder.getKeyList().get(0).get("id"));
     }
 
-    public void addLection(Long groupId, Long lectionId) {
+    @Override
+    public void addlection(Long groupId, Long lectionId) {
         if (Objects.isNull(groupId)) {
             throw new IllegalArgumentException("ID группы не может иметь значение null");
         }
@@ -58,6 +61,11 @@ public class JdbcGroup implements DaoGroupInterface {
             ps.setLong(2, lectionId);
             return ps;
         }, keyHolder);
+    }
+
+    @Override
+    public void removeLection(Long groupId, Long lectionId) {
+        jdbcTemplate.update(GROUP_DELETE_LECTION, groupId, lectionId);
     }
 
     @Override
@@ -76,17 +84,30 @@ public class JdbcGroup implements DaoGroupInterface {
         jdbcTemplate.update(DELETE_GROUP, id);
     }
 
-    public void removeLection(Long groupId, Long lectionId) {
-        jdbcTemplate.update(GROUP_DELETE_LECTION, groupId, lectionId);
-    }
-
     @Override
     public Group findById(Long id) {
         return jdbcTemplate.queryForObject(GET_BY_ID, groupMapper, id);
     }
 
     @Override
+    public List<Group> getGroupById(List<Long> groupIds) {
+        if (groupIds == null || groupIds.isEmpty()) {
+            throw new IllegalArgumentException("The list of groups IDs cannot be null or empty");
+        }
+
+        String ids = groupIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
+        String FIND_ALL_GROUP_BY_ID = "SELECT g.*, c.name AS cathedra_name FROM groups g JOIN cathedra c ON g.cathedra_id = c.id WHERE g.id IN ("+ ids +")";
+
+        return jdbcTemplate.query(FIND_ALL_GROUP_BY_ID, groupMapper);
+    }
+    @Override
     public List<Group> findAll() {
         return jdbcTemplate.query(FIND_ALL, groupMapper);
+    }
+
+    @Override
+    public boolean isSingle(Group group) {
+        Integer result = jdbcTemplate.queryForObject(FIND_GROUP, Integer.class, group.getName());
+        return result != null && result > 0;
     }
 }

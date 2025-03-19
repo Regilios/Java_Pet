@@ -46,8 +46,8 @@ public class Formatter {
                 group.getTeacher().getFirstName(),
                 group.getTeacher().getLastName(),
                 group.getSubject().getName(),
-                group.getTime().getStart(),
-                group.getTime().getEnd(),
+                group.getTime().getStart_lection(),
+                group.getTime().getEnd_lection(),
                 group.getAudience().getRoom()
         )).collect(Collectors.joining(System.lineSeparator()));
     }
@@ -55,8 +55,8 @@ public class Formatter {
     public String formatListStudent(List<Student> list) {
         Integer maxColFirstName = getMaxCol(list, Student::getFirstName);
         Integer maxColLastName = getMaxCol(list, Student::getLastName);
-        Integer maxColGender = getMaxCol(list, Student::getGender);
-        Integer maxColFAddress = getMaxCol(list, Student::getAddres);
+        Integer maxColGender = getMaxCol(list, Student::getGenderString);
+        Integer maxColFAddress = getMaxCol(list, Student::getAddress);
         Integer maxColEmail = getMaxCol(list, Student::getEmail);
         Integer maxColPhone = getMaxCol(list, Student::getPhone);
         Integer maxColGroup = getMaxCol(list, (Student::getGroupName));
@@ -76,7 +76,7 @@ public class Formatter {
                 student.getFirstName(),
                 student.getLastName(),
                 student.getGender(),
-                student.getAddres(),
+                student.getAddress(),
                 student.getEmail(),
                 student.getPhone(),
                 student.getBirthday()
@@ -86,8 +86,8 @@ public class Formatter {
     public String formatListTeacher(List<Teacher> list) {
         Integer maxColFirstName = getMaxCol(list, Teacher::getFirstName);
         Integer maxColLastName = getMaxCol(list, Teacher::getLastName);
-        Integer maxColGender = getMaxCol(list, Teacher::getGender);
-        Integer maxColFAddress = getMaxCol(list, Teacher::getAddres);
+        Integer maxColGender = getMaxCol(list, Teacher::getGenderString);
+        Integer maxColFAddress = getMaxCol(list, Teacher::getAddress);
         Integer maxColEmail = getMaxCol(list, Teacher::getEmail);
         Integer maxColPhone = getMaxCol(list, Teacher::getPhone);
         Integer maxColCathedra = getMaxCol(list, (Teacher::getCathedraName));
@@ -107,7 +107,7 @@ public class Formatter {
                 teacher.getFirstName(),
                 teacher.getLastName(),
                 teacher.getGender(),
-                teacher.getAddres(),
+                teacher.getAddress(),
                 teacher.getEmail(),
                 teacher.getPhone(),
                 teacher.getBirthday()
@@ -126,8 +126,8 @@ public class Formatter {
                 "END JOB: %-" + maxEndJob + "s" + COLUMN +
                 "TEACHER: %-" + maxFirstName + "s %-" + maxLastName + "s",
                 vacation.getId(),
-                vacation.getStartJobLocal(),
-                vacation.getEndJobLocal(),
+                vacation.getStartJob(),
+                vacation.getEndJob(),
                 vacation.getTeacher().getFirstName(),
                 vacation.getTeacher().getLastName()
         )).collect(Collectors.joining(System.lineSeparator()));
@@ -148,23 +148,23 @@ public class Formatter {
     }
 
     public String formatListLectionTime(List<LectureTime> list) {
-        Integer maxSrartLection = getMaxCol(list, LectureTime::getStart);
-        Integer maxEndlection = getMaxCol(list, LectureTime::getEnd);
+        Integer maxSrartLection = getMaxCol(list, LectureTime::getStart_lection);
+        Integer maxEndlection = getMaxCol(list, LectureTime::getEnd_lection);
 
         return list.stream().map(lectureTime -> format(
                 "ID: %-3s" +
                 "START LECTION: %-" + maxSrartLection + "s" + COLUMN +
                 "END LECTION: %-" + maxEndlection + "s",
                 lectureTime.getId(),
-                lectureTime.getStart(),
-                lectureTime.getEnd()
+                lectureTime.getStart_lection(),
+                lectureTime.getEnd_lection()
         )).collect(Collectors.joining(System.lineSeparator()));
     }
 
     public String formatListHoliday(List<Holiday> list) {
         Integer maxDesc = getMaxCol(list, Holiday::getDesc);
-        Integer maxStart = getMaxCol(list, Holiday::getStartHoliday);
-        Integer maxEnd = getMaxCol(list, Holiday::getEndHoliday);
+        Integer maxStart = getMaxCol(list, Holiday::getStartHolidayLocal);
+        Integer maxEnd = getMaxCol(list, Holiday::getEndHolidayLocal);
 
         return list.stream().map(holiday -> format(
                 "ID: %-3s" +
@@ -173,12 +173,12 @@ public class Formatter {
                 "END HOLIDAY: %-" + maxEnd + "s",
                 holiday.getId(),
                 holiday.getDesc(),
-                holiday.getStartHoliday(),
-                holiday.getEndHoliday()
+                holiday.getStart_holiday(),
+                holiday.getEnd_holiday()
         )).collect(Collectors.joining(System.lineSeparator()));
     }
 
-    public String formatAudience(List<Audience> list) {
+    public String formatListAudience(List<Audience> list) {
         Integer maxRoom = getMaxCol(list, Audience::getRoomString);
         Integer maxSize = getMaxCol(list, Audience::getCapacityString);
 
@@ -198,10 +198,21 @@ public class Formatter {
                 "START LECTION: %s" + COLUMN +
                 "END LECTION: %s",
                 lectureTime.getId(),
-                lectureTime.getStart(),
-                lectureTime.getEnd()
+                lectureTime.getStart_lection(),
+                lectureTime.getEnd_lection()
         );
     }
+    public String formatSubject(Subject subject) {
+        return String.format(
+                "ID: %-3s" +
+                "NAME: %s" + COLUMN +
+                "DESCRIPTION: %s",
+                subject.getId(),
+                subject.getName(),
+                subject.getDescription()
+        );
+    }
+
 
     public String formatTeacher(Teacher teacher) {
         return String.format(
@@ -219,7 +230,7 @@ public class Formatter {
                 teacher.getFirstName(),
                 teacher.getLastName(),
                 teacher.getGender(),
-                teacher.getAddres(),
+                teacher.getAddress(),
                 teacher.getEmail(),
                 teacher.getPhone(),
                 teacher.getBirthday()
@@ -242,7 +253,7 @@ public class Formatter {
                 student.getFirstName(),
                 student.getLastName(),
                 student.getGender(),
-                student.getAddres(),
+                student.getAddress(),
                 student.getEmail(),
                 student.getPhone(),
                 student.getBirthday()

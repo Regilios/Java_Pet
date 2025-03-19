@@ -4,6 +4,9 @@ import org.example.univer.dao.interfaces.DaoAudienceInterface;
 import org.example.univer.dao.mapper.AudienceMapper;
 import org.example.univer.models.Audience;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,12 +17,14 @@ import java.util.List;
 
 @Component
 public class JdbcAudience implements DaoAudienceInterface {
-    private static final String GET_BY_ID = "SELECT * FROM audience WHERE id = ?";
-    private static final String FIND_ROOM = "SELECT COUNT(*) FROM audience WHERE room_number = ?";
-    private static final String FIND_ALL = "SELECT * FROM audience";
+    private static final String GET_BY_ID = "SELECT * FROM audience WHERE id=?";
+    private static final String SELECT_BY_PAGE = "SELECT * FROM audience LIMIT ? OFFSET ?";
+    private static final String COUNT_ALL = "SELECT COUNT(*) FROM audience";
+    private static final String FIND_ROOM = "SELECT COUNT(*) FROM audience WHERE room_number=?";
+    private static final String FIND_ALL = "SELECT * FROM audience ORDER BY id";
     private static final String CREATE_AUDEINCE = "INSERT INTO audience (room_number, capacity) VALUES (?, ?)";
     private static final String UPDATE_AUDEINCE = "UPDATE audience SET room_number=?, capacity=? WHERE id=?";
-    private static final String DELETE_AUDEINCE = "DELETE FROM audience WHERE id = ?";
+    private static final String DELETE_AUDEINCE = "DELETE FROM audience WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private AudienceMapper audienceMapper;
@@ -69,7 +74,15 @@ public class JdbcAudience implements DaoAudienceInterface {
     }
 
     @Override
-    public boolean findRoom(Audience audience) {
+    public Page<Audience> findPaginatedAudience(Pageable pageable) {
+        int total = jdbcTemplate.queryForObject(COUNT_ALL, Integer.class);
+        List<Audience> audiences = jdbcTemplate.query(SELECT_BY_PAGE, audienceMapper, pageable.getPageSize(), pageable.getOffset());
+
+        return new PageImpl<>(audiences, pageable, total);
+    }
+
+    @Override
+    public boolean isSingle(Audience audience) {
         Integer result = jdbcTemplate.queryForObject(FIND_ROOM, Integer.class, audience.getRoom());
         return result != null && result > 0;
     }
