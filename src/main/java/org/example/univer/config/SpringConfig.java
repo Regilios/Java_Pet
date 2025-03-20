@@ -1,135 +1,110 @@
 package org.example.univer.config;
 
-import org.example.univer.models.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.Properties;
 
 @Configuration
 @Profile("jdbc")
 @ComponentScan("org.example.univer")
-@PropertySource("classpath*:postgress.properties")
+@PropertySource("classpath:postgress.properties")
+@EnableTransactionManagement // Включение управления транзакциями
 public class SpringConfig {
 
-    @Value("${driver}")
-    private String driver;
-    @Value("${url}")
-    private String url;
-    @Value("${user}")
-    private String user;
-    @Value("${password}")
-    private String password;
+    private String jndiUrl = "java:comp/env/jdbc/MyDataSource";
 
     @Value("classpath:schema.sql")
-    Resource init;
+    private Resource schema;
+
     @Value("classpath:data.sql")
-    Resource data;
+    private Resource data;
 
-
+    /**
+     * Бин для поддержки ${}-синтаксиса в аннотациях @Value.
+     */
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
     }
 
+    /**
+     * Получение DataSource через JNDI.
+     */
     @Bean
     public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        JndiDataSourceLookup jndiDataSource = new JndiDataSourceLookup();
+        jndiDataSource.setResourceRef(true);
+        DataSource dataSource = jndiDataSource.getDataSource(jndiUrl);
 
-        dataSource.setDriverClassName(driver);
-        dataSource.setUsername(user);
-        dataSource.setUrl(url);
-        dataSource.setPassword(password);
-
+        // Инициализация базы данных
         createSchema(dataSource);
         createData(dataSource);
 
         return dataSource;
     }
 
-    @Bean
-    @Scope("prototype")
-    public Group group() {
-        return new Group();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Student student() {
-        return new Student();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Cathedra cathedra() {
-        return new Cathedra();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Teacher teacher() {
-        return new Teacher();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Vacation vacation() {
-        return new Vacation();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Subject subject() {
-        return new Subject();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public LectureTime lectureTime() {
-        return new LectureTime();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Audience audience() {
-        return new Audience();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Holiday holiday() {
-        return new Holiday();
-    }
-
-    @Bean
-    @Scope("prototype")
-    public Lecture lecture() {
-        return new Lecture();
-    }
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
-    @Bean
-    public DataSourceTransactionManager txManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
-
-    private void createData(DataSource dataSource) {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator(data);
-        populator.execute(dataSource);
-    }
-
+    /**
+     * Создание таблиц базы данных из schema.sql.
+     */
     private void createSchema(DataSource dataSource) {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator(init);
-        populator.execute(dataSource);
+        ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(schema);
+        databasePopulator.execute(dataSource);
+    }
+
+    /**
+     * Заполнение базы данных данными из data.sql.
+     */
+    private void createData(DataSource dataSource) {
+        ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(data);
+        databasePopulator.execute(dataSource);
+    }
+
+    /**
+     * Настройка SessionFactory для Hibernate.
+     */
+    @Bean
+    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) throws IOException {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource);
+        sessionFactory.setPackagesToScan("org.example.univer.models"); // Укажите пакет с вашими сущностями
+        sessionFactory.setHibernateProperties(hibernateProperties());
+        sessionFactory.afterPropertiesSet();
+
+        return sessionFactory;
+    }
+
+    /**
+     * Настройка менеджера транзакций.
+     */
+    @Bean
+    public PlatformTransactionManager transactionManager(LocalSessionFactoryBean sessionFactory) {
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(sessionFactory.getObject());
+        return transactionManager;
+    }
+
+    /**
+     * Свойства Hibernate.
+     */
+    private Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        properties.put("hibernate.show_sql", "true");
+        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.current_session_context_class",
+                "org.springframework.orm.hibernate5.SpringSessionContext");
+
+        return properties;
     }
 }
