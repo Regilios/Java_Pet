@@ -1,6 +1,5 @@
 package org.example.univer.controllers;
 
-import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.LectureTime;
 import org.example.univer.services.LectureTimeService;
@@ -14,7 +13,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/lecturetimes")
@@ -70,15 +68,7 @@ public class LectureTimeController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        Optional<LectureTime> lectureTimeOptional = lectureTimeService.findById(id);
-        if (lectureTimeOptional.isPresent()) {
-            LectureTime lectureTime = lectureTimeOptional.get();
-            model.addAttribute("lectureTime", lectureTime);
-            logger.debug("Found and edited lectureTime with id: {}", id);
-        } else {
-            logger.warn("LectureTime with id {} not found", id);
-            throw new ResourceNotFoundException("LectureTime not found");
-        }
+        model.addAttribute("lectureTime", lectureTimeService.findById(id));
         logger.debug("Edit lectureTime");
         return "lecturetimes/edit";
     }
@@ -107,29 +97,18 @@ public class LectureTimeController {
         return "redirect:/lecturetimes";
     }
 
-
-
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         model.addAttribute("lectureTime", lectureTimeService.findById(id));
-        Optional<LectureTime> lectureTimeOptional = lectureTimeService.findById(id);
-        if (lectureTimeOptional.isPresent()) {
-            LectureTime lectureTime = lectureTimeOptional.get();
-            model.addAttribute("lectureTime", lectureTime);
-            logger.debug("Found and edited lectureTime with id: {}", id);
-        } else {
-            logger.warn("LectureTime with id {} not found", id);
-            throw new ResourceNotFoundException("LectureTime not found");
-        }
         logger.debug("Edited lectureTime");
         return "lecturetimes/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute LectureTime lectureTime) {
-        lectureTimeService.deleteById(lectureTime);
+    public String delete(@PathVariable("id") Long id) {
+        lectureTimeService.deleteById(id);
         logger.debug("Deleted lectureTime");
         return "redirect:/lecturetimes";
     }

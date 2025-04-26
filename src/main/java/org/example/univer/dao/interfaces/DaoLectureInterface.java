@@ -8,8 +8,17 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface DaoLectureInterface extends DaoInterfaces<Lecture> {
+    void addlectionGroup(Long groupId, Long lectionId);
+
+    void update(Lecture lecture, Lecture lectureOld);
+
+    void updateLecture(Lecture lecture);
+
+    List<Long> getListGroupForLecture(Long lectureId);
+
     Page<Lecture> findPaginatedLecture(Pageable pageable);
 
+    List<Lecture> getTimetableStudent(Student entity, LocalDate localDate);
 
     List<Lecture> getTimetableTeacherForCreate(Teacher entity, LocalDate localDate);
 

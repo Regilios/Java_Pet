@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -109,12 +108,12 @@ public class StudentService {
         return daoStudentInterface.checkGroupSize(student) <= maxGroupSize;
     }
 
-    public void deleteById(Student student) {
-        logger.debug("Delete student width id: {}", student.getId());
-        daoStudentInterface.deleteById(student);
+    public void deleteById(Long id) {
+        logger.debug("Delete student width id: {}", id);
+        daoStudentInterface.deleteById(id);
     }
 
-    public Optional<Student> findById(Long id) {
+    public Student findById(Long id) {
         logger.debug("Find student width id: {}", id);
         return daoStudentInterface.findById(id);
     }

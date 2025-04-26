@@ -25,7 +25,7 @@
                     <tbody>
                     <tr th:each="holiday: ${holidays}">
                         <td><a th:text="${holiday.getId()}">Id</a></td>
-                        <td><a th:text="${holiday.getDescription()}">Description</a></td>
+                        <td><a th:text="${holiday.getDesc()}">Description</a></td>
                         <td><a class="btn btn-primary" th:href="@{/holidays/{id}(id=${holiday.getId()})}">show</a></td>
                         <td>
                             <a class="btn btn-outline-primary" th:href="@{/holidays/{id}/edit(id=${holiday.getId()})}">

@@ -66,7 +66,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="subjects">Choose subject(s): </label>
-                        <select class="form-control" id="subjects" name="subjectIds" multiple required>
+                        <select class="form-control" id="subjects" name="subjects" multiple required>
                             <option th:each="subject: ${subjects}"
                                     th:value="${subject.id}"
                                     th:text="${subject.name}">Subject

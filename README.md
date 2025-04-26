@@ -1,10 +1,10 @@
 # University pet-project 
 
-Updating the project with a Hibernate layer
+Updating the project with a service layer and web
 Current updates:
-- added Hibernate layer for all models 
-- added converters of some layers for linking hibernate and controller
-- added and modified tests for hibernate
-- modification of the model for hibernate
-- modification of the interface for hibernate
-- deleted jdbc layer, mappers, test jdbc
+- add CRUD pages for all models (controller extentions)
+- add UI-schedule with fullcalendar
+- add Tests
+- A service layer with basic business logic has been added
+- Tests for the service layer have been added
+- Unique application characteristics have been added for the service layer to change the program for a specific user

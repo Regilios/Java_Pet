@@ -13,16 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
 public class AudienceService {
     private DaoAudienceInterface daoAudienceInterfaces;
     private static final Logger logger = LoggerFactory.getLogger(AudienceService.class);
-    @Value("${roomSettings.SIZE_MAX}")
-    private Integer maxSize;
-    @Value("${roomSettings.SIZE_MIN}")
-    private Integer minSize;
+    @Value("#{${roomSettings}}")
+    private Map<String, Integer> roomSettings;
+
     @Autowired
     public AudienceService(DaoAudienceInterface daoAudienceInterfaces) {
         this.daoAudienceInterfaces = daoAudienceInterfaces;
@@ -51,7 +50,7 @@ public class AudienceService {
     }
 
     private void validateCommon(Audience audience, String action) {
-        if (audience.getCapacity() < minSize || audience.getCapacity() > maxSize) {
+        if (audience.getCapacity() < getMinSize() || audience.getCapacity() > getMaxSize()) {
             throw new AudienceExeption("Невозможно " + action + " аудиенцию! Размер аудиенции не попадает в рамки критериев!");
         }
     }
@@ -104,12 +103,12 @@ public class AudienceService {
         }
     }
 
-    public void deleteById(Audience audience) {
-        logger.debug("Delete audience width id: {}", audience.getId());
-        daoAudienceInterfaces.deleteById(audience);
+    public void deleteById(Long id) {
+        logger.debug("Delete audience width id: {}", id);
+        daoAudienceInterfaces.deleteById(id);
     }
 
-    public Optional<Audience> findById(Long id) {
+    public Audience findById(Long id) {
         logger.debug("Find audience width id: {}", id);
         return daoAudienceInterfaces.findById(id);
     }
@@ -129,4 +128,11 @@ public class AudienceService {
         return daoAudienceInterfaces.isSingle(audience);
     }
 
+    public Integer getMaxSize() {
+        return roomSettings.get("SIZE_MAX");
+    }
+
+    public Integer getMinSize() {
+        return roomSettings.get("SIZE_MIN");
+    }
 }

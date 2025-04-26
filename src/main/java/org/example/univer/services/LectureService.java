@@ -1,10 +1,10 @@
 package org.example.univer.services;
 
-import jakarta.annotation.PostConstruct;
 import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.dao.interfaces.DaoLectureInterface;
 import org.example.univer.dao.interfaces.DaoSubjectInterface;
 import org.example.univer.exeption.*;
+import org.example.univer.models.Group;
 import org.example.univer.models.Lecture;
 import org.example.univer.models.Teacher;
 import org.slf4j.Logger;
@@ -16,11 +16,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LectureService {
@@ -106,7 +107,6 @@ public class LectureService {
         logger.debug("Start create Lecture");
         try {
             validate(lecture, ValidationContext.METHOD_CREATE);
-            logger.debug("validate completed");
             daoLectureInterface.create(lecture);
             logger.debug("Lecture created");
         } catch (LectureExeption e) {
@@ -131,17 +131,12 @@ public class LectureService {
         logger.debug("Start update holiday");
         try {
             validate(lecture, ValidationContext.METHOD_UPDATE);
-          /*  Lecture lectureOld = findById(lecture.getId())
-                    .orElseThrow(() -> new RuntimeException("Lecture not found with id: " + lecture.getId()));
-
-            List<Group> groups = daoLectureInterface.getListGroupForLecture(lectureOld.getId()).stream()
-                    .map(groupId -> groupService.findById(groupId).orElse(null))
-                    .filter(Objects::nonNull)
+            Lecture lectureOld = findById(lecture.getId());
+            List<Group> group = daoLectureInterface.getListGroupForLecture(lectureOld.getId()).stream()
+                    .map(groupService::findById)
                     .collect(Collectors.toList());
-            lectureOld.setGroups(groups);
-            daoLectureInterface.update(lecture, lectureOld);*/
-
-            daoLectureInterface.update(lecture);
+            lectureOld.setGroup(group);
+            daoLectureInterface.update(lecture, lectureOld);
             logger.debug("Lecture updated");
         } catch (LectureExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -161,12 +156,12 @@ public class LectureService {
         }
     }
 
-    public void deleteById(Lecture lecture) {
-        logger.debug("Delete lecture width id: {}", lecture.getId());
-        daoLectureInterface.deleteById(lecture);
+    public void deleteById(Long id) {
+        logger.debug("Delete lecture width id: {}", id);
+        daoLectureInterface.deleteById(id);
     }
 
-    public Optional<Lecture> findById(Long id) {
+    public Lecture findById(Long id) {
         logger.debug("Find lecture width id: {}", id);
         return daoLectureInterface.findById(id);
     }
@@ -176,9 +171,30 @@ public class LectureService {
         return daoLectureInterface.findAll();
     }
 
+    public List<Lecture> findAllWithGroup() {
+        logger.debug("Find all lectures with groups");
+        List<Lecture> list = daoLectureInterface.findAll();
+        list.stream().forEach(elem -> {
+            List<Long> groupIds = daoLectureInterface.getListGroupForLecture(elem.getId());
+            List<Group> groups = groupService.getGroupById(groupIds);
+            elem.setGroup(groups);
+        });
+        return list;
+    }
+
     public Page<Lecture> findAllWithGroup(Pageable pageable) {
         logger.debug("Find all lectures with groups");
-        return  daoLectureInterface.findPaginatedLecture(pageable);
+        Page<Lecture> list = daoLectureInterface.findPaginatedLecture(pageable);
+        list.stream().forEach(elem -> {
+            List<Long> groupIds = daoLectureInterface.getListGroupForLecture(elem.getId());
+            List<Group> groups = groupService.getGroupById(groupIds);
+            elem.setGroup(groups);
+        });
+        return list;
+    }
+
+    public List<Long> getListGroupForLecture(Long id) {
+        return daoLectureInterface.getListGroupForLecture(id);
     }
 
     public boolean isSingle(Lecture lecture) {
