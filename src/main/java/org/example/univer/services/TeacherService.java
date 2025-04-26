@@ -2,7 +2,6 @@ package org.example.univer.services;
 
 import org.example.univer.dao.interfaces.DaoTeacherInterface;
 import org.example.univer.exeption.*;
-import org.example.univer.models.Subject;
 import org.example.univer.models.Teacher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class TeacherService {
@@ -82,14 +81,18 @@ public class TeacherService {
 
     public void update(Teacher teacher) {
         logger.debug("Start update teacher");
-        try {
+        try {/*
             validate(teacher, ValidationContext.METHOD_UPDATE);
-            Teacher teacherOld = findById(teacher.getId());
+            Teacher teacherOld = findById(teacher.getId())
+                    .orElseThrow(() -> new RuntimeException("Lecture not found with id: " + teacher.getId()));
+
             List<Subject> subjects = daoTeacherInterface.getListSubjectForTeacher(teacherOld.getId()).stream()
-                    .map(subjectService::findById)
+                    .map(groupId -> subjectService.findById(groupId).orElse(null))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-            teacherOld.setSubject(subjects);
-            daoTeacherInterface.update(teacher, teacherOld);
+            teacherOld.setSubjects(subjects);
+            daoTeacherInterface.update(teacher, teacherOld);*/
+            daoTeacherInterface.update(teacher);
             logger.debug("Teacher updated");
         } catch (TeacherExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -109,12 +112,12 @@ public class TeacherService {
         }
     }
 
-    public void deleteById(Long id) {
-        logger.debug("Delete teacher width id: {}", id);
-        daoTeacherInterface.deleteById(id);
+    public void deleteById(Teacher teacher) {
+        logger.debug("Delete teacher width id: {}", teacher.getId());
+        daoTeacherInterface.deleteById(teacher);
     }
 
-    public Teacher findById(Long id) {
+    public Optional<Teacher> findById(Long id) {
         logger.debug("Find teacher width id: {}", id);
         return daoTeacherInterface.findById(id);
     }
@@ -128,11 +131,11 @@ public class TeacherService {
         logger.debug("Check teacher is single");
         return daoTeacherInterface.isSingle(teacher);
     }
-
+/*
     public List<Long> getListSubjectForTeacher(Long teacherId) {
         logger.debug("Get list subject by id teacher");
         return daoTeacherInterface.getListSubjectForTeacher(teacherId);
-    }
+    }*/
     private boolean checkGender(Teacher teacher) {
         return teacher.getGender().toString().equals(genderTeacher);
     }

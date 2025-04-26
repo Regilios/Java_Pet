@@ -43,31 +43,43 @@ public class SpringConfig {
      */
     @Bean
     public DataSource dataSource() {
-        JndiDataSourceLookup jndiDataSource = new JndiDataSourceLookup();
-        jndiDataSource.setResourceRef(true);
-        DataSource dataSource = jndiDataSource.getDataSource(jndiUrl);
+        try {
+            JndiDataSourceLookup jndiDataSource = new JndiDataSourceLookup();
+            DataSource dataSource = jndiDataSource.getDataSource(jndiUrl);
 
-        // Инициализация базы данных
-        createSchema(dataSource);
-        createData(dataSource);
+            createSchema(dataSource);
+            createData(dataSource);
 
-        return dataSource;
+            return dataSource;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to lookup JNDI DataSource", e);
+        }
     }
 
     /**
      * Создание таблиц базы данных из schema.sql.
      */
     private void createSchema(DataSource dataSource) {
-        ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(schema);
-        databasePopulator.execute(dataSource);
+        try {
+            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(schema);
+            databasePopulator.execute(dataSource);
+            System.out.println("Schema initialized successfully.");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize schema", e);
+        }
     }
 
     /**
      * Заполнение базы данных данными из data.sql.
      */
     private void createData(DataSource dataSource) {
-        ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(data);
-        databasePopulator.execute(dataSource);
+        try {
+            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(data);
+            databasePopulator.execute(dataSource);
+            System.out.println("Data initialized successfully.");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize data", e);
+        }
     }
 
     /**
@@ -77,7 +89,7 @@ public class SpringConfig {
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) throws IOException {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
-        sessionFactory.setPackagesToScan("org.example.univer.models"); // Укажите пакет с вашими сущностями
+        sessionFactory.setPackagesToScan("org.example.univer.models");
         sessionFactory.setHibernateProperties(hibernateProperties());
         sessionFactory.afterPropertiesSet();
 
@@ -101,10 +113,14 @@ public class SpringConfig {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         properties.put("hibernate.show_sql", "true");
+        properties.put("hibernate.format_sql", "true");
+        properties.put("hibernate.use_sql_comments", "true");
         properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.current_session_context_class",
-                "org.springframework.orm.hibernate5.SpringSessionContext");
+        properties.put("logging.level.org.hibernate.stat", "DEBUG");
+        properties.put("spring.jpa.properties.hibernate.generate_statistics", "true");
+
 
         return properties;
     }
+
 }

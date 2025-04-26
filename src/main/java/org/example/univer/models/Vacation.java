@@ -2,20 +2,44 @@ package org.example.univer.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-
+@NamedQueries({
+        @NamedQuery(
+                name = "findAllVacation",
+                query = "FROM Vacation"
+        ),
+        @NamedQuery(
+                name = "countVacantion",
+                query = "SELECT COUNT(v) FROM Vacation v WHERE v.startJob =:startJob AND v.endJob =:endJob AND v.teacher.id =:teacher_id"
+        ),
+        @NamedQuery(
+                name =  "findListVacantion",
+                query = "FROM Vacation v WHERE v.teacher.id = :teacher_id"
+        )
+})
+@Entity
+@Table(name = "vacation")
 public class Vacation implements Serializable {
-    private static final long serialVersionUID = 2595365395005712101L;
+    private static final long serialVersionUID = -2595365395005712101L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "startJob", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startJob;
+
+    @Column(name = "endJob", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endJob;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
     private Teacher teacher;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM, yyyy");
 
     public Vacation(Long id, LocalDate startJob, LocalDate endJob, Teacher teacher) {
         this.id = id;
@@ -39,7 +63,7 @@ public class Vacation implements Serializable {
     }
 
     public String getStartJobString() {
-        return startJob.format(formatter);
+        return startJob != null ? startJob.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
     }
 
     public LocalDate getStartJob() {
@@ -51,7 +75,7 @@ public class Vacation implements Serializable {
     }
 
     public String getEndJobString() {
-        return endJob.format(formatter);
+        return endJob != null ? endJob.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
     }
 
     public LocalDate getEndJob() {

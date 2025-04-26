@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HolidayService {
@@ -39,7 +40,7 @@ public class HolidayService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(holiday)) {
-                    throw new InvalidParameterException("Невозможно создать каникулы! Каникулы с названием: " + holiday.getDesc() + " уже существуют!");
+                    throw new InvalidParameterException("Невозможно создать каникулы! Каникулы с названием: " + holiday.getDescription() + " уже существуют!");
                 }
                 validateCommon(holiday, "создать");
                 break;
@@ -113,12 +114,12 @@ public class HolidayService {
         logger.debug("Holiday updated");
     }
 
-    public void deleteById(Long id) {
-        logger.debug("Delete holiday width id: {}", id);
-        daoHolidayInterface.deleteById(id);
+    public void deleteById(Holiday holiday) {
+        logger.debug("Delete holiday width id: {}", holiday.getId());
+        daoHolidayInterface.deleteById(holiday);
     }
 
-    public Holiday findById(Long id) {
+    public Optional<Holiday> findById(Long id) {
         logger.debug("Find holiday width id: {}", id);
         return daoHolidayInterface.findById(id);
     }
