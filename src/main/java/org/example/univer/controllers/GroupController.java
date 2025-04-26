@@ -1,6 +1,5 @@
 package org.example.univer.controllers;
 
-import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.Group;
 import org.example.univer.services.CathedraService;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/groups")
@@ -29,9 +26,9 @@ public class GroupController {
     /* Общая страница */
     @GetMapping()
     public String index(Model model) {
-        logger.debug("Show all groups");
         model.addAttribute("title", "All Groups");
         model.addAttribute("groups", groupService.findAll());
+        logger.debug("Show all groups");
         return "groups/index";
     }
 
@@ -62,15 +59,7 @@ public class GroupController {
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         model.addAttribute("cathedras", cathedraService.findAll());
-        Optional<Group> optionalGroup = groupService.findById(id);
-        if (optionalGroup.isPresent()) {
-            Group group = optionalGroup.get();
-            model.addAttribute("group", group);
-            logger.debug("Found and edited group with id: {}", id);
-        } else {
-            logger.warn("Group with id {} not found", id);
-            throw new ResourceNotFoundException("Group not found");
-        }
+        model.addAttribute("group", groupService.findById(id));
         logger.debug("Edit group");
         return "groups/edit";
     }
@@ -91,24 +80,15 @@ public class GroupController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        Optional<Group> optionalGroup = groupService.findById(id);
-        if (optionalGroup.isPresent()) {
-            Group group = optionalGroup.get();
-            model.addAttribute("group", group);
-            logger.debug("Found and edited group with id: {}", id);
-        } else {
-            logger.warn("Group with id {} not found", id);
-            throw new ResourceNotFoundException("Group not found");
-        }
+        model.addAttribute("group", groupService.findById(id));
         logger.debug("Edited group");
         return "groups/show";
     }
 
-
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Group group) {
-        groupService.deleteById(group);
+    public String delete(@PathVariable("id") Long id) {
+        groupService.deleteById(id);
         logger.debug("Deleted group");
         return "redirect:/groups";
     }

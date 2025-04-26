@@ -1,6 +1,5 @@
 package org.example.univer.controllers;
 
-import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.Subject;
 import org.example.univer.models.Teacher;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -54,28 +51,21 @@ public class TeacherController {
 
     @PostMapping
     public String newTeacher(@ModelAttribute Teacher teacher,
-                             @RequestParam("subjectIds") List<Long> subjectIds,
+                             @RequestParam("subjects") List<Long> subjectIds,
                              Model model,
                              RedirectAttributes redirectAttributes) {
         try {
-            logger.debug("Received subject IDs: {}", subjectIds);
-            for (Long subjectId : subjectIds) {
-                logger.debug("Test findById and get name: {}", subjectService.findById(subjectId).get().getName());
-            }
             List<Subject> subjects = subjectIds.stream()
-                    .map(subjectId -> subjectService.findById(subjectId).orElse(null))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());;
-            logger.debug("Subjects finded: {}", subjects);
-            teacher.setSubjects(subjects);
-            logger.debug("Subjects added: {}",teacher.getSubjects());
+                    .map(subjectService::findById)
+                    .collect(Collectors.toList());
+            teacher.setSubject(subjects);
             teacherService.create(teacher);
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/teachers/new";
         }
 
-        logger.debug("Create new teacher. Id {}", teacher.getId());
+        logger.debug("Create new holidays. Id {}", teacher.getId());
         return "redirect:/teachers";
     }
 
@@ -84,31 +74,22 @@ public class TeacherController {
     public String edit(@PathVariable("id") Long id, Model model) {
         model.addAttribute("cathedras", cathedraService.findAll());
         model.addAttribute("subjects", subjectService.findAll());
-        Optional<Teacher> teacherOptional = teacherService.findById(id);
-        if (teacherOptional.isPresent()) {
-            Teacher teacher = teacherOptional.get();
-            model.addAttribute("teacher", teacher);
-            logger.debug("Found and edited teacher with id: {}", id);
-        } else {
-            logger.warn("Teacher with id {} not found", id);
-            throw new ResourceNotFoundException("Teacher not found");
-        }
+        model.addAttribute("teacher", teacherService.findById(id));
         logger.debug("Edit teacher");
         return "teachers/edit";
     }
 
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("teacher") Teacher teacher,
-                         @RequestParam("subjectIds") List<Long> subjectIds,
+                         @RequestParam("subjects") List<Long> subjectIds,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
         try {
             List<Subject> subjects = subjectIds.stream()
-                    .map(subjectId -> subjectService.findById(subjectId).orElse(null))
-                    .filter(Objects::nonNull)
+                    .map(subjectService::findById)
                     .collect(Collectors.toList());
-            teacher.setSubjects(subjects);
+            teacher.setSubject(subjects);
             teacherService.update(teacher);
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -123,23 +104,15 @@ public class TeacherController {
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         model.addAttribute("subjects", subjectService.getSubjectById(id));
-        Optional<Teacher> teacherOptional = teacherService.findById(id);
-        if (teacherOptional.isPresent()) {
-            Teacher teacher = teacherOptional.get();
-            model.addAttribute("teacher", teacher);
-            logger.debug("Found and edited teacher with id: {}", id);
-        } else {
-            logger.warn("Teacher with id {} not found", id);
-            throw new ResourceNotFoundException("Teacher not found");
-        }
+        model.addAttribute("teacher", teacherService.findById(id));
         logger.debug("Show teacher");
         return "teachers/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Teacher teacher) {
-        teacherService.deleteById(teacher);
+    public String delete(@PathVariable("id") Long id) {
+        teacherService.deleteById(id);
         logger.debug("Deleted teacher");
         return "redirect:/teachers";
     }

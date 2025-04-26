@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LectureTimeService {
@@ -106,12 +105,12 @@ public class LectureTimeService {
         }
     }
 
-    public void deleteById(LectureTime lectureTime) {
-        logger.debug("Delete lectionTime width id: {}", lectureTime.getId());
-        daoLectureTimeInterface.deleteById(lectureTime);
+    public void deleteById(Long id) {
+        logger.debug("Delete lectionTime width id: {}", id);
+        daoLectureTimeInterface.deleteById(id);
     }
 
-    public Optional<LectureTime> findById(Long id) {
+    public LectureTime findById(Long id) {
         logger.debug("Find lectionTime width id: {}", id);
         return daoLectureTimeInterface.findById(id);
     }

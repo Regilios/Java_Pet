@@ -162,7 +162,7 @@ public class Formatter {
     }
 
     public String formatListHoliday(List<Holiday> list) {
-        Integer maxDesc = getMaxCol(list, Holiday::getDescription);
+        Integer maxDesc = getMaxCol(list, Holiday::getDesc);
         Integer maxStart = getMaxCol(list, Holiday::getStartHolidayLocal);
         Integer maxEnd = getMaxCol(list, Holiday::getEndHolidayLocal);
 
@@ -172,7 +172,7 @@ public class Formatter {
                 "START HOLIDAY: %-" + maxStart + "s" + COLUMN +
                 "END HOLIDAY: %-" + maxEnd + "s",
                 holiday.getId(),
-                holiday.getDescription(),
+                holiday.getDesc(),
                 holiday.getStart_holiday(),
                 holiday.getEnd_holiday()
         )).collect(Collectors.joining(System.lineSeparator()));

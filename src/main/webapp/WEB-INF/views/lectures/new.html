@@ -70,7 +70,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="groups">Choose group(s): </label>
-                        <select class="form-control" id="groups" name="groupsId" multiple required>
+                        <select class="form-control" id="groups" name="groups" multiple required>
                             <option th:each="group : ${groups}"
                                     th:value="${group.id}"
                                     th:text="${group.name}">

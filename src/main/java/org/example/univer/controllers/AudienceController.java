@@ -1,6 +1,5 @@
 package org.example.univer.controllers;
 
-import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.Audience;
 import org.example.univer.services.AudienceService;
@@ -9,16 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/audiences")
-@Transactional
 public class AudienceController {
     private static final Logger logger = LoggerFactory.getLogger(HolidayController.class);
     private AudienceService audienceService;
@@ -62,15 +57,7 @@ public class AudienceController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        Optional<Audience> optionalAudience = audienceService.findById(id);
-        if (optionalAudience.isPresent()) {
-            Audience audience = optionalAudience.get();
-            model.addAttribute("audience", audience);
-            logger.debug("Found and edited audience with id: {}", id);
-        } else {
-            logger.warn("Audience with id {} not found", id);
-            throw new ResourceNotFoundException("Audience not found");
-        }
+        model.addAttribute("audience", audienceService.findById(id));
         logger.debug("Edit audience");
         return "audiences/edit";
     }
@@ -91,22 +78,15 @@ public class AudienceController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        Optional<Audience> optionalAudience = audienceService.findById(id);
-        if (optionalAudience.isPresent()) {
-            Audience audience = optionalAudience.get();
-            model.addAttribute("audience", audience);
-            logger.debug("Found and edited audience with id: {}", id);
-        } else {
-            logger.warn("Audience with id {} not found", id);
-            throw new ResourceNotFoundException("Audience not found");
-        }
+        model.addAttribute("audience", audienceService.findById(id));
+        logger.debug("Edited audience");
         return "audiences/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Audience audience) {
-        audienceService.deleteById(audience);
+    public String delete(@PathVariable("id") Long id) {
+        audienceService.deleteById(id);
         logger.debug("Deleted audience");
         return "redirect:/audiences";
     }

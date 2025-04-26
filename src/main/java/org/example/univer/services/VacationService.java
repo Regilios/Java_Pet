@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VacationService {
@@ -109,12 +108,12 @@ public class VacationService {
         }
     }
 
-    public void deleteById(Vacation vacation) {
-        logger.debug("Delete vacation width id: {}", vacation.getId());
-        daoVacationInterface.deleteById(vacation);
+    public void deleteById(Long id) {
+        logger.debug("Delete vacation width id: {}", id);
+        daoVacationInterface.deleteById(id);
     }
 
-    public Optional<Vacation> findById(Long id) {
+    public Vacation findById(Long id) {
         logger.debug("Find vacation width id: {}", id);
         return daoVacationInterface.findById(id);
     }
