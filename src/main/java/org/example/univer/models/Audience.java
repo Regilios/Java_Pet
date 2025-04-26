@@ -1,16 +1,41 @@
 package org.example.univer.models;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.util.Objects;
-
+@NamedQueries({
+        @NamedQuery(
+                name = "findAllAudiences",
+                query = "FROM Audience"
+        ),
+        @NamedQuery(
+                name = "countAudiencesByRoomNumber",
+                query = "SELECT COUNT(*) FROM Audience WHERE roomNumber = :roomNumber"
+        ),
+        @NamedQuery(
+                name = "countAllAudiences",
+                query = "SELECT COUNT(a) FROM Audience a"
+        ),
+        @NamedQuery(
+                name = "findAllAudiencesPaginated",
+                query = "FROM Audience ORDER BY id"
+        )
+})
+@Entity
+@Table(name = "audience")
 public class Audience implements Serializable {
 
-    private static final long serialVersionUID = 82658307871733049L;
+    private static final long serialVersionUID = -82658307871733049L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "room_number", unique = true)
     private Integer roomNumber;
+    @Column(name = "capacity", nullable = false)
     private Integer capacity;
 
-    public Audience(Long id, Integer room, Integer size) {
+    public Audience(Long id, Integer room, Integer capacity) {
         this.id = id;
         this.roomNumber = room;
         this.capacity = capacity;
