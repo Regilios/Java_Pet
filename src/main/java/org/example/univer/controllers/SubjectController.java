@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.Subject;
 import org.example.univer.services.SubjectService;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/subjects")
@@ -53,7 +56,15 @@ public class SubjectController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("subject", subjectService.findById(id));
+        Optional<Subject> subjectOptional = subjectService.findById(id);
+        if (subjectOptional.isPresent()) {
+            Subject subject = subjectOptional.get();
+            model.addAttribute("subject", subject);
+            logger.debug("Found and edited subject with id: {}", id);
+        } else {
+            logger.warn("Subject with id {} not found", id);
+            throw new ResourceNotFoundException("Subject not found");
+        }
         logger.debug("Edit subject");
         return "subjects/edit";
     }
@@ -75,15 +86,23 @@ public class SubjectController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("subject", subjectService.findById(id));
+        Optional<Subject> subjectOptional = subjectService.findById(id);
+        if (subjectOptional.isPresent()) {
+            Subject subject = subjectOptional.get();
+            model.addAttribute("subject", subject);
+            logger.debug("Found and edited subject with id: {}", id);
+        } else {
+            logger.warn("Subject with id {} not found", id);
+            throw new ResourceNotFoundException("Subject not found");
+        }
         logger.debug("Edited student");
         return "subjects/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") Long id) {
-        subjectService.deleteById(id);
+    public String delete(@ModelAttribute Subject subject) {
+        subjectService.deleteById(subject);
         logger.debug("Deleted student");
         return "redirect:/subjects";
     }

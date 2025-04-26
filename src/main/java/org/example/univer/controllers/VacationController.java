@@ -1,7 +1,9 @@
 package org.example.univer.controllers;
 
+import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.Lecture;
+import org.example.univer.models.Teacher;
 import org.example.univer.models.Vacation;
 import org.example.univer.services.LectureService;
 import org.example.univer.services.TeacherService;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/teachers/{teacherId}/vacations")
@@ -37,7 +40,9 @@ public class VacationController {
     public String index(@PathVariable("teacherId") Long teacherId, Model model) {
         model.addAttribute("title", "All Vacations");
         model.addAttribute("vacations", vacationService.findByTeacherId(teacherId));
-        model.addAttribute("teacher", teacherService.findById(teacherId));
+        Teacher teacher = teacherService.findById(teacherId)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        model.addAttribute("teacher", teacher);
         logger.debug("Show all vacations for teacher");
         return "teachers/vacations/index";
     }
@@ -45,7 +50,9 @@ public class VacationController {
     /* Обарботка добавления */
     @GetMapping("/new")
     public String create(@PathVariable("teacherId") Long teacherId, Vacation vacation, Model model) {
-        model.addAttribute("teacher", teacherService.findById(teacherId));
+        Teacher teacher = teacherService.findById(teacherId)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        model.addAttribute("teacher", teacher);
         model.addAttribute(vacation);
         logger.debug("Show create page");
         return "teachers/vacations/new";
@@ -57,7 +64,7 @@ public class VacationController {
                               Model model,
                               RedirectAttributes redirectAttributes) {
         try {
-            vacation.setTeacher(teacherService.findById(teacherId));
+            teacherService.findById(teacherId).ifPresent(vacation::setTeacher);
             List<Lecture> lectures = lectureService.findByTeacherIdAndPeriod(
                     vacation.getTeacher(),
                     vacation.getStartJob(),
@@ -82,8 +89,18 @@ public class VacationController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("teacherId") Long teacherId, @PathVariable("id") Long vacationId, Model model) {
-        model.addAttribute("teacher", teacherService.findById(teacherId));
-        model.addAttribute("vacation", vacationService.findById(vacationId));
+        Teacher teacher = teacherService.findById(teacherId)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        model.addAttribute("teacher", teacher);
+        Optional<Vacation> vacationOptional = vacationService.findById(vacationId);
+        if (vacationOptional.isPresent()) {
+            Vacation vacation = vacationOptional.get();
+            model.addAttribute("vacation", vacation);
+            logger.debug("Found and edited vacation with id: {}", vacationId);
+        } else {
+            logger.warn("Vacation with id {} not found", vacationId);
+            throw new ResourceNotFoundException("Vacation not found");
+        }
         logger.debug("Edit vacation");
         return "teachers/vacations/edit";
     }
@@ -95,7 +112,7 @@ public class VacationController {
                          Model model,
                          RedirectAttributes redirectAttributes) {
         try {
-            vacation.setTeacher(teacherService.findById(teacherId));
+            teacherService.findById(teacherId).ifPresent(vacation::setTeacher);
             List<Lecture> lectures = lectureService.findByTeacherIdAndPeriod(
                     vacation.getTeacher(),
                     vacation.getStartJob(),
@@ -125,8 +142,10 @@ public class VacationController {
                                           Model model,
                                           @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
                                           @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
-        List<Lecture> lectures = lectureService.findByTeacherIdAndPeriod(teacherService.findById(teacherId), start, end);
-        model.addAttribute("teacher", teacherService.findById(teacherId));
+        List<Lecture> lectures = lectureService.findByTeacherIdAndPeriod(teacherService.findById(teacherId).orElse(null), start, end);
+        Teacher teacher = teacherService.findById(teacherId)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        model.addAttribute("teacher", teacher);
         model.addAttribute("lectures", lectures);
         model.addAttribute("start", start);
         model.addAttribute("end", end);
@@ -137,15 +156,25 @@ public class VacationController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("vacation", vacationService.findById(id));
+        Optional<Vacation> vacationOptional = vacationService.findById(id);
+        if (vacationOptional.isPresent()) {
+            Vacation vacation = vacationOptional.get();
+            model.addAttribute("vacation", vacation);
+            logger.debug("Found and edited vacation with id: {}", id);
+        } else {
+            logger.warn("Vacation with id {} not found", id);
+            throw new ResourceNotFoundException("Vacation not found");
+        }
         logger.debug("Edited vacation");
         return "teachers/vacations/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") Long id, @PathVariable("teacherId") Long teacherId) {
-        vacationService.deleteById(id);
+    public String delete(@ModelAttribute Vacation vacation, @PathVariable("teacherId") Long teacherId) {
+        vacationService.findById(vacation.getId()).ifPresentOrElse( vacationService::deleteById, () -> {
+            throw new ResourceNotFoundException("Vacation not found");
+        });
         logger.debug("Deleted teacher");
         return "redirect:/teachers/{teacherId}/vacations";
     }

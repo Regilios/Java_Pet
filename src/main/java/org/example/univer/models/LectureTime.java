@@ -2,19 +2,35 @@ package org.example.univer.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-
+@NamedQueries(
+        {
+                @NamedQuery(
+                        name = "findAllLectureTime",
+                        query = "FROM LectureTime"
+                ),
+                @NamedQuery(
+                        name = "findLectureTime",
+                        query = "SELECT COUNT(*) FROM LectureTime WHERE start_lection=:start_lection AND end_lection=:end_lection "
+                )
+        })
+@Entity
+@Table(name = "lectiontime")
 public class LectureTime implements Serializable {
-    private static final long serialVersionUID = 4670760351992342275L;
+    private static final long serialVersionUID = -4670760351992342275L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "start_lection", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime start_lection;
+    @Column(name = "end_lection", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime end_lection;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public LectureTime(Long id, LocalDateTime start, LocalDateTime end) {
         this.id = id;
@@ -33,9 +49,8 @@ public class LectureTime implements Serializable {
     }
 
     public String getStart_lection() {
-        return start_lection.format(formatter);
+        return start_lection != null ? start_lection.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : null;
     }
-
     public LocalDateTime getStartLocal() {
         return start_lection;
     }
@@ -45,7 +60,7 @@ public class LectureTime implements Serializable {
     }
 
     public String getEnd_lection() {
-        return end_lection.format(formatter);
+        return end_lection != null ? end_lection.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : null;
     }
 
     public LocalDateTime getEndLocal() {
