@@ -32,8 +32,11 @@
                         <td th:text="${lecture.getTimeStart()} + ' ' + ${lecture.getTimeEnd()}">Time</td>
                         <td th:text="${lecture.getAudience().getRoom()}">Room</td>
                         <td>
-                            <ul th:each="group : ${lecture.getGroup()}">
-                                <li th:text="${group?.name}">Group</li>
+                            <ul th:if="${#lists.isEmpty(lecture.groups)}">
+                                <li>No groups assigned</li>
+                            </ul>
+                            <ul th:each="group : ${lecture.groups}">
+                                <li th:text="${group.name}">Group</li>
                             </ul>
                         </td>
                         <td><a class="btn btn-primary" th:href="@{/lectures/{id}(id=${lecture.getId()})}">show</a></td>

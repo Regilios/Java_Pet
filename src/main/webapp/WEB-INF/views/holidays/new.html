@@ -20,15 +20,15 @@
                 <form th:method="POST" th:action="@{/holidays}" th:object="${holiday}">
                     <div class="mb-3">
                         <label class="form-label" for="desc">desc</label>
-                        <input class="form-control" type="text" th:field="*{desc}" id="desc"/>
+                        <input class="form-control" type="text" th:field="*{description}" id="desc"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="start_holiday">start_holiday</label>
-                        <input class="form-control" type="date" th:field="*{start_holiday}" id="start_holiday"/>
+                        <input class="form-control" type="date" th:field="*{startHoliday}" id="start_holiday"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="end_holiday">end_holiday</label>
-                        <input class="form-control" type="date" th:field="*{end_holiday}" id="end_holiday"/>
+                        <input class="form-control" type="date" th:field="*{endHoliday}" id="end_holiday"/>
                     </div>
 
                     <button type="submit" class="btn btn-primary" value="add student">add holiday</button>

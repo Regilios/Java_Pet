@@ -26,8 +26,8 @@
                     <tbody>
                     <tr th:each="lectureTime: ${lectureTimes}">
                         <td><a th:text="${lectureTime.getId()}">Id</a></td>
-                        <td><a th:text="${lectureTime.getStart_lection()}">Start lecture</a></td>
-                        <td><a th:text="${lectureTime.getEnd_lection()}">End lecture</a></td>
+                        <td><a th:text="${lectureTime.getStartLection()}">Start lecture</a></td>
+                        <td><a th:text="${lectureTime.getEndLection()}">End lecture</a></td>
                         <td><a class="btn btn-primary"
                                th:href="@{/lecturetimes/{id}(id=${lectureTime.getId()})}">show</a></td>
                         <td>

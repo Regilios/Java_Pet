@@ -1,54 +1,78 @@
 package org.example.univer.models;
 
+import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-
+@NamedQueries(
+        {
+                @NamedQuery(
+                        name = "findAllHoliday",
+                        query = "FROM Holiday"
+                ),
+                @NamedQuery(
+                        name = "findHolidayByName",
+                        query = "SELECT COUNT(*) FROM Holiday WHERE description=:desc"
+                ),
+                @NamedQuery(
+                        name = "countHolidayByDescript",
+                        query = "SELECT COUNT(*) FROM Holiday WHERE description = :description"
+                ),
+                @NamedQuery(
+                        name = "findHolidayByDate",
+                        query = "SELECT COUNT(h) FROM Holiday h WHERE :date BETWEEN h.startHoliday AND h.endHoliday"
+                )
+        })
+@Entity
+@Table(name = "holiday")
 public class Holiday implements Serializable {
-    private static final long serialVersionUID = 3884262256218360709L;
+    private static final long serialVersionUID = -3884262256218360709L;
+    private static final String DATE_PATTERN_HOLIDAY = "yyyy-MM-dd";
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String desc;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate start_holiday;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate end_holiday;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+    @Column
+    private String description;
+    @Column(name = "start_holiday", nullable = false)
+    @DateTimeFormat(pattern = DATE_PATTERN_HOLIDAY)
+    private LocalDate startHoliday;
+    @Column(name = "end_holiday", nullable = false)
+    @DateTimeFormat(pattern = DATE_PATTERN_HOLIDAY)
+    private LocalDate endHoliday;
 
-    public Holiday(Long id, String desc, LocalDate start_holiday, LocalDate end_holiday) {
+    public Holiday(Long id, String desc, LocalDate startHoliday, LocalDate endHoliday) {
         this.id = id;
-        this.desc = desc;
-        this.start_holiday = start_holiday;
-        this.end_holiday = end_holiday;
+        this.description = desc;
+        this.startHoliday = startHoliday;
+        this.endHoliday = endHoliday;
     }
 
     public Holiday() {}
 
-    public LocalDate getStart_holiday() {
-        return start_holiday;
+    public LocalDate getStartHoliday() {
+        return startHoliday;
     }
 
-    public void setStart_holiday(LocalDate start_holiday) {
-        this.start_holiday = start_holiday;
+    public void setStartHoliday(LocalDate start_holiday) {
+        this.startHoliday = start_holiday;
     }
 
     public String getStartHolidayLocal() {
-        return start_holiday.format(formatter);
+        return  Objects.nonNull(startHoliday) ? startHoliday.format(DateTimeFormatter.ofPattern(DATE_PATTERN_HOLIDAY)) : null;
     }
 
-
-    public LocalDate getEnd_holiday() {
-        return end_holiday;
+    public LocalDate getEndHoliday() {
+        return endHoliday;
     }
 
     public String getEndHolidayLocal() {
-        return end_holiday.format(formatter);
+        return Objects.nonNull(endHoliday) ? endHoliday.format(DateTimeFormatter.ofPattern(DATE_PATTERN_HOLIDAY)) : null;
     }
 
-    public void setEnd_holiday(LocalDate end_holiday) {
-        this.end_holiday = end_holiday;
+    public void setEndHoliday(LocalDate end_holiday) {
+        this.endHoliday = end_holiday;
     }
 
     public Long getId() {
@@ -59,12 +83,12 @@ public class Holiday implements Serializable {
         this.id = id;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String desc) {
+        this.description = desc;
     }
 
     @Override
@@ -72,11 +96,11 @@ public class Holiday implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Holiday holiday = (Holiday) o;
-        return Objects.equals(id, holiday.id) && Objects.equals(desc, holiday.desc) && Objects.equals(start_holiday, holiday.start_holiday) && Objects.equals(end_holiday, holiday.end_holiday);
+        return Objects.equals(id, holiday.id) && Objects.equals(description, holiday.description) && Objects.equals(startHoliday, holiday.startHoliday) && Objects.equals(endHoliday, holiday.endHoliday);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, desc, start_holiday, end_holiday);
+        return Objects.hash(id, description, startHoliday, endHoliday);
     }
 }

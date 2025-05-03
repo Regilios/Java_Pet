@@ -6,6 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface DaoAudienceInterface extends DaoInterfaces<Audience>{
     Page<Audience> findPaginatedAudience(Pageable pageable);
-
     boolean isSingle(Audience audience);
 }

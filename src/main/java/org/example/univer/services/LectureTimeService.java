@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LectureTimeService {
@@ -34,7 +35,7 @@ public class LectureTimeService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lectureTime)) {
-                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStart_lection() + " по " + lectureTime.getEnd_lection() + "уже существует!");
+                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStartLection() + " по " + lectureTime.getEndLection() + "уже существует!");
                 }
                 validateCommon(lectureTime, "создать");
                 break;
@@ -105,12 +106,12 @@ public class LectureTimeService {
         }
     }
 
-    public void deleteById(Long id) {
-        logger.debug("Delete lectionTime width id: {}", id);
-        daoLectureTimeInterface.deleteById(id);
+    public void deleteEntity(LectureTime lectureTime) {
+        logger.debug("Delete lectionTime width id: {}", lectureTime.getId());
+        daoLectureTimeInterface.deleteEntity(lectureTime);
     }
 
-    public LectureTime findById(Long id) {
+    public Optional<LectureTime> findById(Long id) {
         logger.debug("Find lectionTime width id: {}", id);
         return daoLectureTimeInterface.findById(id);
     }

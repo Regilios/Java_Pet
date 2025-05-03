@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface DaoVacationInterface extends DaoInterfaces<Vacation> {
     boolean isSingle(Vacation vacation);
-
     List<Vacation> findByTeacherId(Long id);
 }

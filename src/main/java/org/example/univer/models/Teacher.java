@@ -1,23 +1,48 @@
 package org.example.univer.models;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+@NamedQueries({
+        @NamedQuery(
+                name = "findAllTeachers",
+                query = "FROM Teacher"
+        ),
+        @NamedQuery(
+                name = "countTeachers",
+                query = "SELECT COUNT(t) FROM Teacher t WHERE t.firstName =:firstName AND t.lastName =:lastName"
+        )
+})
+@Entity
+@Table(name = "teacher")
 public class Teacher extends Person implements Serializable {
     private static final long serialVersionUID = -2167704875913420388L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private List<Subject> subject = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "teacher_subject",
+            joinColumns = @JoinColumn(name = "teacher_id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id")
+    )
+    private List<Subject> subjects = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cathedra_id", referencedColumnName = "id")
     private Cathedra cathedra;
+
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Vacation> vacation = new ArrayList<>();
 
-    public Teacher(String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subject, List<Vacation> vacation) {
+    public Teacher(String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subjects, List<Vacation> vacation) {
         super(firstName, lastName, gender, address, email, phone, birthday);
         this.id = id;
         this.cathedra = cathedra;
-        this.subject = subject;
+        this.subjects = subjects;
         this.vacation = vacation;
     }
 
@@ -31,12 +56,12 @@ public class Teacher extends Person implements Serializable {
         this.id = id;
     }
 
-    public List<Subject> getSubject() {
-        return subject;
+    public List<Subject> getSubjects() {
+        return subjects;
     }
 
-    public void setSubject(List<Subject> subject) {
-        this.subject = subject;
+    public void setSubjects(List<Subject> subject) {
+        this.subjects = subject;
     }
 
     public Cathedra getCathedra() {
@@ -65,11 +90,11 @@ public class Teacher extends Person implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Teacher teacher = (Teacher) o;
-        return Objects.equals(id, teacher.id) && Objects.equals(subject, teacher.subject) && Objects.equals(cathedra, teacher.cathedra) && Objects.equals(vacation, teacher.vacation);
+        return Objects.equals(id, teacher.id) && Objects.equals(subjects, teacher.subjects) && Objects.equals(cathedra, teacher.cathedra) && Objects.equals(vacation, teacher.vacation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, subject, cathedra, vacation);
+        return Objects.hash(super.hashCode(), id, subjects, cathedra, vacation);
     }
 }

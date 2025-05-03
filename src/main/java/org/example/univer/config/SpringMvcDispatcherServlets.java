@@ -17,11 +17,11 @@ public class SpringMvcDispatcherServlets extends AbstractAnnotationConfigDispatc
         return new Class[]{SpringWebConfig.class};
     }
 
-
     @Override
     protected String[] getServletMappings() {
         return new String[]{"/"};
     }
+
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         super.onStartup(servletContext);
