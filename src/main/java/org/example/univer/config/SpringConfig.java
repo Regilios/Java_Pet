@@ -21,8 +21,8 @@ import java.util.Properties;
 @PropertySource("classpath:postgress.properties")
 @EnableTransactionManagement // Включение управления транзакциями
 public class SpringConfig {
-
-    private String jndiUrl = "java:comp/env/jdbc/MyDataSource";
+    @Value("${jndiUrl}")
+    private String jndiUrl;
 
     @Value("classpath:schema.sql")
     private Resource schema;

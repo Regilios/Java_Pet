@@ -12,11 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 @Transactional
 @Component
 public class HibernateLecture implements DaoLectureInterface {
@@ -46,7 +44,7 @@ public class HibernateLecture implements DaoLectureInterface {
     }
 
     @Override
-    public void deleteById(Lecture lecture) {
+    public void deleteEntity(Lecture lecture) {
         logger.debug("Lecture with id {} was deleted", lecture.getId());
         sessionFactory.getCurrentSession().remove(lecture);
     }
@@ -74,7 +72,10 @@ public class HibernateLecture implements DaoLectureInterface {
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
-        logger.debug("Found {} audiences", lectures.size());
+        logger.debug("Found {} lectures. Returning page {} with page size {}",
+                lectures.size(),
+                pageable.getPageNumber() + 1,
+                pageable.getPageSize());
 
         return new PageImpl<>(lectures, pageable, total);
     }

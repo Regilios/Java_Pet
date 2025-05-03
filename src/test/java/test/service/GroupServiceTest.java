@@ -73,9 +73,9 @@ public class GroupServiceTest {
     @Test
     void deleteById_deletedGroup_deleted() {
         Group group = new Group();
-        groupService.deleteById(group);
+        groupService.deleteEntity(group);
 
-        verify(mockGroup, times(1)).deleteById(group);
+        verify(mockGroup, times(1)).deleteEntity(group);
     }
 
     @Test

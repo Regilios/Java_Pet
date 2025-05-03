@@ -59,7 +59,7 @@ public class HibernateLectureTimeTest {
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(1L);
 
-        mockLectureTime.deleteById(lectureTime);
+        mockLectureTime.deleteEntity(lectureTime);
 
         verify(session).remove(lectureTime);
     }
@@ -98,8 +98,8 @@ public class HibernateLectureTimeTest {
     void whenCheckIsSingleLectureTime_thenReturnsCorrectResult() {
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(1L);
-        lectureTime.setStart_lection(LocalDateTime.of(2025,10,10,10,0,0));
-        lectureTime.setEnd_lection(LocalDateTime.of(2025,10,10,11,0,0));
+        lectureTime.setStartLection(LocalDateTime.of(2025,10,10,10,0,0));
+        lectureTime.setEndLection(LocalDateTime.of(2025,10,10,11,0,0));
 
         Query<Long> query = mock(Query.class);
         when(session.createNamedQuery("findLectureTime", Long.class)).thenReturn(query);

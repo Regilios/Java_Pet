@@ -112,9 +112,9 @@ public class TeacherService {
         }
     }
 
-    public void deleteById(Teacher teacher) {
+    public void deleteEntity(Teacher teacher) {
         logger.debug("Delete teacher width id: {}", teacher.getId());
-        daoTeacherInterface.deleteById(teacher);
+        daoTeacherInterface.deleteEntity(teacher);
     }
 
     public Optional<Teacher> findById(Long id) {

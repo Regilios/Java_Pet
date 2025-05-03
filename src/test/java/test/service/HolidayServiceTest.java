@@ -38,8 +38,8 @@ public class HolidayServiceTest {
     void create_holiday10dayStartMonday_createHoliday() {
         Holiday holiday = new Holiday();
         holiday.setDescription("test");
-        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
-        holiday.setEnd_holiday(LocalDate.parse("2024-01-14"));
+        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-14"));
 
         when(mockHoliday.isSingle(holiday)).thenReturn(false);
         holidayService.create(holiday);
@@ -51,8 +51,8 @@ public class HolidayServiceTest {
     void create_holiday10dayStartThursday_throwException() {
         Holiday holiday = new Holiday();
         holiday.setDescription("test");
-        holiday.setStart_holiday(LocalDate.parse("2024-01-02"));
-        holiday.setEnd_holiday(LocalDate.parse("2024-01-14"));
+        holiday.setStartHoliday(LocalDate.parse("2024-01-02"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-14"));
 
         when(mockHoliday.isSingle(holiday)).thenReturn(false);
         assertThrows(HolidaysExeption.class, () -> {
@@ -75,9 +75,9 @@ public class HolidayServiceTest {
     @Test
     void deleteById_deletedHoliday_deleted() {
         Holiday holiday = new Holiday();
-        holidayService.deleteById(holiday);
+        holidayService.deleteEntity(holiday);
 
-        verify(mockHoliday, times(1)).deleteById(holiday);
+        verify(mockHoliday, times(1)).deleteEntity(holiday);
     }
 
     @Test

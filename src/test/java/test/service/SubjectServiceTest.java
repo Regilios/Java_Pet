@@ -72,9 +72,9 @@ public class SubjectServiceTest {
     void deleteById_deletedSubject_deleted() {
         Subject subject = new Subject();
 
-        subjectService.deleteById(subject);
+        subjectService.deleteEntity(subject);
 
-        verify(mockSubject, times(1)).deleteById(subject);
+        verify(mockSubject, times(1)).deleteEntity(subject);
     }
 
     @Test

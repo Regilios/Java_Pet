@@ -68,19 +68,19 @@ public class LectureService {
                     throw new InvalidParameterException("Невозможно создать лекцию! Лекция с такими параметрами уже существует!");
                 }
                 if (isAudienceFreeForCreate(lecture)) {
-                    throw new LectureExeption("Невозможно создать лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStart_lection());
+                    throw new LectureExeption("Невозможно создать лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStartLection());
                 }
                 if (!isTeacherBusyForCreate(lecture)) {
-                    throw new LectureExeption("Невозможно создать лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStart_lection());
+                    throw new LectureExeption("Невозможно создать лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLection());
                 }
                 validateCommon(lecture, "создать");
                 break;
             case METHOD_UPDATE:
                 if (isAudienceFreeForUpdate(lecture)) {
-                    throw new LectureExeption("Невозможно обновить лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStart_lection());
+                    throw new LectureExeption("Невозможно обновить лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStartLection());
                 }
                 if (!isTeacherBusyForUpdate(lecture)) {
-                    throw new LectureExeption("Невозможно обновить лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStart_lection());
+                    throw new LectureExeption("Невозможно обновить лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLection());
                 }
                 validateCommon(lecture, "обновить");
                 break;
@@ -161,9 +161,9 @@ public class LectureService {
         }
     }
 
-    public void deleteById(Lecture lecture) {
+    public void deleteEntity(Lecture lecture) {
         logger.debug("Delete lecture width id: {}", lecture.getId());
-        daoLectureInterface.deleteById(lecture);
+        daoLectureInterface.deleteEntity(lecture);
     }
 
     public Optional<Lecture> findById(Long id) {

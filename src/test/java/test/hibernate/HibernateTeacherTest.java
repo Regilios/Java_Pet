@@ -56,7 +56,7 @@ public class HibernateTeacherTest {
         Teacher teacher = new Teacher();
         teacher.setId(1L);
 
-        mockTeacher.deleteById(teacher);
+        mockTeacher.deleteEntity(teacher);
         verify(session).remove(teacher);
     }
 

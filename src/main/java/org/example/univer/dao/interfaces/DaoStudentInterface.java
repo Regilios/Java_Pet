@@ -6,8 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface DaoStudentInterface extends DaoInterfaces<Student> {
      Page<Student> findPaginatedStudents(Pageable pageable);
-
      boolean isSingle(Student student);
-
      Integer checkGroupSize(Student student);
 }

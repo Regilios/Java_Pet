@@ -1,7 +1,6 @@
 package org.example.univer.models;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.Objects;
 @NamedQueries({

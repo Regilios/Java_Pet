@@ -71,9 +71,9 @@ public class CathedraServiceTest {
     @Test
     void deleteById_deletedCathedra_deleted() {
         Cathedra cathedra = new Cathedra();
-        cathedraService.deleteById(cathedra);
+        cathedraService.deleteEntity(cathedra);
 
-        verify(mockCathedra, times(1)).deleteById(cathedra);
+        verify(mockCathedra, times(1)).deleteEntity(cathedra);
     }
 
     @Test

@@ -56,7 +56,7 @@ public class HibernateCathedraTest {
         Cathedra cathedra = new Cathedra();
         cathedra.setId(1L);
 
-        mockCthedra.deleteById(cathedra);
+        mockCthedra.deleteEntity(cathedra);
         verify(session).remove(cathedra);
     }
 

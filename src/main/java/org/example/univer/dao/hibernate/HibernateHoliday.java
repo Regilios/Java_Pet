@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 @Component
 @Transactional
@@ -32,7 +32,7 @@ public class HibernateHoliday implements DaoHolidayInterface {
                 .createNamedQuery("countHolidayByDescript", Long.class)
                 .setParameter("description", holiday.getDescription())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class HibernateHoliday implements DaoHolidayInterface {
                 .createNamedQuery("findHolidayByDate", Long.class)
                 .setParameter("date", date)
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class HibernateHoliday implements DaoHolidayInterface {
     }
 
     @Override
-    public void deleteById(Holiday holiday) {
+    public void deleteEntity(Holiday holiday) {
         logger.debug("Audience with id {} was deleted", holiday.getId());
         sessionFactory.getCurrentSession().remove(holiday);
     }

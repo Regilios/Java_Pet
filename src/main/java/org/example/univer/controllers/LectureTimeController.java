@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/lecturetimes")
@@ -55,8 +54,8 @@ public class LectureTimeController {
             LocalDateTime endLection = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
 
             LectureTime lectureTime = new LectureTime();
-            lectureTime.setStart_lection(startLection);
-            lectureTime.setEnd_lection(endLection);
+            lectureTime.setStartLection(startLection);
+            lectureTime.setEndLection(endLection);
             lectureTimeService.create(lectureTime);
             logger.debug("Create new group. Id {}", lectureTime.getId());
         } catch (ServiceException e) {
@@ -70,15 +69,14 @@ public class LectureTimeController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        Optional<LectureTime> lectureTimeOptional = lectureTimeService.findById(id);
-        if (lectureTimeOptional.isPresent()) {
-            LectureTime lectureTime = lectureTimeOptional.get();
-            model.addAttribute("lectureTime", lectureTime);
-            logger.debug("Found and edited lectureTime with id: {}", id);
-        } else {
-            logger.warn("LectureTime with id {} not found", id);
-            throw new ResourceNotFoundException("LectureTime not found");
-        }
+        lectureTimeService.findById(id).ifPresentOrElse(lectureTime -> {
+                    model.addAttribute("lectureTime", lectureTime);
+                    logger.debug("Found and edited lectureTime with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("LectureTime not found");
+                }
+        );
+
         logger.debug("Edit lectureTime");
         return "lecturetimes/edit";
     }
@@ -95,8 +93,8 @@ public class LectureTimeController {
 
             LectureTime lectureTime = new LectureTime();
             lectureTime.setId(id);
-            lectureTime.setStart_lection(startLection);
-            lectureTime.setEnd_lection(endLection);
+            lectureTime.setStartLection(startLection);
+            lectureTime.setEndLection(endLection);
             lectureTimeService.update(lectureTime);
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -113,15 +111,14 @@ public class LectureTimeController {
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         model.addAttribute("lectureTime", lectureTimeService.findById(id));
-        Optional<LectureTime> lectureTimeOptional = lectureTimeService.findById(id);
-        if (lectureTimeOptional.isPresent()) {
-            LectureTime lectureTime = lectureTimeOptional.get();
-            model.addAttribute("lectureTime", lectureTime);
-            logger.debug("Found and edited lectureTime with id: {}", id);
-        } else {
-            logger.warn("LectureTime with id {} not found", id);
-            throw new ResourceNotFoundException("LectureTime not found");
-        }
+        lectureTimeService.findById(id).ifPresentOrElse(lectureTime -> {
+                    model.addAttribute("lectureTime", lectureTime);
+                    logger.debug("Found and edited lectureTime with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("LectureTime not found");
+                }
+        );
+
         logger.debug("Edited lectureTime");
         return "lecturetimes/show";
     }
@@ -129,7 +126,7 @@ public class LectureTimeController {
     /* Обарботка удаления */
     @DeleteMapping("{id}")
     public String delete(@ModelAttribute LectureTime lectureTime) {
-        lectureTimeService.deleteById(lectureTime);
+        lectureTimeService.deleteEntity(lectureTime);
         logger.debug("Deleted lectureTime");
         return "redirect:/lecturetimes";
     }

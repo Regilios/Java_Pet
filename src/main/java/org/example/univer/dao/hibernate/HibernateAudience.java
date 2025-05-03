@@ -12,10 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-
 @Component
 @Transactional
 public class HibernateAudience implements DaoAudienceInterface {
@@ -32,7 +31,6 @@ public class HibernateAudience implements DaoAudienceInterface {
     @Override
     public List<Audience> findAll() {
         logger.debug("Find all audiences");
-        // return sessionFactory.getCurrentSession().getNamedQuery("findAllAudiences").getResultList();
         return sessionFactory.getCurrentSession().createNamedQuery("findAllAudiences", Audience.class).getResultList();
     }
 
@@ -40,7 +38,6 @@ public class HibernateAudience implements DaoAudienceInterface {
     public void create(Audience audience) {
         logger.debug("create audience {}", audience);
         Session session = sessionFactory.getCurrentSession();
-        // session.save(audience);
         session.persist(audience);
     }
 
@@ -52,9 +49,8 @@ public class HibernateAudience implements DaoAudienceInterface {
     }
 
     @Override
-    public void deleteById(Audience audience) {
+    public void deleteEntity(Audience audience) {
          logger.debug("Audience with id {} was deleted", audience.getId());
-         // sessionFactory.getCurrentSession().delete(audience);
          sessionFactory.getCurrentSession().remove(audience);
     }
 
@@ -72,7 +68,11 @@ public class HibernateAudience implements DaoAudienceInterface {
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
-        logger.debug("Found {} audiences", audiences.size());
+
+        logger.debug("Found {} audiences. Returning page {} with page size {}",
+                audiences.size(),
+                pageable.getPageNumber() + 1,
+                pageable.getPageSize());
 
         return new PageImpl<>(audiences, pageable, total);
     }
@@ -83,6 +83,6 @@ public class HibernateAudience implements DaoAudienceInterface {
                 .createNamedQuery("countAudiencesByRoomNumber", Long.class)
                 .setParameter("roomNumber", audience.getRoom())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 }

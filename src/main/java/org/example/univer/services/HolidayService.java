@@ -56,10 +56,10 @@ public class HolidayService {
     }
 
     private void validateCommon(Holiday holiday, String action) {
-        if (!holiday.getStart_holiday().getDayOfWeek().equals(DayOfWeek.valueOf(startDayHoliday))) {
+        if (!holiday.getStartHoliday().getDayOfWeek().equals(DayOfWeek.valueOf(startDayHoliday))) {
             throw new HolidaysExeption("Невозможно " + action + " каникулы! Каникулы должны начинаться с " + startDayHoliday + "!");
         }
-        if (ChronoUnit.DAYS.between(holiday.getStart_holiday(), holiday.getEnd_holiday()) > maxDayHoliday) {
+        if (ChronoUnit.DAYS.between(holiday.getStartHoliday(), holiday.getEndHoliday()) > maxDayHoliday) {
             throw new HolidaysExeption("Невозможно " + action + " каникулы! Каникулы не должны превышать заданное количество дней отдыха: " + maxDayHoliday + "!");
         }
     }
@@ -114,9 +114,9 @@ public class HolidayService {
         logger.debug("Holiday updated");
     }
 
-    public void deleteById(Holiday holiday) {
+    public void deleteEntity(Holiday holiday) {
         logger.debug("Delete holiday width id: {}", holiday.getId());
-        daoHolidayInterface.deleteById(holiday);
+        daoHolidayInterface.deleteEntity(holiday);
     }
 
     public Optional<Holiday> findById(Long id) {

@@ -48,14 +48,14 @@ public class HolidayControllerTest {
     public void whenGetAllHolidays_thenAllHolidaysReturned() throws Exception {
         Holiday holiday1 = new Holiday();
         holiday1.setDescription("test");
-        holiday1.setStart_holiday(LocalDate.parse("2024-01-01"));
-        holiday1.setEnd_holiday(LocalDate.parse("2024-01-30"));
+        holiday1.setStartHoliday(LocalDate.parse("2024-01-01"));
+        holiday1.setEndHoliday(LocalDate.parse("2024-01-30"));
         holidayService.create(holiday1);
 
         Holiday holiday2 = new Holiday();
         holiday2.setDescription("test");
-        holiday2.setStart_holiday(LocalDate.parse("2024-01-02"));
-        holiday2.setEnd_holiday(LocalDate.parse("2024-02-03"));
+        holiday2.setStartHoliday(LocalDate.parse("2024-01-02"));
+        holiday2.setEndHoliday(LocalDate.parse("2024-02-03"));
         holidayService.create(holiday2);
 
         List<Holiday> holidays = Arrays.asList(holiday1, holiday2);
@@ -74,8 +74,8 @@ public class HolidayControllerTest {
     public void whenGetOneHoliday_thenOneGroupReturned() throws Exception {
         Holiday holiday = new Holiday();
         holiday.setDescription("test");
-        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
-        holiday.setEnd_holiday(LocalDate.parse("2024-01-30"));
+        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
         holidayService.create(holiday);
 
         when(holidayService.findById(1L)).thenReturn(Optional.of(holiday));
@@ -102,8 +102,8 @@ public class HolidayControllerTest {
     void whenEditHoliday_thenHolidayFound() throws Exception {
         Holiday holiday = new Holiday();
         holiday.setDescription("test");
-        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
-        holiday.setEnd_holiday(LocalDate.parse("2024-01-30"));
+        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
 
         when(holidayService.findById(1L)).thenReturn(Optional.of(holiday));
 
@@ -122,8 +122,8 @@ public class HolidayControllerTest {
     public void whenUpdateHoliday_thenHolidayUpdated() throws Exception {
         Holiday holiday = new Holiday();
         holiday.setDescription("test");
-        holiday.setStart_holiday(LocalDate.parse("2024-01-01"));
-        holiday.setEnd_holiday(LocalDate.parse("2024-01-30"));
+        holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
+        holiday.setEndHoliday(LocalDate.parse("2024-01-30"));
 
         mockMvc.perform(patch("/holidays/{id}", 1)
                         .flashAttr("holiday", holiday))
@@ -141,7 +141,7 @@ public class HolidayControllerTest {
         mockMvc.perform(delete("/holidays/{id}", 1))
                 .andExpect(redirectedUrl("/holidays"));
 
-        verify(holidayService).deleteById(holiday);
+        verify(holidayService).deleteEntity(holiday);
     }
 
 }

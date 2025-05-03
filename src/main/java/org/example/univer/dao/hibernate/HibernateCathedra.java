@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 @Component
 @Transactional
@@ -30,7 +30,7 @@ public class HibernateCathedra implements DaoCathedraInterface {
                 .createNamedQuery("findCathedraByName", Long.class)
                 .setParameter("name", cathedra.getName())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class HibernateCathedra implements DaoCathedraInterface {
     }
 
     @Override
-    public void deleteById(Cathedra cathedra) {
+    public void deleteEntity(Cathedra cathedra) {
         logger.debug("Cathedra with id {} was deleted", cathedra.getId());
         sessionFactory.getCurrentSession().remove(cathedra);
     }

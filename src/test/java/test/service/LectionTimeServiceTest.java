@@ -38,8 +38,8 @@ public class LectionTimeServiceTest {
     @Test
     void create_lectionTimeDuration30min_and_correctTime_createLectionTime() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2024-02-01 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2024-02-01 16:30:00", formatter1));
 
         when(mockLectureTime.isSingle(lectureTime)).thenReturn(false);
         lectureTimeService.create(lectureTime);
@@ -50,8 +50,8 @@ public class LectionTimeServiceTest {
     @Test
     void create_lectionTimeDuration20min_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2024-02-01 14:00:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2024-02-01 14:20:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2024-02-01 14:00:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2024-02-01 14:20:00", formatter1));
 
         when(mockLectureTime.isSingle(lectureTime)).thenReturn(false);
         assertThrows(LectureTimeExeption.class, () -> {
@@ -64,8 +64,8 @@ public class LectionTimeServiceTest {
     @Test
     void create_lectionTimeDuration30min_and_notCorrectTimePeriod_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2024-02-01 15:00:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2024-02-01 15:00:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
 
         when(mockLectureTime.isSingle(lectureTime)).thenReturn(false);
         assertThrows(LectureTimeExeption.class, () -> {
@@ -88,9 +88,9 @@ public class LectionTimeServiceTest {
     @Test
     void deleteById_deletedLectionTime_deleted() {
         LectureTime lectureTime = new LectureTime();
-        lectureTimeService.deleteById(lectureTime);
+        lectureTimeService.deleteEntity(lectureTime);
 
-        verify(mockLectureTime, times(1)).deleteById(lectureTime);
+        verify(mockLectureTime, times(1)).deleteEntity(lectureTime);
     }
 
     @Test

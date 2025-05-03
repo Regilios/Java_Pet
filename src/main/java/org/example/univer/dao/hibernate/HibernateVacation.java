@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 @Transactional
 @Component
@@ -42,7 +42,7 @@ public class HibernateVacation implements DaoVacationInterface {
     }
 
     @Override
-    public void deleteById(Vacation vacation) {
+    public void deleteEntity(Vacation vacation) {
         logger.debug("Vacation with id {} was deleted", vacation.getId());
         sessionFactory.getCurrentSession().remove(vacation);
     }
@@ -66,7 +66,7 @@ public class HibernateVacation implements DaoVacationInterface {
                 .setParameter("endJob",vacation.getEndJob())
                 .setParameter("teacher_id",vacation.getTeacher().getId())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 
     @Override

@@ -57,7 +57,7 @@ public class HibernateSubjectTest {
         Subject subject = new Subject();
         subject.setId(1L);
 
-        mockSubject.deleteById(subject);
+        mockSubject.deleteEntity(subject);
         verify(session).remove(subject);
     }
 

@@ -97,9 +97,9 @@ public class GroupService {
         }
     }
 
-    public void deleteById(Group group) {
+    public void deleteEntity(Group group) {
         logger.debug("Delete group width id: {}", group.getId());
-        daoGroupInterface.deleteById(group);
+        daoGroupInterface.deleteEntity(group);
     }
 
     public Optional<Group> findById(Long id) {

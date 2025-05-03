@@ -12,10 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-
 @Component
 @Transactional
 public class HibernateStudent implements DaoStudentInterface {
@@ -43,7 +42,7 @@ public class HibernateStudent implements DaoStudentInterface {
     }
 
     @Override
-    public void deleteById(Student student) {
+    public void deleteEntity(Student student) {
         logger.debug("Student with id {} was deleted", student.getId());
         sessionFactory.getCurrentSession().remove(student);
     }
@@ -80,7 +79,7 @@ public class HibernateStudent implements DaoStudentInterface {
                 .setParameter("firstName", student.getFirstName())
                 .setParameter("lastName", student.getLastName())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 
     @Override

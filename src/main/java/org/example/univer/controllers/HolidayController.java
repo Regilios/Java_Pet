@@ -11,8 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/holidays")
 public class HolidayController {
@@ -57,15 +55,14 @@ public class HolidayController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        Optional<Holiday> holidayOptional = holidayService.findById(id);
-        if (holidayOptional.isPresent()) {
-            Holiday holiday = holidayOptional.get();
-            model.addAttribute("holiday", holiday);
-            logger.debug("Found and edited holiday with id: {}", id);
-        } else {
-            logger.warn("Holiday with id {} not found", id);
-            throw new ResourceNotFoundException("Holiday not found");
-        }
+        holidayService.findById(id).ifPresentOrElse(holiday -> {
+                    model.addAttribute("holiday", holiday);
+                    logger.debug("Found and edited holiday with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Holiday not found");
+                }
+        );
+
         logger.debug("Edit holiday");
         return "holidays/edit";
     }
@@ -86,15 +83,13 @@ public class HolidayController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        Optional<Holiday> holidayOptional = holidayService.findById(id);
-        if (holidayOptional.isPresent()) {
-            Holiday holiday = holidayOptional.get();
-            model.addAttribute("holiday", holiday);
-            logger.debug("Found and edited holiday with id: {}", id);
-        } else {
-            logger.warn("Holiday with id {} not found", id);
-            throw new ResourceNotFoundException("Holiday not found");
-        }
+        holidayService.findById(id).ifPresentOrElse(holiday -> {
+                     model.addAttribute("holiday", holiday);
+                    logger.debug("Found and edited holiday with id: {}", id);
+                }, () -> {
+                     throw new ResourceNotFoundException("Holiday not found");
+                }
+        );
         logger.debug("Edited holiday");
         return "holidays/show";
     }
@@ -102,7 +97,7 @@ public class HolidayController {
     /* Обарботка удаления */
     @DeleteMapping("{id}")
     public String delete(@ModelAttribute Holiday holiday) {
-        holidayService.deleteById(holiday);
+        holidayService.deleteEntity(holiday);
         logger.debug("Deleted holiday");
         return "redirect:/holidays";
     }

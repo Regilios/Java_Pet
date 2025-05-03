@@ -110,9 +110,9 @@ public class CathedraService {
         logger.debug("Cathedra updated");
     }
 
-    public void deleteById(Cathedra cathedra) {
+    public void deleteEntity(Cathedra cathedra) {
         logger.debug("Delete cathedra width id: {}", cathedra.getId());
-        daoCathedraInterface.deleteById(cathedra);
+        daoCathedraInterface.deleteEntity(cathedra);
     }
 
     public Optional<Cathedra> findById(Long id) {

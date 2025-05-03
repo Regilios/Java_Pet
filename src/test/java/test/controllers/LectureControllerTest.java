@@ -86,16 +86,16 @@ public class LectureControllerTest {
         subject.setDescription("Test Test Test Test Test Test Test");
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
         audience.setRoom(1);
         audience.setCapacity(100);
 
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStart_lection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEnd_lection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStartLection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEndLection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         Lecture lecture1 = new Lecture();
         lecture1.setCathedra(cathedra);
@@ -144,16 +144,16 @@ public class LectureControllerTest {
         subject.setDescription("Test Test Test Test Test Test Test");
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
         audience.setRoom(1);
         audience.setCapacity(100);
 
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStart_lection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEnd_lection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStartLection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEndLection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         Lecture lecture = new Lecture();
         lecture.setCathedra(cathedra);
@@ -202,16 +202,16 @@ public class LectureControllerTest {
         subject.setDescription("Test Test Test Test Test Test Test");
 
         LectureTime time = new LectureTime();
-        time.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        time.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        time.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        time.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
         audience.setRoom(1);
         audience.setCapacity(100);
 
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStart_lection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEnd_lection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStartLection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEndLection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         when(teacherService.findAll()).thenReturn(Arrays.asList(teacher));
         when(cathedraService.findAll()).thenReturn(Arrays.asList(cathedra));
@@ -265,16 +265,16 @@ public class LectureControllerTest {
         subject.setDescription("Test Test Test Test Test Test Test");
 
         LectureTime time = new LectureTime();
-        time.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        time.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        time.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        time.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
         audience.setRoom(1);
         audience.setCapacity(100);
 
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStart_lection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEnd_lection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStartLection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEndLection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         List<Cathedra> cathedraList = Arrays.asList(cathedra);
         List<Teacher> teacherList = Arrays.asList(teacher);
@@ -345,16 +345,16 @@ public class LectureControllerTest {
         subject.setDescription("Test Test Test Test Test Test Test");
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
         audience.setRoom(1);
         audience.setCapacity(100);
 
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStart_lection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEnd_lection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStartLection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEndLection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         Group group1 = new Group();
         group1.setName("Абривель");
@@ -389,6 +389,6 @@ public class LectureControllerTest {
         mockMvc.perform(delete("/lectures/{id}", 1))
                 .andExpect(redirectedUrl("/lectures"));
 
-        verify(lectureService).deleteById(lecture);
+        verify(lectureService).deleteEntity(lecture);
     }
 }

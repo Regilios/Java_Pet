@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 @Component
 @Transactional
@@ -29,7 +29,7 @@ public class HibernateGroup implements DaoGroupInterface {
                 .createNamedQuery("findGroupByName", Long.class)
                 .setParameter("name", group.getName())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class HibernateGroup implements DaoGroupInterface {
     }
 
     @Override
-    public void deleteById(Group group) {
+    public void deleteEntity(Group group) {
         logger.debug("Group with id {} was deleted", group.getId());
         sessionFactory.getCurrentSession().remove(group);
     }

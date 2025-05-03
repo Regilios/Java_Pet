@@ -197,7 +197,7 @@ public class StudentsControllerTest {
                 .andExpect(redirectedUrl("/students"));
 
         ArgumentCaptor<Student> studentArgumentCaptor = ArgumentCaptor.forClass(Student.class);
-        verify(studentService).deleteById(studentArgumentCaptor.capture());
+        verify(studentService).deleteEntity(studentArgumentCaptor.capture());
 
         Student actual = studentArgumentCaptor.getValue();
         assertEquals(1L, actual.getId());

@@ -62,7 +62,7 @@ public class HibernateAudienceTest {
         Audience audience = new Audience();
         audience.setId(1L);
 
-        mockAudience.deleteById(audience);
+        mockAudience.deleteEntity(audience);
 
         verify(session).remove(audience);
     }

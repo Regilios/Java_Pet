@@ -33,26 +33,27 @@ public class SpringWebConfig implements WebMvcConfigurer {
     private final ApplicationContext applicationContext;
     @Autowired
     SessionFactory sessionFactory;
-
     @Autowired
     private SubjectConverter subjectConverter;
     @Autowired
     private GroupsConverter groupsConverter;
     @Autowired
     private TeacherConverter teacherConverter;
+    @Autowired
+    public SpringWebConfig(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(subjectConverter);
         registry.addConverter(groupsConverter);
         registry.addConverter(teacherConverter);
     }
-    @Autowired
-    public SpringWebConfig(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 
     @Value("${defaultPageSize}")
     private int defaultPageSize;
+
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();

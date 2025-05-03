@@ -58,7 +58,7 @@ public class HibernateVacationTest {
         Vacation vacation = new Vacation();
         vacation.setId(1L);
 
-        mockVacation.deleteById(vacation);
+        mockVacation.deleteEntity(vacation);
         verify(session).remove(vacation);
     }
 

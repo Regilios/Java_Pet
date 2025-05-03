@@ -46,13 +46,13 @@ public class LectureTimeControllerTest {
     @Test
     public void whenGetAllLectureTimes_thenAllLectureTimesReturned() throws Exception {
         LectureTime lectureTime1 = new LectureTime();
-        lectureTime1.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime1.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime1.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime1.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
         lectureTimeService.create(lectureTime1);
 
         LectureTime lectureTime2 = new LectureTime();
-        lectureTime2.setStart_lection(LocalDateTime.parse("2026-02-02 14:30:00", formatter1));
-        lectureTime2.setEnd_lection(LocalDateTime.parse("2026-02-02 16:30:00", formatter1));
+        lectureTime2.setStartLection(LocalDateTime.parse("2026-02-02 14:30:00", formatter1));
+        lectureTime2.setEndLection(LocalDateTime.parse("2026-02-02 16:30:00", formatter1));
         lectureTimeService.create(lectureTime2);
 
         List<LectureTime> lectureTimes = Arrays.asList(lectureTime1, lectureTime2);
@@ -70,8 +70,8 @@ public class LectureTimeControllerTest {
     @Test
     public void whenGetOneLectureTime_thenOneLectureTimeReturned() throws Exception {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
         lectureTimeService.create(lectureTime);
 
         when(lectureTimeService.findById(1L)).thenReturn(Optional.of(lectureTime));
@@ -97,8 +97,8 @@ public class LectureTimeControllerTest {
     @Test
     void whenEditLectureTime_thenLectureTimeFound() throws Exception {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         when(lectureTimeService.findById(1L)).thenReturn(Optional.of(lectureTime));
 
@@ -135,8 +135,8 @@ public class LectureTimeControllerTest {
 
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(id);
-        lectureTime.setStart_lection(startLection);
-        lectureTime.setEnd_lection(endLection);
+        lectureTime.setStartLection(startLection);
+        lectureTime.setEndLection(endLection);
 
         verify(lectureTimeService, times(1)).update(lectureTime);
     }
@@ -148,6 +148,6 @@ public class LectureTimeControllerTest {
         mockMvc.perform(delete("/lecturetimes/{id}", 1))
                 .andExpect(redirectedUrl("/lecturetimes"));
 
-        verify(lectureTimeService).deleteById(lectureTime);
+        verify(lectureTimeService).deleteEntity(lectureTime);
     }
 }

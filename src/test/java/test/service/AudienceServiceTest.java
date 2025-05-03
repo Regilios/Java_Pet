@@ -74,9 +74,9 @@ public class AudienceServiceTest {
     @Test
     void deleteById_deletedAudience_deleted() {
         Audience audience = new Audience();
-        audienceService.deleteById(audience);
+        audienceService.deleteEntity(audience);
 
-        verify(mockAudience, times(1)).deleteById(audience);
+        verify(mockAudience, times(1)).deleteEntity(audience);
     }
 
     @Test

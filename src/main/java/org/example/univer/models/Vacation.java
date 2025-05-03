@@ -1,7 +1,6 @@
 package org.example.univer.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -25,16 +24,17 @@ import java.util.Objects;
 @Table(name = "vacation")
 public class Vacation implements Serializable {
     private static final long serialVersionUID = -2595365395005712101L;
+    private static final String DATE_PATTERN_VACATION = "yyyy-MM-dd";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "startJob", nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     private LocalDate startJob;
 
     @Column(name = "endJob", nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     private LocalDate endJob;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -63,7 +63,7 @@ public class Vacation implements Serializable {
     }
 
     public String getStartJobString() {
-        return startJob != null ? startJob.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
+        return Objects.nonNull(startJob) ? startJob.format(DateTimeFormatter.ofPattern(DATE_PATTERN_VACATION)) : null;
     }
 
     public LocalDate getStartJob() {
@@ -75,7 +75,7 @@ public class Vacation implements Serializable {
     }
 
     public String getEndJobString() {
-        return endJob != null ? endJob.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
+        return Objects.nonNull(endJob) ? endJob.format(DateTimeFormatter.ofPattern(DATE_PATTERN_VACATION)) : null;
     }
 
     public LocalDate getEndJob() {

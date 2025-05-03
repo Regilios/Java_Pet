@@ -104,9 +104,9 @@ public class AudienceService {
         }
     }
 
-    public void deleteById(Audience audience) {
+    public void deleteEntity(Audience audience) {
         logger.debug("Delete audience width id: {}", audience.getId());
-        daoAudienceInterfaces.deleteById(audience);
+        daoAudienceInterfaces.deleteEntity(audience);
     }
 
     public Optional<Audience> findById(Long id) {

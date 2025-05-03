@@ -109,9 +109,9 @@ public class VacationService {
         }
     }
 
-    public void deleteById(Vacation vacation) {
+    public void deleteEntity(Vacation vacation) {
         logger.debug("Delete vacation width id: {}", vacation.getId());
-        daoVacationInterface.deleteById(vacation);
+        daoVacationInterface.deleteEntity(vacation);
     }
 
     public Optional<Vacation> findById(Long id) {

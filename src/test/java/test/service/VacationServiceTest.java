@@ -100,9 +100,9 @@ public class VacationServiceTest {
     @Test
     void deleteById_deletedVacation_deleted() {
         Vacation vacation = new Vacation();
-        vacationService.deleteById(vacation);
+        vacationService.deleteEntity(vacation);
 
-        verify(mockVacation, times(1)).deleteById(vacation);
+        verify(mockVacation, times(1)).deleteEntity(vacation);
     }
 
     @Test

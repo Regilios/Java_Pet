@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 @Component
 @Transactional
@@ -40,7 +40,7 @@ public class HibernateSubject implements DaoSubjectInterface {
     }
 
     @Override
-    public void deleteById(Subject subject) {
+    public void deleteEntity(Subject subject) {
         logger.debug("Subject with id {} was deleted", subject.getId());
         sessionFactory.getCurrentSession().remove(subject);
     }
@@ -73,7 +73,7 @@ public class HibernateSubject implements DaoSubjectInterface {
                 .createNamedQuery("countAllSubjects", Long.class)
                 .setParameter("name", subject.getName())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 
     @Override

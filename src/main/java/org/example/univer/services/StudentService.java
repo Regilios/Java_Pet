@@ -109,9 +109,9 @@ public class StudentService {
         return daoStudentInterface.checkGroupSize(student) <= maxGroupSize;
     }
 
-    public void deleteById(Student student) {
+    public void deleteEntity(Student student) {
         logger.debug("Delete student width id: {}", student.getId());
-        daoStudentInterface.deleteById(student);
+        daoStudentInterface.deleteEntity(student);
     }
 
     public Optional<Student> findById(Long id) {

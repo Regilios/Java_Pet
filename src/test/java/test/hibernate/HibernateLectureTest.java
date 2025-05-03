@@ -61,7 +61,7 @@ public class HibernateLectureTest {
         Lecture lecture = new Lecture();
         lecture.setId(1L);
 
-        mockLecture.deleteById(lecture);
+        mockLecture.deleteEntity(lecture);
 
         verify(session).remove(lecture);
     }

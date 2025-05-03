@@ -14,8 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/students")
 public class StudentsController {
@@ -63,15 +61,14 @@ public class StudentsController {
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         model.addAttribute("groups", groupService.findAll());
-        Optional<Student> studentOptional = studentService.findById(id);
-        if (studentOptional.isPresent()) {
-            Student student = studentOptional.get();
-            model.addAttribute("student", student);
-            logger.debug("Found and edited student with id: {}", id);
-        } else {
-            logger.warn("Student with id {} not found", id);
-            throw new ResourceNotFoundException("Student not found");
-        }
+        studentService.findById(id).ifPresentOrElse(student -> {
+                    model.addAttribute("student", student);
+                    logger.debug("Found and edited student with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Student not found");
+                }
+        );
+
         logger.debug("Show edit page");
         return "students/edit";
     }
@@ -93,15 +90,13 @@ public class StudentsController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        Optional<Student> studentOptional = studentService.findById(id);
-        if (studentOptional.isPresent()) {
-            Student student = studentOptional.get();
-            model.addAttribute("student", student);
-            logger.debug("Found and edited student with id: {}", id);
-        } else {
-            logger.warn("Student with id {} not found", id);
-            throw new ResourceNotFoundException("Student not found");
-        }
+        studentService.findById(id).ifPresentOrElse(student -> {
+                    model.addAttribute("student", student);
+                    logger.debug("Found and edited student with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Student not found");
+                }
+        );
 
         logger.debug("Show student");
         return "students/show";
@@ -110,7 +105,7 @@ public class StudentsController {
     /* Обарботка удаления */
     @DeleteMapping("{id}")
     public String delete(@ModelAttribute Student student) {
-        studentService.deleteById(student);
+        studentService.deleteEntity(student);
         logger.debug("Deleted student");
         return "redirect:/students";
     }

@@ -101,9 +101,9 @@ public class SubjectService {
             throw new ServiceException("Неизвестная ошибка при создании объекта предмета", e);
         }
     }
-    public void deleteById(Subject subject) {
+    public void deleteEntity(Subject subject) {
         logger.debug("Delete subject width id: {}", subject.getId());
-        daoSubjectInterface.deleteById(subject);
+        daoSubjectInterface.deleteEntity(subject);
     }
 
     public Optional<Subject> findById(Long id) {

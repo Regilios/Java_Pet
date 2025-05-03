@@ -59,7 +59,7 @@ public class HibernateStudentTest {
         Student student = new Student();
         student.setId(1L);
 
-        mockStudent.deleteById(student);
+        mockStudent.deleteEntity(student);
         verify(session).remove(student);
     }
 

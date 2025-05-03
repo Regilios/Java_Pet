@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -84,15 +83,14 @@ public class TeacherController {
     public String edit(@PathVariable("id") Long id, Model model) {
         model.addAttribute("cathedras", cathedraService.findAll());
         model.addAttribute("subjects", subjectService.findAll());
-        Optional<Teacher> teacherOptional = teacherService.findById(id);
-        if (teacherOptional.isPresent()) {
-            Teacher teacher = teacherOptional.get();
-            model.addAttribute("teacher", teacher);
-            logger.debug("Found and edited teacher with id: {}", id);
-        } else {
-            logger.warn("Teacher with id {} not found", id);
-            throw new ResourceNotFoundException("Teacher not found");
-        }
+        teacherService.findById(id).ifPresentOrElse(teacher -> {
+                    model.addAttribute("teacher", teacher);
+                    logger.debug("Found and edited teacher with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Teacher not found");
+                }
+        );
+
         logger.debug("Edit teacher");
         return "teachers/edit";
     }
@@ -123,15 +121,14 @@ public class TeacherController {
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         model.addAttribute("subjects", subjectService.getSubjectById(id));
-        Optional<Teacher> teacherOptional = teacherService.findById(id);
-        if (teacherOptional.isPresent()) {
-            Teacher teacher = teacherOptional.get();
-            model.addAttribute("teacher", teacher);
-            logger.debug("Found and edited teacher with id: {}", id);
-        } else {
-            logger.warn("Teacher with id {} not found", id);
-            throw new ResourceNotFoundException("Teacher not found");
-        }
+        teacherService.findById(id).ifPresentOrElse(teacher -> {
+                    model.addAttribute("teacher", teacher);
+                    logger.debug("Found and edited teacher with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Teacher not found");
+                }
+        );
+
         logger.debug("Show teacher");
         return "teachers/show";
     }
@@ -139,7 +136,7 @@ public class TeacherController {
     /* Обарботка удаления */
     @DeleteMapping("{id}")
     public String delete(@ModelAttribute Teacher teacher) {
-        teacherService.deleteById(teacher);
+        teacherService.deleteEntity(teacher);
         logger.debug("Deleted teacher");
         return "redirect:/teachers";
     }

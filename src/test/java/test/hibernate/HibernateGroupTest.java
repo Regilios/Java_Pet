@@ -57,7 +57,7 @@ public class HibernateGroupTest {
         Group group = new Group();
         group.setId(1L);
 
-        mockGroup.deleteById(group);
+        mockGroup.deleteEntity(group);
         verify(session).remove(group);
     }
 

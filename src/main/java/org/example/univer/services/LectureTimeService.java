@@ -35,7 +35,7 @@ public class LectureTimeService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lectureTime)) {
-                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStart_lection() + " по " + lectureTime.getEnd_lection() + "уже существует!");
+                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStartLection() + " по " + lectureTime.getEndLection() + "уже существует!");
                 }
                 validateCommon(lectureTime, "создать");
                 break;
@@ -106,9 +106,9 @@ public class LectureTimeService {
         }
     }
 
-    public void deleteById(LectureTime lectureTime) {
+    public void deleteEntity(LectureTime lectureTime) {
         logger.debug("Delete lectionTime width id: {}", lectureTime.getId());
-        daoLectureTimeInterface.deleteById(lectureTime);
+        daoLectureTimeInterface.deleteEntity(lectureTime);
     }
 
     public Optional<LectureTime> findById(Long id) {

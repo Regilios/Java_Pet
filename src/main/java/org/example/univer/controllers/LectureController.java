@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -106,17 +105,16 @@ public class LectureController {
         model.addAttribute("subjects", subjectService.findAll());
         model.addAttribute("times", lectureTimeService.findAll());
         model.addAttribute("audiences", audienceService.findAll());
-        Optional<Lecture> lectureOptional = lectureService.findById(id);
-        if (lectureOptional.isPresent()) {
-            Lecture lecture = lectureOptional.get();
-            model.addAttribute("lecture", lecture);
-            logger.debug("Found and edited lecture with id: {}", id);
-        } else {
-            logger.warn("Lecture with id {} not found", id);
-            throw new ResourceNotFoundException("Lecture not found");
-        }
-        logger.debug("Edit teacher");
 
+        lectureService.findById(id).ifPresentOrElse(lecture -> {
+                    model.addAttribute("lecture", lecture);
+                    logger.debug("Found and edited lecture with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Lecture not found");
+                }
+        );
+
+        logger.debug("Edit teacher");
         return "lectures/edit";
     }
 
@@ -154,16 +152,14 @@ public class LectureController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        Optional<Lecture> lectureOptional = lectureService.findById(id);
-        if (lectureOptional.isPresent()) {
-            Lecture lecture = lectureOptional.get();
-            model.addAttribute("lecture", lecture);
-            model.addAttribute("groups", lecture.getGroups());
-            logger.debug("Found and edited lecture with id: {}", id);
-        } else {
-            logger.warn("Lecture with id {} not found", id);
-            throw new ResourceNotFoundException("Lecture not found");
-        }
+        lectureService.findById(id).ifPresentOrElse(lecture -> {
+                    model.addAttribute("lecture", lecture);
+                    model.addAttribute("groups", lecture.getGroups());
+                    logger.debug("Found and edited lecture with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Lecture not found");
+                }
+        );
 
         logger.debug("Show lecture");
         return "lectures/show";
@@ -172,7 +168,7 @@ public class LectureController {
     /* Обарботка удаления */
     @DeleteMapping("{id}")
     public String delete(@ModelAttribute Lecture lecture) {
-        lectureService.deleteById(lecture);
+        lectureService.deleteEntity(lecture);
         logger.debug("Deleted lecture");
         return "redirect:/lectures";
     }

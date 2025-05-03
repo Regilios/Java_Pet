@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 @NamedQueries({
         @NamedQuery(
                 name = "findAllLecture",
@@ -38,7 +37,7 @@ import java.util.Objects;
         ),
         @NamedQuery(
                 name = "findLecturesByTeacherAndPeriod",
-                query = "SELECT l FROM Lecture l JOIN l.time t WHERE t.start_lection BETWEEN :start_l AND :end_l AND l.teacher.id = :teacherId"
+                query = "SELECT l FROM Lecture l JOIN l.time t WHERE t.startLection BETWEEN :start_l AND :end_l AND l.teacher.id = :teacherId"
         ),
         @NamedQuery(
                 name = "findByAudienceDateAndLectureTimeForCreate",
@@ -150,7 +149,7 @@ public class Lecture implements Serializable {
     }
 
     public String getTimeStart() {
-        return time.getStart_lection();
+        return time.getStartLection();
     }
 
     public LocalDateTime getLocalTimeStart() {
@@ -158,7 +157,7 @@ public class Lecture implements Serializable {
     }
 
     public String getTimeEnd() {
-        return time.getEnd_lection();
+        return time.getEndLection();
     }
 
     public LocalDateTime getLocalTimeEnd() {

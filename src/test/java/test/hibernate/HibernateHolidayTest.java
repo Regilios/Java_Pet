@@ -59,7 +59,7 @@ public class HibernateHolidayTest {
         Holiday holiday = new Holiday();
         holiday.setId(1L);
 
-        mockHoliday.deleteById(holiday);
+        mockHoliday.deleteEntity(holiday);
         verify(session).remove(holiday);
     }
 
@@ -97,12 +97,12 @@ public class HibernateHolidayTest {
     void whenLectureDoesNotFallOnHoliday_thenReturnsCorrectResult() {
         Holiday holiday = new Holiday();
         holiday.setId(1L);
-        holiday.setStart_holiday(LocalDate.of(2025,10,10));
-        holiday.setEnd_holiday(LocalDate.of(2025,10,17));
+        holiday.setStartHoliday(LocalDate.of(2025,10,10));
+        holiday.setEndHoliday(LocalDate.of(2025,10,17));
 
         Query<Long> query = mock(Query.class);
         when(session.createNamedQuery("findHolidayByDate", Long.class)).thenReturn(query);
-        when(query.setParameter("date", holiday.getStart_holiday())).thenReturn(query);
+        when(query.setParameter("date", holiday.getStartHoliday())).thenReturn(query);
         when(query.uniqueResult()).thenReturn(1L);
 
         boolean result = mockHoliday.lectureDoesNotFallOnHoliday(LocalDateTime.of(2025,10,10,0,0,0));

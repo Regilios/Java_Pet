@@ -50,8 +50,8 @@ public class LectureServiceTest {
         Subject subject = new Subject();
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
         audience.setRoom(1);
@@ -65,8 +65,8 @@ public class LectureServiceTest {
         lecture.setAudience(audience);
 
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStart_lection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEnd_lection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStartLection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEndLection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         when(mockLecture.isSingle(lecture)).thenReturn(false);
         when(mockHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(false);
@@ -84,8 +84,8 @@ public class LectureServiceTest {
     @Test
     void create_LectureWidthIncorrectLectionTime_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 08:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 20:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 08:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 20:30:00", formatter1));
 
         Lecture lecture = new Lecture();
         lecture.setTime(lectureTime);
@@ -100,8 +100,8 @@ public class LectureServiceTest {
     @Test
     void create_LectureOnHolidays_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2024-01-02 08:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2024-01-02 10:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2024-01-02 08:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2024-01-02 10:30:00", formatter1));
 
         Lecture lecture = new Lecture();
         lecture.setTime(lectureTime);
@@ -121,8 +121,8 @@ public class LectureServiceTest {
         Subject subject = new Subject();
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2025-02-02 10:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2025-02-02 12:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 10:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 12:30:00", formatter1));
 
         Lecture lecture = new Lecture();
         lecture.setTeacher(teacher);
@@ -143,8 +143,8 @@ public class LectureServiceTest {
     @Test
     void create_AudienceNotFree_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStart_lection(LocalDateTime.parse("2035-02-02 14:30:00", formatter1));
-        lectureTime.setEnd_lection(LocalDateTime.parse("2035-02-02 16:30:00", formatter1));
+        lectureTime.setStartLection(LocalDateTime.parse("2035-02-02 14:30:00", formatter1));
+        lectureTime.setEndLection(LocalDateTime.parse("2035-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
         audience.setRoom(1);
@@ -184,9 +184,9 @@ public class LectureServiceTest {
     @Test
     void deleteById_deletedLecture_deleted() {
         Lecture lecture = new Lecture();
-        lectureService.deleteById(lecture);
+        lectureService.deleteEntity(lecture);
 
-        verify(mockLecture, times(1)).deleteById(lecture);
+        verify(mockLecture, times(1)).deleteEntity(lecture);
     }
 
     @Test

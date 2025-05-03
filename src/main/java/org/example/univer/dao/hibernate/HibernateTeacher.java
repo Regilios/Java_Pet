@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 @Transactional
 @Component
@@ -40,7 +40,7 @@ public class HibernateTeacher implements DaoTeacherInterface {
     }
 
     @Override
-    public void deleteById(Teacher teacher) {
+    public void deleteEntity(Teacher teacher) {
         logger.debug("Teacher with id {} was deleted", teacher.getId());
         sessionFactory.getCurrentSession().remove(teacher);
     }
@@ -63,6 +63,6 @@ public class HibernateTeacher implements DaoTeacherInterface {
                 .setParameter("firstName",teacher.getFirstName())
                 .setParameter("lastName",teacher.getLastName())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 }

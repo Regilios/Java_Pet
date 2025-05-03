@@ -18,7 +18,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/teachers/{teacherId}/vacations")
@@ -89,18 +88,16 @@ public class VacationController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("teacherId") Long teacherId, @PathVariable("id") Long vacationId, Model model) {
-        Teacher teacher = teacherService.findById(teacherId)
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        Teacher teacher = teacherService.findById(teacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
         model.addAttribute("teacher", teacher);
-        Optional<Vacation> vacationOptional = vacationService.findById(vacationId);
-        if (vacationOptional.isPresent()) {
-            Vacation vacation = vacationOptional.get();
-            model.addAttribute("vacation", vacation);
-            logger.debug("Found and edited vacation with id: {}", vacationId);
-        } else {
-            logger.warn("Vacation with id {} not found", vacationId);
-            throw new ResourceNotFoundException("Vacation not found");
-        }
+        vacationService.findById(vacationId).ifPresentOrElse(vacation -> {
+                    model.addAttribute("vacation", vacation);
+                    logger.debug("Found and edited vacation with id: {}", vacationId);
+                }, () -> {
+                    throw new ResourceNotFoundException("Vacation not found");
+                }
+        );
+
         logger.debug("Edit vacation");
         return "teachers/vacations/edit";
     }
@@ -156,15 +153,14 @@ public class VacationController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        Optional<Vacation> vacationOptional = vacationService.findById(id);
-        if (vacationOptional.isPresent()) {
-            Vacation vacation = vacationOptional.get();
-            model.addAttribute("vacation", vacation);
-            logger.debug("Found and edited vacation with id: {}", id);
-        } else {
-            logger.warn("Vacation with id {} not found", id);
-            throw new ResourceNotFoundException("Vacation not found");
-        }
+        vacationService.findById(id).ifPresentOrElse(teacher -> {
+                    model.addAttribute("vacation", teacher);
+                    logger.debug("Found and edited vacation with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Vacation not found");
+                }
+        );
+
         logger.debug("Edited vacation");
         return "teachers/vacations/show";
     }
@@ -172,7 +168,7 @@ public class VacationController {
     /* Обарботка удаления */
     @DeleteMapping("{id}")
     public String delete(@ModelAttribute Vacation vacation, @PathVariable("teacherId") Long teacherId) {
-        vacationService.findById(vacation.getId()).ifPresentOrElse( vacationService::deleteById, () -> {
+        vacationService.findById(vacation.getId()).ifPresentOrElse( vacationService::deleteEntity, () -> {
             throw new ResourceNotFoundException("Vacation not found");
         });
         logger.debug("Deleted teacher");

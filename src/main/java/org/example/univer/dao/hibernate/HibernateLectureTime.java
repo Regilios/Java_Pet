@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 @Component
 @Transactional
@@ -38,7 +38,7 @@ public class HibernateLectureTime implements DaoLectureTimeInterface {
     }
 
     @Override
-    public void deleteById(LectureTime lectureTime) {
+    public void deleteEntity(LectureTime lectureTime) {
         logger.debug("LectureTime with id {} was deleted", lectureTime.getId());
         sessionFactory.getCurrentSession().remove(lectureTime);
     }
@@ -62,6 +62,6 @@ public class HibernateLectureTime implements DaoLectureTimeInterface {
                 .setParameter("start_lection", lectureTime.getStartLocal())
                 .setParameter("end_lection", lectureTime.getEndLocal())
                 .uniqueResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result)  && result > 0;
     }
 }

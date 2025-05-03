@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 @NamedQueries({
         @NamedQuery(
                 name = "findAllTeachers",
@@ -39,11 +38,11 @@ public class Teacher extends Person implements Serializable {
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Vacation> vacation = new ArrayList<>();
 
-    public Teacher(String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subject, List<Vacation> vacation) {
+    public Teacher(String firstName, String lastName, Gender gender, String address, String email, String phone, LocalDate birthday, Long id, Cathedra cathedra, List<Subject> subjects, List<Vacation> vacation) {
         super(firstName, lastName, gender, address, email, phone, birthday);
         this.id = id;
         this.cathedra = cathedra;
-        this.subjects = subject;
+        this.subjects = subjects;
         this.vacation = vacation;
     }
 

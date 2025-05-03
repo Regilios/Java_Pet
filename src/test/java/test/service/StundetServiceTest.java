@@ -93,9 +93,9 @@ public class StundetServiceTest {
     @Test
     void deleteById_deletedStudent_deleted() {
         Student student = new Student();
-        studentService.deleteById(student);
+        studentService.deleteEntity(student);
 
-        verify(mockStudent, times(1)).deleteById(student);
+        verify(mockStudent, times(1)).deleteEntity(student);
     }
 
     @Test

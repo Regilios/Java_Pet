@@ -1,19 +1,17 @@
 package org.example.univer.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
-
 @MappedSuperclass
 public abstract class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "firstname")
+    @Column(name = "firstname", nullable = false)
     protected String firstName;
-    @Column(name = "lastname")
+    @Column(name = "lastname", nullable = false)
     protected String lastName;
     @Column
     @Enumerated(EnumType.STRING)
