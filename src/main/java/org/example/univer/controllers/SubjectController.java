@@ -97,8 +97,8 @@ public class SubjectController {
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Subject subject) {
-        subjectService.deleteEntity(subject);
+    public String delete(@PathVariable("id") Long id) {
+        subjectService.deleteById(id);
         logger.debug("Deleted student");
         return "redirect:/subjects";
     }

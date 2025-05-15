@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoVacationInterface;
 import org.example.univer.exeption.VacationExeption;
 import org.example.univer.models.Teacher;
@@ -10,9 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,19 +23,21 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class VacationServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoVacationInterface mockVacation;
-
     @InjectMocks
     private VacationService vacationService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(vacationService, "minVacationDay", 7);
-        ReflectionTestUtils.setField(vacationService, "maxVacationDay", 20);
+        appSettings.setMinVacationDay(7);
+        appSettings.setMaxVacationDay(20);
+        vacationService = new VacationService(mockVacation, appSettings);
     }
 
     @Test
@@ -100,9 +104,10 @@ public class VacationServiceTest {
     @Test
     void deleteById_deletedVacation_deleted() {
         Vacation vacation = new Vacation();
-        vacationService.deleteEntity(vacation);
+        vacation.setId(1L);
+        vacationService.deleteById(1L);
 
-        verify(mockVacation, times(1)).deleteEntity(vacation);
+        verify(mockVacation, times(1)).deleteById(1L);
     }
 
     @Test

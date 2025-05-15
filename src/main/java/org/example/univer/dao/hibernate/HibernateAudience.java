@@ -1,70 +1,66 @@
 package org.example.univer.dao.hibernate;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.univer.dao.interfaces.DaoAudienceInterface;
 import org.example.univer.models.Audience;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 @Component
 @Transactional
 public class HibernateAudience implements DaoAudienceInterface {
-
     private static final Logger logger = LoggerFactory.getLogger(HibernateAudience.class);
-    @Autowired
-    private final SessionFactory sessionFactory;
-
-    @Autowired
-    public HibernateAudience(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Audience> findAll() {
         logger.debug("Find all audiences");
-        return sessionFactory.getCurrentSession().createNamedQuery("findAllAudiences", Audience.class).getResultList();
+        return entityManager.createNamedQuery("findAllAudiences", Audience.class).getResultList();
     }
 
     @Override
     public void create(Audience audience) {
         logger.debug("create audience {}", audience);
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(audience);
+        entityManager.persist(audience);
     }
 
     @Override
     public void update(Audience audience) {
         logger.debug("update audience {}", audience);
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(audience);
+        entityManager.merge(audience);
     }
 
     @Override
-    public void deleteEntity(Audience audience) {
-         logger.debug("Audience with id {} was deleted", audience.getId());
-         sessionFactory.getCurrentSession().remove(audience);
+    public void deleteById(Long id) {
+        Audience audience = entityManager.find(Audience.class, id);
+        if (audience != null) {
+            entityManager.remove(audience);
+            logger.debug("Audience with id {} was deleted", id);
+        } else {
+            logger.warn("Audience with id {} not found", id);
+        }
     }
 
     @Override
     public Optional<Audience> findById(Long id) {
         logger.debug("Find audience by id: {}", id);
-        return Optional.ofNullable(sessionFactory.getCurrentSession().get(Audience.class, id));
+        return  Optional.ofNullable(entityManager.find(Audience.class, id));
     }
 
     @Override
     public Page<Audience> findPaginatedAudience(Pageable pageable) {
-        Session session = sessionFactory.getCurrentSession();
-        Long total = session.createNamedQuery("countAllAudiences", Long.class).uniqueResult();
-        List<Audience> audiences = session.createNamedQuery("findAllAudiencesPaginated", Audience.class)
+        Long total = entityManager.createNamedQuery("countAllAudiences", Long.class).getSingleResult();
+        List<Audience> audiences = entityManager.createNamedQuery("findAllAudiencesPaginated", Audience.class)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
@@ -79,10 +75,9 @@ public class HibernateAudience implements DaoAudienceInterface {
 
     @Override
     public boolean isSingle(Audience audience) {
-        Long result = sessionFactory.getCurrentSession()
-                .createNamedQuery("countAudiencesByRoomNumber", Long.class)
+        Long result = entityManager.createNamedQuery("countAudiencesByRoomNumber", Long.class)
                 .setParameter("roomNumber", audience.getRoom())
-                .uniqueResult();
+                .getSingleResult();
         return Objects.nonNull(result)  && result > 0;
     }
 }

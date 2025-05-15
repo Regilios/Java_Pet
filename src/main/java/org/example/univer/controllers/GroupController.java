@@ -103,8 +103,8 @@ public class GroupController {
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Group group) {
-        groupService.deleteEntity(group);
+    public String delete(@PathVariable("id") Long id) {
+        groupService.deleteById(id);
         logger.debug("Deleted group");
         return "redirect:/groups";
     }

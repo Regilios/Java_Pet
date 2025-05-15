@@ -1,14 +1,14 @@
 package org.example.univer.dao.hibernate;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.univer.dao.interfaces.DaoTeacherInterface;
 import org.example.univer.models.Teacher;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,53 +16,50 @@ import java.util.Optional;
 @Component
 public class HibernateTeacher implements DaoTeacherInterface {
     private static final Logger logger = LoggerFactory.getLogger(HibernateTeacher.class);
-
-    @Autowired
-    private static SessionFactory sessionFactory;
-
-    @Autowired
-    public HibernateTeacher(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public void create(Teacher teacher) {
         logger.debug("create teacher {}", teacher);
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(teacher);
+        entityManager.persist(teacher);
     }
 
     @Override
     public void update(Teacher teacher) {
         logger.debug("update teacher {}", teacher);
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(teacher);
+        entityManager.merge(teacher);
     }
 
     @Override
-    public void deleteEntity(Teacher teacher) {
-        logger.debug("Teacher with id {} was deleted", teacher.getId());
-        sessionFactory.getCurrentSession().remove(teacher);
+    public void deleteById(Long id) {
+        Teacher teacher = entityManager.find(Teacher.class, id);
+        if (teacher != null) {
+            entityManager.remove(teacher);
+            logger.debug("Teacher with id {} was deleted", id);
+        } else {
+            logger.warn("Teacher with id {} not found", id);
+        }
     }
 
     @Override
     public Optional<Teacher> findById(Long id) {
-        return Optional.ofNullable(sessionFactory.getCurrentSession().get(Teacher.class, id));
+        return Optional.ofNullable(entityManager.find(Teacher.class, id));
     }
 
     @Override
     public List<Teacher> findAll() {
         logger.debug("Find all teachers");
-        return sessionFactory.getCurrentSession().createNamedQuery("findAllTeachers", Teacher.class).getResultList();
+        return entityManager.createNamedQuery("findAllTeachers", Teacher.class).getResultList();
     }
 
     @Override
     public boolean isSingle(Teacher teacher) {
         logger.debug("Check teacher is single");
-        Long result = sessionFactory.getCurrentSession().createNamedQuery("countTeachers",Long.class)
+        Long result = entityManager.createNamedQuery("countTeachers",Long.class)
                 .setParameter("firstName",teacher.getFirstName())
                 .setParameter("lastName",teacher.getLastName())
-                .uniqueResult();
+                .getSingleResult();
         return Objects.nonNull(result)  && result > 0;
     }
 }

@@ -1,14 +1,14 @@
 package org.example.univer.dao.hibernate;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.univer.dao.interfaces.DaoGroupInterface;
 import org.example.univer.models.Group;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,52 +16,50 @@ import java.util.Optional;
 @Transactional
 public class HibernateGroup implements DaoGroupInterface {
     private static final Logger logger = LoggerFactory.getLogger(HibernateGroup.class);
-    @Autowired
-    private final SessionFactory sessionFactory;
-    @Autowired
-    public HibernateGroup(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public boolean isSingle(Group group) {
-        Long result = sessionFactory.getCurrentSession()
-                .createNamedQuery("findGroupByName", Long.class)
+        Long result = entityManager.createNamedQuery("findGroupByName", Long.class)
                 .setParameter("name", group.getName())
-                .uniqueResult();
+                .getSingleResult();
         return Objects.nonNull(result)  && result > 0;
     }
 
     @Override
     public void create(Group group) {
         logger.debug("create groups {}", group);
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(group);
+        entityManager.persist(group);
     }
 
     @Override
     public void update(Group group) {
         logger.debug("update group {}", group);
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(group);
+        entityManager.merge(group);
     }
 
     @Override
-    public void deleteEntity(Group group) {
-        logger.debug("Group with id {} was deleted", group.getId());
-        sessionFactory.getCurrentSession().remove(group);
+    public void deleteById(Long id) {
+        Group group = entityManager.find(Group.class, id);
+        if (group != null) {
+            entityManager.remove(group);
+            logger.debug("Group with id {} was deleted", id);
+        } else {
+            logger.warn("Group with id {} not found", id);
+        }
     }
 
     @Override
     public Optional<Group> findById(Long id) {
         logger.debug("Find group by id: {}", id);
-        return Optional.ofNullable(sessionFactory.getCurrentSession().get(Group.class, id));
+        return Optional.ofNullable(entityManager.find(Group.class, id));
     }
 
     @Override
     public List<Group> findAll() {
         logger.debug("Find all groups");
-        return sessionFactory.getCurrentSession().createNamedQuery("findAllGroups", Group.class).getResultList();
+        return entityManager.createNamedQuery("findAllGroups", Group.class).getResultList();
     }
 
     @Override
@@ -72,9 +70,8 @@ public class HibernateGroup implements DaoGroupInterface {
 
         logger.debug("Find groups by IDs: {}", groupIds);
 
-        return sessionFactory.getCurrentSession()
-                .createNamedQuery("findGroupsByIds", Group.class)
-                .setParameterList("ids", groupIds)
+        return entityManager.createNamedQuery("findGroupsByIds", Group.class)
+                .setParameter("ids", groupIds)
                 .getResultList();
     }
 }

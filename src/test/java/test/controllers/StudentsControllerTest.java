@@ -9,7 +9,6 @@ import org.example.univer.services.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -193,14 +191,21 @@ public class StudentsControllerTest {
 
     @Test
     void whenDeleteStudent_thenStudentDeleted() throws Exception {
-        mockMvc.perform(delete("/students/{id}", 1))
+      /*  mockMvc.perform(delete("/students/{id}", 1))
                 .andExpect(redirectedUrl("/students"));
 
         ArgumentCaptor<Student> studentArgumentCaptor = ArgumentCaptor.forClass(Student.class);
-        verify(studentService).deleteEntity(studentArgumentCaptor.capture());
+        verify(studentService).deleteById(1L);
 
         Student actual = studentArgumentCaptor.getValue();
         assertEquals(1L, actual.getId());
+*/
+        Student student = new Student();
+        student.setId(1L);
+        mockMvc.perform(delete("/students/{id}", 1))
+                .andExpect(redirectedUrl("/students"));
+
+        verify(studentService).deleteById(1L);
     }
 
 }

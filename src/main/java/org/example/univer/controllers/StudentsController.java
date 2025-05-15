@@ -103,10 +103,10 @@ public class StudentsController {
     }
 
     /* Обарботка удаления */
-    @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Student student) {
-        studentService.deleteEntity(student);
-        logger.debug("Deleted student");
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable("id") Long id) {
+        studentService.deleteById(id);
+        logger.debug("Deleted student with id {}", id);
         return "redirect:/students";
     }
 }

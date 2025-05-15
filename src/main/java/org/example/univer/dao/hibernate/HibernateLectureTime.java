@@ -1,14 +1,14 @@
 package org.example.univer.dao.hibernate;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.univer.dao.interfaces.DaoLectureTimeInterface;
 import org.example.univer.models.LectureTime;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,52 +16,50 @@ import java.util.Optional;
 @Transactional
 public class HibernateLectureTime implements DaoLectureTimeInterface {
     private static final Logger logger = LoggerFactory.getLogger(HibernateLectureTime.class);
-    @Autowired
-    private final SessionFactory sessionFactory;
-    @Autowired
-    public HibernateLectureTime(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public void create(LectureTime lectureTime) {
         logger.debug("create lectureTime {}", lectureTime);
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(lectureTime);
+        entityManager.persist(lectureTime);
     }
 
     @Override
     public void update(LectureTime lectureTime) {
         logger.debug("update lectureTime {}", lectureTime);
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(lectureTime);
+        entityManager.merge(lectureTime);
     }
 
     @Override
-    public void deleteEntity(LectureTime lectureTime) {
-        logger.debug("LectureTime with id {} was deleted", lectureTime.getId());
-        sessionFactory.getCurrentSession().remove(lectureTime);
+    public void deleteById(Long id) {
+        LectureTime lectureTime = entityManager.find(LectureTime.class, id);
+        if (lectureTime != null) {
+            entityManager.remove(lectureTime);
+            logger.debug("LectureTime with id {} was deleted", id);
+        } else {
+            logger.warn("LectureTime with id {} not found", id);
+        }
     }
 
     @Override
     public Optional<LectureTime> findById(Long id) {
         logger.debug("Find LectureTime by id: {}", id);
-        return Optional.ofNullable(sessionFactory.getCurrentSession().get(LectureTime.class, id));
+        return Optional.ofNullable(entityManager.find(LectureTime.class, id));
     }
 
     @Override
     public List<LectureTime> findAll() {
         logger.debug("Find all LectureTimes");
-        return sessionFactory.getCurrentSession().createNamedQuery("findAllLectureTime", LectureTime.class).getResultList();
+        return entityManager.createNamedQuery("findAllLectureTime", LectureTime.class).getResultList();
     }
 
     @Override
     public boolean isSingle(LectureTime lectureTime) {
-        Long result = sessionFactory.getCurrentSession()
-                .createNamedQuery("findLectureTime", Long.class)
+        Long result = entityManager.createNamedQuery("findLectureTime", Long.class)
                 .setParameter("start_lection", lectureTime.getStartLocal())
                 .setParameter("end_lection", lectureTime.getEndLocal())
-                .uniqueResult();
+                .getSingleResult();
         return Objects.nonNull(result)  && result > 0;
     }
 }

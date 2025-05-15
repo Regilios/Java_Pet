@@ -29,11 +29,12 @@ import java.util.Objects;
         ),
         @NamedQuery(
                 name = "getTimetableTeacherForCreate",
-                query = "SELECT l FROM Lecture l JOIN l.time t WHERE l.teacher.id = :teacherId AND EXTRACT(DAY FROM t.start_lection) = :day_l AND EXTRACT(MONTH FROM t.start_lection) = :month_l"
+                query = "SELECT l FROM Lecture l JOIN l.time t WHERE l.teacher.id = :teacherId AND EXTRACT(DAY FROM t.startLection) = :day_l AND EXTRACT(MONTH FROM t.startLection) = :month_l"
         ),
         @NamedQuery(
                 name = "getTimetableTeacherForUpdate",
-                query = "SELECT l FROM Lecture l JOIN l.time t WHERE l.teacher.id = :teacherId AND EXTRACT(DAY FROM t.start_lection) = :day_l AND EXTRACT(MONTH FROM t.start_lection) = :month_l AND l.id = :lectureId"
+             /* query = "SELECT l FROM Lecture l JOIN l.time t WHERE l.teacher.id = :teacherId AND EXTRACT(DAY FROM t.startLection) = :day_l AND EXTRACT(MONTH FROM t.startLection) = :month_l AND l.id <> :lectureId AND t.id <> :timeId"*/
+                query = "SELECT l FROM Lecture l WHERE l.teacher.id = :teacherId AND l.time.id = :timeId AND l.id <> :lectureId"
         ),
         @NamedQuery(
                 name = "findLecturesByTeacherAndPeriod",
@@ -45,7 +46,7 @@ import java.util.Objects;
         ),
         @NamedQuery(
                 name = "findByAudienceDateAndLectureTimeForUpdate",
-                query = "SELECT COUNT(l) FROM Lecture l JOIN l.audience a JOIN l.time t WHERE t.id = :lecture_time_id AND  a.id = :audience_id AND l.id = :lecture_id"
+                query = "SELECT COUNT(l) FROM Lecture l JOIN l.audience a JOIN l.time t WHERE t.id = :lecture_time_id AND  a.id = :audience_id AND l.id = :lecture_id AND l.id <> :lecture_id"
         )
  })
 @Entity

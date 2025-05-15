@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoLectureTimeInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.LectureTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +18,14 @@ import java.util.Optional;
 public class LectureTimeService {
     DaoLectureTimeInterface daoLectureTimeInterface;
     private static final Logger logger = LoggerFactory.getLogger(LectureTimeService.class);
-
-    @Value("#{${minimumLectureTimeMinutes}}")
+    private AppSettings appSettings;
     private Integer minimumLectureTimeMinutes;
 
     @Autowired
-    public LectureTimeService(DaoLectureTimeInterface daoLectureTimeInterface) {
+    public LectureTimeService(DaoLectureTimeInterface daoLectureTimeInterface, AppSettings appSettings) {
         this.daoLectureTimeInterface = daoLectureTimeInterface;
+        this.appSettings = appSettings;
+        this.minimumLectureTimeMinutes = appSettings.getMinimumLectureTimeMinutes();
     }
 
     public enum ValidationContext {
@@ -106,9 +107,9 @@ public class LectureTimeService {
         }
     }
 
-    public void deleteEntity(LectureTime lectureTime) {
-        logger.debug("Delete lectionTime width id: {}", lectureTime.getId());
-        daoLectureTimeInterface.deleteEntity(lectureTime);
+    public void deleteById(Long id) {
+        logger.debug("Delete lectionTime width id: {}", id);
+        daoLectureTimeInterface.deleteById(id);
     }
 
     public Optional<LectureTime> findById(Long id) {

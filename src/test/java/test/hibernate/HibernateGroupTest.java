@@ -1,16 +1,16 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateGroup;
 import org.example.univer.models.Group;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,21 +18,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateGroupTest {
     @Mock
-    Session session;
-    @Mock
-    SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
     HibernateGroup mockGroup;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
 
     @Test
     void whenCreateGroup_thenGroupIsPersisted() {
@@ -40,7 +32,7 @@ public class HibernateGroupTest {
         group.setId(1L);
 
         mockGroup.create(group);
-        verify(session).persist(group);
+        verify(entityManager).persist(group);
     }
 
     @Test
@@ -49,7 +41,7 @@ public class HibernateGroupTest {
         group.setId(1L);
 
         mockGroup.update(group);
-        verify(session).merge(group);
+        verify(entityManager).merge(group);
     }
 
     @Test
@@ -57,8 +49,10 @@ public class HibernateGroupTest {
         Group group = new Group();
         group.setId(1L);
 
-        mockGroup.deleteEntity(group);
-        verify(session).remove(group);
+        when(entityManager.find(Group.class, 1L)).thenReturn(group);
+        mockGroup.deleteById(1L);
+
+        verify(entityManager).remove(group);
     }
 
     @Test
@@ -66,7 +60,7 @@ public class HibernateGroupTest {
         Group group = new Group();
         group.setId(1L);
 
-        when(session.get(Group.class, group.getId())).thenReturn(group);
+        when(entityManager.find(Group.class, group.getId())).thenReturn(group);
         Optional<Group> result =  mockGroup.findById(1L);
 
         assertTrue(result.isPresent());
@@ -82,7 +76,7 @@ public class HibernateGroupTest {
 
         Query<Group> query =  mock(Query.class);
 
-        when(session.createNamedQuery("findAllGroups", Group.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findAllGroups", Group.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(group,group2));
 
         List<Group> result =  mockGroup.findAll();
@@ -99,9 +93,9 @@ public class HibernateGroupTest {
 
         Query<Long> query =  mock(Query.class);
 
-        when(session.createNamedQuery("findGroupByName", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findGroupByName", Long.class)).thenReturn(query);
         when(query.setParameter("name", group.getName())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(query.getSingleResult()).thenReturn(1L);
 
         boolean result = mockGroup.isSingle(group);
         assertTrue(result);
@@ -117,8 +111,8 @@ public class HibernateGroupTest {
         Query<Group> query =  mock(Query.class);
         List<Long> groupIds = List.of(1L,2L);
 
-        when(session.createNamedQuery("findGroupsByIds", Group.class)).thenReturn(query);
-        when(query.setParameterList("ids", groupIds)).thenReturn(query);
+        when(entityManager.createNamedQuery("findGroupsByIds", Group.class)).thenReturn(query);
+        when(query.setParameter("ids", groupIds)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(group,group2));
 
         List<Group> result = mockGroup.getGroupById(groupIds);
@@ -126,5 +120,7 @@ public class HibernateGroupTest {
         assertEquals(2, result.size());
         assertEquals(group, result.get(0));
         assertEquals(group2, result.get(1));
+
+
     }
 }

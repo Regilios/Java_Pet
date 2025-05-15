@@ -1,16 +1,16 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateTeacher;
 import org.example.univer.models.Teacher;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,20 +18,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateTeacherTest {
     @Mock
-    Session session;
-    @Mock
-    SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
     HibernateTeacher mockTeacher;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
 
     @Test
     void whenCreateTeacher_thenTeacherIsPersisted() {
@@ -39,7 +32,7 @@ public class HibernateTeacherTest {
         teacher.setId(1L);
 
         mockTeacher.create(teacher);
-        verify(session).persist(teacher);
+        verify(entityManager).persist(teacher);
     }
 
     @Test
@@ -48,7 +41,7 @@ public class HibernateTeacherTest {
         teacher.setId(1L);
 
         mockTeacher.update(teacher);
-        verify(session).merge(teacher);
+        verify(entityManager).merge(teacher);
     }
 
     @Test
@@ -56,8 +49,10 @@ public class HibernateTeacherTest {
         Teacher teacher = new Teacher();
         teacher.setId(1L);
 
-        mockTeacher.deleteEntity(teacher);
-        verify(session).remove(teacher);
+        when(entityManager.find(Teacher.class, 1L)).thenReturn(teacher);
+        mockTeacher.deleteById(1L);
+
+        verify(entityManager).remove(teacher);
     }
 
     @Test
@@ -65,7 +60,7 @@ public class HibernateTeacherTest {
         Teacher teacher = new Teacher();
         teacher.setId(1L);
 
-        when(session.get(Teacher.class, 1L)).thenReturn(teacher);
+        when(entityManager.find(Teacher.class, 1L)).thenReturn(teacher);
         Optional<Teacher> result = mockTeacher.findById(1L);
         assertTrue(result.isPresent());
         assertEquals(teacher, result.get());
@@ -79,7 +74,7 @@ public class HibernateTeacherTest {
         teacher2.setId(1L);
 
         Query<Teacher> query = mock(Query.class);
-        when(session.createNamedQuery("findAllTeachers", Teacher.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findAllTeachers", Teacher.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(teacher,teacher2));
 
         List<Teacher> result = mockTeacher.findAll();
@@ -97,10 +92,10 @@ public class HibernateTeacherTest {
         teacher.setLastName("test2");
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("countTeachers", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("countTeachers", Long.class)).thenReturn(query);
         when(query.setParameter("firstName", teacher.getFirstName())).thenReturn(query);
         when(query.setParameter("lastName", teacher.getLastName())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(query.getSingleResult()).thenReturn(1L);
 
         boolean result = mockTeacher.isSingle(teacher);
         assertTrue(result);

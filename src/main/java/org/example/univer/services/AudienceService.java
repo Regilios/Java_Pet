@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoAudienceInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Audience;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,15 +19,16 @@ import java.util.Optional;
 public class AudienceService {
     private DaoAudienceInterface daoAudienceInterfaces;
     private static final Logger logger = LoggerFactory.getLogger(AudienceService.class);
-    @Value("${roomSettings.SIZE_MAX}")
+    private AppSettings appSettings;
     private Integer maxSize;
-    @Value("${roomSettings.SIZE_MIN}")
     private Integer minSize;
     @Autowired
-    public AudienceService(DaoAudienceInterface daoAudienceInterfaces) {
+    public AudienceService(DaoAudienceInterface daoAudienceInterfaces, AppSettings appSettings) {
         this.daoAudienceInterfaces = daoAudienceInterfaces;
+        this.appSettings = appSettings;
+        this.maxSize = appSettings.getRoomSettings().getSizeMax();
+        this.minSize = appSettings.getRoomSettings().getSizeMin();
     }
-
     public enum ValidationContext {
         METHOD_CREATE,
         METHOD_UPDATE
@@ -104,9 +105,9 @@ public class AudienceService {
         }
     }
 
-    public void deleteEntity(Audience audience) {
-        logger.debug("Delete audience width id: {}", audience.getId());
-        daoAudienceInterfaces.deleteEntity(audience);
+    public void deleteById(Long id) {
+        logger.debug("Delete audience width id: {}", id);
+        daoAudienceInterfaces.deleteById(id);
     }
 
     public Optional<Audience> findById(Long id) {

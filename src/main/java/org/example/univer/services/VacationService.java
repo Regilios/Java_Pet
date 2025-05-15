@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoVacationInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Vacation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +18,16 @@ import java.util.Optional;
 public class VacationService {
     private DaoVacationInterface daoVacationInterface;
     private static final Logger logger = LoggerFactory.getLogger(VacationService.class);
-
-    @Value("#{${minVacationDay:7}}")
+    private AppSettings appSettings;
     private Integer minVacationDay;
-
-    @Value("#{${maxVacationDay:30}}")
     private Integer maxVacationDay;
 
     @Autowired
-    public VacationService(DaoVacationInterface daoVacationInterface) {
+    public VacationService(DaoVacationInterface daoVacationInterface, AppSettings appSettings) {
         this.daoVacationInterface = daoVacationInterface;
+        this.appSettings = appSettings;
+        this.minVacationDay = appSettings.getMinVacationDay();
+        this.maxVacationDay = appSettings.getMaxVacationDay();
     }
 
     public enum ValidationContext {
@@ -109,9 +109,9 @@ public class VacationService {
         }
     }
 
-    public void deleteEntity(Vacation vacation) {
-        logger.debug("Delete vacation width id: {}", vacation.getId());
-        daoVacationInterface.deleteEntity(vacation);
+    public void deleteById(Long id) {
+        logger.debug("Delete vacation width id: {}", id);
+        daoVacationInterface.deleteById(id);
     }
 
     public Optional<Vacation> findById(Long id) {

@@ -1,10 +1,11 @@
 # University pet-project 
 
-Updating the project with a Hibernate layer
+### Project update - project translation Spring boot
 Current updates:
-- added Hibernate layer for all models 
-- added converters of some layers for linking hibernate and controller
-- added and modified tests for hibernate
-- modification of the model for hibernate
-- modification of the interface for hibernate
-- deleted jdbc layer, mappers, test jdbc
+- added Spring Boot logics 
+- modification converters, models, hibernate of some layers
+- deleted old properties and configs
+- add Configuration for Spring Boot
+- add Setting for applications
+- add Setting Boot Test
+- transition to yml

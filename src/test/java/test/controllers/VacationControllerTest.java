@@ -169,15 +169,12 @@ public class VacationControllerTest {
         Vacation vacation = new Vacation();
         vacation.setId(1L);
 
-        when(vacationService.findById(1L)).thenReturn(Optional.of(vacation));
-        doNothing().when(vacationService).deleteEntity(vacation);
-
+        doNothing().when(vacationService).deleteById(1L);
         mockMvc.perform(delete("/teachers/{teacherId}/vacations/{id}", 1, 1))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/teachers/1/vacations"));
 
-        verify(vacationService).findById(1L);
-        verify(vacationService).deleteEntity(vacation);
+        verify(vacationService).deleteById(1L);
 
     }
 }

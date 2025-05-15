@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoStudentInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +19,14 @@ import java.util.Optional;
 public class StudentService {
     private DaoStudentInterface daoStudentInterface;
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
-
-    @Value("#{${maxGroupSize}}")
+    private AppSettings appSettings;
     private Integer maxGroupSize;
 
     @Autowired
-    public StudentService(DaoStudentInterface daoStudentInterface) {
+    public StudentService(DaoStudentInterface daoStudentInterface, AppSettings appSettings) {
         this.daoStudentInterface = daoStudentInterface;
+        this.appSettings = appSettings;
+        this.maxGroupSize = appSettings.getMaxGroupSize();
     }
 
     public enum ValidationContext {
@@ -109,9 +110,9 @@ public class StudentService {
         return daoStudentInterface.checkGroupSize(student) <= maxGroupSize;
     }
 
-    public void deleteEntity(Student student) {
-        logger.debug("Delete student width id: {}", student.getId());
-        daoStudentInterface.deleteEntity(student);
+    public void deleteById(Long id) {
+        logger.debug("Delete student width id: {}", id);
+        daoStudentInterface.deleteById(id);
     }
 
     public Optional<Student> findById(Long id) {
