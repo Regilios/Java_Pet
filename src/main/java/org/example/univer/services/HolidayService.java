@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HolidayService {
@@ -39,7 +40,7 @@ public class HolidayService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(holiday)) {
-                    throw new InvalidParameterException("Невозможно создать каникулы! Каникулы с названием: " + holiday.getDesc() + " уже существуют!");
+                    throw new InvalidParameterException("Невозможно создать каникулы! Каникулы с названием: " + holiday.getDescription() + " уже существуют!");
                 }
                 validateCommon(holiday, "создать");
                 break;
@@ -55,10 +56,10 @@ public class HolidayService {
     }
 
     private void validateCommon(Holiday holiday, String action) {
-        if (!holiday.getStart_holiday().getDayOfWeek().equals(DayOfWeek.valueOf(startDayHoliday))) {
+        if (!holiday.getStartHoliday().getDayOfWeek().equals(DayOfWeek.valueOf(startDayHoliday))) {
             throw new HolidaysExeption("Невозможно " + action + " каникулы! Каникулы должны начинаться с " + startDayHoliday + "!");
         }
-        if (ChronoUnit.DAYS.between(holiday.getStart_holiday(), holiday.getEnd_holiday()) > maxDayHoliday) {
+        if (ChronoUnit.DAYS.between(holiday.getStartHoliday(), holiday.getEndHoliday()) > maxDayHoliday) {
             throw new HolidaysExeption("Невозможно " + action + " каникулы! Каникулы не должны превышать заданное количество дней отдыха: " + maxDayHoliday + "!");
         }
     }
@@ -113,12 +114,12 @@ public class HolidayService {
         logger.debug("Holiday updated");
     }
 
-    public void deleteById(Long id) {
-        logger.debug("Delete holiday width id: {}", id);
-        daoHolidayInterface.deleteById(id);
+    public void deleteEntity(Holiday holiday) {
+        logger.debug("Delete holiday width id: {}", holiday.getId());
+        daoHolidayInterface.deleteEntity(holiday);
     }
 
-    public Holiday findById(Long id) {
+    public Optional<Holiday> findById(Long id) {
         logger.debug("Find holiday width id: {}", id);
         return daoHolidayInterface.findById(id);
     }

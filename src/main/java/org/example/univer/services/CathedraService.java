@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CathedraService {
@@ -109,12 +110,12 @@ public class CathedraService {
         logger.debug("Cathedra updated");
     }
 
-    public void deleteById(Long id) {
-        logger.debug("Delete cathedra width id: {}", id);
-        daoCathedraInterface.deleteById(id);
+    public void deleteEntity(Cathedra cathedra) {
+        logger.debug("Delete cathedra width id: {}", cathedra.getId());
+        daoCathedraInterface.deleteEntity(cathedra);
     }
 
-    public Cathedra findById(Long id) {
+    public Optional<Cathedra> findById(Long id) {
         logger.debug("Find cathedra width id: {}", id);
         return daoCathedraInterface.findById(id);
     }

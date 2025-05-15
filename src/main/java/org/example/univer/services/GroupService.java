@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GroupService {
@@ -96,15 +97,16 @@ public class GroupService {
         }
     }
 
-    public void deleteById(Long id) {
-        logger.debug("Delete group width id: {}", id);
-        daoGroupInterface.deleteById(id);
+    public void deleteEntity(Group group) {
+        logger.debug("Delete group width id: {}", group.getId());
+        daoGroupInterface.deleteEntity(group);
     }
 
-    public Group findById(Long id) {
+    public Optional<Group> findById(Long id) {
         logger.debug("Find group width id: {}", id);
         return daoGroupInterface.findById(id);
     }
+
     public List<Group> getGroupById(List<Long> groupIds) {
         logger.debug("Find groups by id");
         return daoGroupInterface.getGroupById(groupIds);

@@ -1,6 +1,7 @@
 package org.example.univer.controllers;
 
-import org.example.univer.exeption.*;
+import org.example.univer.exeption.ResourceNotFoundException;
+import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.Holiday;
 import org.example.univer.services.HolidayService;
 import org.slf4j.Logger;
@@ -54,7 +55,14 @@ public class HolidayController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("holiday", holidayService.findById(id));
+        holidayService.findById(id).ifPresentOrElse(holiday -> {
+                    model.addAttribute("holiday", holiday);
+                    logger.debug("Found and edited holiday with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Holiday not found");
+                }
+        );
+
         logger.debug("Edit holiday");
         return "holidays/edit";
     }
@@ -75,15 +83,21 @@ public class HolidayController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("holiday", holidayService.findById(id));
+        holidayService.findById(id).ifPresentOrElse(holiday -> {
+                     model.addAttribute("holiday", holiday);
+                    logger.debug("Found and edited holiday with id: {}", id);
+                }, () -> {
+                     throw new ResourceNotFoundException("Holiday not found");
+                }
+        );
         logger.debug("Edited holiday");
         return "holidays/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") Long id) {
-        holidayService.deleteById(id);
+    public String delete(@ModelAttribute Holiday holiday) {
+        holidayService.deleteEntity(holiday);
         logger.debug("Deleted holiday");
         return "redirect:/holidays";
     }

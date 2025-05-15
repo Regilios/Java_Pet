@@ -1,12 +1,13 @@
 package org.example.univer.controllers;
 
+import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.services.CathedraService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/")
@@ -21,8 +22,15 @@ public class HomeController {
     @GetMapping("/")
     public String index(Model model) {
         logger.debug("Show index page");
-        model.addAttribute("cathedraName", cathedraService.findById(1L).getName());
         model.addAttribute("title", "Welcome");
+
+        cathedraService.findById(1L).ifPresentOrElse(cathedra -> {
+                     model.addAttribute("cathedra", cathedra);
+                     logger.debug("Found and edited audience with id: {}", cathedra.getId());
+                }, () -> {
+                     throw new ResourceNotFoundException("Cathedra not found");
+                }
+        );
         return "index";
     }
 }

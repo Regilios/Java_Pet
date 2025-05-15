@@ -1,18 +1,21 @@
 package org.example.univer.config;
 
 import jakarta.servlet.Filter;
+import org.example.univer.dao.converter.GroupsConverter;
+import org.example.univer.dao.converter.SubjectConverter;
+import org.example.univer.dao.converter.TeacherConverter;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.orm.hibernate5.support.OpenSessionInViewInterceptor;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
@@ -28,14 +31,29 @@ import java.util.List;
 public class SpringWebConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
-
+    @Autowired
+    SessionFactory sessionFactory;
+    @Autowired
+    private SubjectConverter subjectConverter;
+    @Autowired
+    private GroupsConverter groupsConverter;
+    @Autowired
+    private TeacherConverter teacherConverter;
     @Autowired
     public SpringWebConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(subjectConverter);
+        registry.addConverter(groupsConverter);
+        registry.addConverter(teacherConverter);
+    }
+
     @Value("${defaultPageSize}")
     private int defaultPageSize;
+
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
@@ -94,8 +112,19 @@ public class SpringWebConfig implements WebMvcConfigurer {
         WebMvcConfigurer.super.addArgumentResolvers(argumentResolvers);
     }
 
+    @Bean
+    public OpenSessionInViewInterceptor openSessionInViewInterceptor() {
+        OpenSessionInViewInterceptor openSessionInterceptor = new OpenSessionInViewInterceptor();
+        openSessionInterceptor.setSessionFactory(sessionFactory);
+        return openSessionInterceptor;
+    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("index");
     }
 }

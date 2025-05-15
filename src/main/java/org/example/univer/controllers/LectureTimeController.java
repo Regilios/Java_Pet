@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.LectureTime;
 import org.example.univer.services.LectureTimeService;
@@ -53,8 +54,8 @@ public class LectureTimeController {
             LocalDateTime endLection = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
 
             LectureTime lectureTime = new LectureTime();
-            lectureTime.setStart_lection(startLection);
-            lectureTime.setEnd_lection(endLection);
+            lectureTime.setStartLection(startLection);
+            lectureTime.setEndLection(endLection);
             lectureTimeService.create(lectureTime);
             logger.debug("Create new group. Id {}", lectureTime.getId());
         } catch (ServiceException e) {
@@ -68,7 +69,14 @@ public class LectureTimeController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("lectureTime", lectureTimeService.findById(id));
+        lectureTimeService.findById(id).ifPresentOrElse(lectureTime -> {
+                    model.addAttribute("lectureTime", lectureTime);
+                    logger.debug("Found and edited lectureTime with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("LectureTime not found");
+                }
+        );
+
         logger.debug("Edit lectureTime");
         return "lecturetimes/edit";
     }
@@ -85,8 +93,8 @@ public class LectureTimeController {
 
             LectureTime lectureTime = new LectureTime();
             lectureTime.setId(id);
-            lectureTime.setStart_lection(startLection);
-            lectureTime.setEnd_lection(endLection);
+            lectureTime.setStartLection(startLection);
+            lectureTime.setEndLection(endLection);
             lectureTimeService.update(lectureTime);
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -97,18 +105,28 @@ public class LectureTimeController {
         return "redirect:/lecturetimes";
     }
 
+
+
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         model.addAttribute("lectureTime", lectureTimeService.findById(id));
+        lectureTimeService.findById(id).ifPresentOrElse(lectureTime -> {
+                    model.addAttribute("lectureTime", lectureTime);
+                    logger.debug("Found and edited lectureTime with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("LectureTime not found");
+                }
+        );
+
         logger.debug("Edited lectureTime");
         return "lecturetimes/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") Long id) {
-        lectureTimeService.deleteById(id);
+    public String delete(@ModelAttribute LectureTime lectureTime) {
+        lectureTimeService.deleteEntity(lectureTime);
         logger.debug("Deleted lectureTime");
         return "redirect:/lecturetimes";
     }

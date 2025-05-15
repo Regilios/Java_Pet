@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SubjectService {
@@ -100,12 +101,12 @@ public class SubjectService {
             throw new ServiceException("Неизвестная ошибка при создании объекта предмета", e);
         }
     }
-    public void deleteById(Long id) {
-        logger.debug("Delete subject width id: {}", id);
-        daoSubjectInterface.deleteById(id);
+    public void deleteEntity(Subject subject) {
+        logger.debug("Delete subject width id: {}", subject.getId());
+        daoSubjectInterface.deleteEntity(subject);
     }
 
-    public Subject findById(Long id) {
+    public Optional<Subject> findById(Long id) {
         logger.debug("Find subject width id: {}", id);
         return daoSubjectInterface.findById(id);
     }

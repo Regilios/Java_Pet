@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.models.Student;
 import org.example.univer.services.GroupService;
@@ -60,7 +61,14 @@ public class StudentsController {
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         model.addAttribute("groups", groupService.findAll());
-        model.addAttribute("student", studentService.findById(id));
+        studentService.findById(id).ifPresentOrElse(student -> {
+                    model.addAttribute("student", student);
+                    logger.debug("Found and edited student with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Student not found");
+                }
+        );
+
         logger.debug("Show edit page");
         return "students/edit";
     }
@@ -82,15 +90,22 @@ public class StudentsController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("student", studentService.findById(id));
+        studentService.findById(id).ifPresentOrElse(student -> {
+                    model.addAttribute("student", student);
+                    logger.debug("Found and edited student with id: {}", id);
+                }, () -> {
+                    throw new ResourceNotFoundException("Student not found");
+                }
+        );
+
         logger.debug("Show student");
         return "students/show";
     }
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") Long id) {
-        studentService.deleteById(id);
+    public String delete(@ModelAttribute Student student) {
+        studentService.deleteEntity(student);
         logger.debug("Deleted student");
         return "redirect:/students";
     }
