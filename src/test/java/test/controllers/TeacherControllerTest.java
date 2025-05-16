@@ -209,16 +209,6 @@ public class TeacherControllerTest {
 
     @Test
     void whenDeleteTeacher_thenTeacherDeleted() throws Exception {
-        /*
-        mockMvc.perform(delete("/teachers/{id}", 1))
-                .andExpect(redirectedUrl("/teachers"));
-
-        ArgumentCaptor<Teacher> teacherArgumentCaptor = ArgumentCaptor.forClass(Teacher.class);
-        verify(teacherService).deleteEntity(teacherArgumentCaptor.capture());
-
-        Teacher actual = teacherArgumentCaptor.getValue();
-        assertEquals(1L, actual.getId());
-*/
         Teacher teacher = new Teacher();
         teacher.setId(1L);
         mockMvc.perform(delete("/teachers/{id}", 1))

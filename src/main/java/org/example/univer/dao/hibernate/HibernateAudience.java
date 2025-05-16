@@ -43,7 +43,7 @@ public class HibernateAudience implements DaoAudienceInterface {
     @Override
     public void deleteById(Long id) {
         Audience audience = entityManager.find(Audience.class, id);
-        if (audience != null) {
+        if (Objects.nonNull(audience)) {
             entityManager.remove(audience);
             logger.debug("Audience with id {} was deleted", id);
         } else {
@@ -78,6 +78,6 @@ public class HibernateAudience implements DaoAudienceInterface {
         Long result = entityManager.createNamedQuery("countAudiencesByRoomNumber", Long.class)
                 .setParameter("roomNumber", audience.getRoom())
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 }

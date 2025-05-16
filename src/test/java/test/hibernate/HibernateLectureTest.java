@@ -143,10 +143,10 @@ public class HibernateLectureTest {
 
         Query<Long> query = mock(Query.class);
         when(entityManager.createNamedQuery("countLectureByParam", Long.class)).thenReturn(query);
-        when(query.setParameter("teacher_id", lecture.getTeacher())).thenReturn(query);
-        when(query.setParameter("subject_id", lecture.getSubject())).thenReturn(query);
-        when(query.setParameter("lecture_time_id", lecture.getTime())).thenReturn(query);
-        when(query.setParameter("audience_id", lecture.getAudience())).thenReturn(query);
+        when(query.setParameter("teacherId", lecture.getTeacher())).thenReturn(query);
+        when(query.setParameter("subjectId", lecture.getSubject())).thenReturn(query);
+        when(query.setParameter("lectureTimeId", lecture.getTime())).thenReturn(query);
+        when(query.setParameter("audienceId", lecture.getAudience())).thenReturn(query);
         when(query.getSingleResult()).thenReturn(1L);
 
         boolean result = mockLecture.isSingle(lecture);
@@ -170,8 +170,8 @@ public class HibernateLectureTest {
         Query<Lecture> query = mock(Query.class);
         when(entityManager.createNamedQuery("getTimetableTeacherForCreate", Lecture.class)).thenReturn(query);
         when(query.setParameter("teacherId", teacher.getId())).thenReturn(query);
-        when(query.setParameter("day_l", localDate.getDayOfMonth())).thenReturn(query);
-        when(query.setParameter("month_l", localDate.getMonthValue())).thenReturn(query);
+        when(query.setParameter("dayLecture", localDate.getDayOfMonth())).thenReturn(query);
+        when(query.setParameter("monthLecture", localDate.getMonthValue())).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(lecture, lecture2));
 
         List<Lecture> results = mockLecture.getTimetableTeacherForCreate(teacher,localDate);

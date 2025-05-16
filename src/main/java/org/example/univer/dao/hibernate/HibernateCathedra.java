@@ -42,7 +42,7 @@ public class HibernateCathedra implements DaoCathedraInterface {
     @Override
     public void deleteById(Long id) {
         Cathedra cathedra = entityManager.find(Cathedra.class, id);
-        if (cathedra != null) {
+        if (Objects.nonNull(cathedra)) {
             entityManager.remove(cathedra);
             logger.debug("Cathedra with id {} was deleted", id);
         } else {

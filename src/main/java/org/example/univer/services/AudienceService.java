@@ -20,14 +20,10 @@ public class AudienceService {
     private DaoAudienceInterface daoAudienceInterfaces;
     private static final Logger logger = LoggerFactory.getLogger(AudienceService.class);
     private AppSettings appSettings;
-    private Integer maxSize;
-    private Integer minSize;
     @Autowired
     public AudienceService(DaoAudienceInterface daoAudienceInterfaces, AppSettings appSettings) {
         this.daoAudienceInterfaces = daoAudienceInterfaces;
         this.appSettings = appSettings;
-        this.maxSize = appSettings.getRoomSettings().getSizeMax();
-        this.minSize = appSettings.getRoomSettings().getSizeMin();
     }
     public enum ValidationContext {
         METHOD_CREATE,
@@ -52,7 +48,7 @@ public class AudienceService {
     }
 
     private void validateCommon(Audience audience, String action) {
-        if (audience.getCapacity() < minSize || audience.getCapacity() > maxSize) {
+        if (audience.getCapacity() < appSettings.getRoomSettings().getSizeMin() || audience.getCapacity() > appSettings.getRoomSettings().getSizeMax()) {
             throw new AudienceExeption("Невозможно " + action + " аудиенцию! Размер аудиенции не попадает в рамки критериев!");
         }
     }

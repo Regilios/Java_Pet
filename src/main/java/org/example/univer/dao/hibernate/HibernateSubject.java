@@ -35,7 +35,7 @@ public class HibernateSubject implements DaoSubjectInterface {
     @Override
     public void deleteById(Long id) {
         Subject subject = entityManager.find(Subject.class, id);
-        if (subject != null) {
+        if (Objects.nonNull(subject)) {
             entityManager.remove(subject);
             logger.debug("Subject with id {} was deleted", id);
         } else {
@@ -61,7 +61,7 @@ public class HibernateSubject implements DaoSubjectInterface {
                 .setParameter("teacher_id", teacher.getId())
                 .setParameter("subject_id", subject.getId())
                 .getSingleResult();
-        return result != null && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class HibernateSubject implements DaoSubjectInterface {
         Long result = entityManager.createNamedQuery("countAllSubjects", Long.class)
                 .setParameter("name", subject.getName())
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 
     @Override

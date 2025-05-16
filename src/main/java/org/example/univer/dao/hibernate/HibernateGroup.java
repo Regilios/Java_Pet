@@ -42,7 +42,7 @@ public class HibernateGroup implements DaoGroupInterface {
     @Override
     public void deleteById(Long id) {
         Group group = entityManager.find(Group.class, id);
-        if (group != null) {
+        if (Objects.nonNull(group)) {
             entityManager.remove(group);
             logger.debug("Group with id {} was deleted", id);
         } else {

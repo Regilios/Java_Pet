@@ -35,7 +35,7 @@ public class HibernateVacation implements DaoVacationInterface {
     @Override
     public void deleteById(Long id) {
         Vacation vacation = entityManager.find(Vacation.class, id);
-        if (vacation != null) {
+        if (Objects.nonNull(vacation)) {
             entityManager.remove(vacation);
             logger.debug("Vacation with id {} was deleted", id);
         } else {
@@ -64,7 +64,7 @@ public class HibernateVacation implements DaoVacationInterface {
                 .setParameter("endJob",vacation.getEndJob())
                 .setParameter("teacher_id",vacation.getTeacher().getId())
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 
     @Override

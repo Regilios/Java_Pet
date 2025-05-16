@@ -34,7 +34,7 @@ public class HibernateTeacher implements DaoTeacherInterface {
     @Override
     public void deleteById(Long id) {
         Teacher teacher = entityManager.find(Teacher.class, id);
-        if (teacher != null) {
+        if (Objects.nonNull(teacher)) {
             entityManager.remove(teacher);
             logger.debug("Teacher with id {} was deleted", id);
         } else {
@@ -60,6 +60,6 @@ public class HibernateTeacher implements DaoTeacherInterface {
                 .setParameter("firstName",teacher.getFirstName())
                 .setParameter("lastName",teacher.getLastName())
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 }

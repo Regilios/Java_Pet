@@ -34,7 +34,7 @@ public class HibernateLectureTime implements DaoLectureTimeInterface {
     @Override
     public void deleteById(Long id) {
         LectureTime lectureTime = entityManager.find(LectureTime.class, id);
-        if (lectureTime != null) {
+        if (Objects.nonNull(lectureTime)) {
             entityManager.remove(lectureTime);
             logger.debug("LectureTime with id {} was deleted", id);
         } else {
@@ -60,6 +60,6 @@ public class HibernateLectureTime implements DaoLectureTimeInterface {
                 .setParameter("start_lection", lectureTime.getStartLocal())
                 .setParameter("end_lection", lectureTime.getEndLocal())
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 }

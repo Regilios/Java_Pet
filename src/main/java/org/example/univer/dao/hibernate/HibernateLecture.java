@@ -39,7 +39,7 @@ public class HibernateLecture implements DaoLectureInterface {
 
     public void deleteById(Long id) {
         Lecture lecture = entityManager.find(Lecture.class, id);
-        if (lecture != null) {
+        if (Objects.nonNull(lecture)) {
             for (Group group : lecture.getGroups()) {
                 group.getLections().remove(lecture);
             }
@@ -88,10 +88,10 @@ public class HibernateLecture implements DaoLectureInterface {
     @Override
     public boolean isSingle(Lecture lecture) {
         Long result = entityManager.createNamedQuery("countLectureByParam", Long.class)
-                .setParameter("teacher_id", lecture.getTeacher())
-                .setParameter("subject_id", lecture.getSubject())
-                .setParameter("lecture_time_id", lecture.getTime())
-                .setParameter("audience_id", lecture.getAudience())
+                .setParameter("teacherId", lecture.getTeacher())
+                .setParameter("subjectId", lecture.getSubject())
+                .setParameter("lectureTimeId", lecture.getTime())
+                .setParameter("audienceId", lecture.getAudience())
                 .getSingleResult();
         return Objects.nonNull(result)  && result > 0;
     }
@@ -100,8 +100,8 @@ public class HibernateLecture implements DaoLectureInterface {
     public List<Lecture> getTimetableTeacherForCreate(Teacher teacher, LocalDate localDate) {
         return entityManager.createNamedQuery("getTimetableTeacherForCreate", Lecture.class)
                 .setParameter("teacherId", teacher.getId())
-                .setParameter("day_l", localDate.getDayOfMonth())
-                .setParameter("month_l", localDate.getMonthValue())
+                .setParameter("dayLecture", localDate.getDayOfMonth())
+                .setParameter("monthLecture", localDate.getMonthValue())
                 .getResultList();
     }
 
@@ -115,11 +115,11 @@ public class HibernateLecture implements DaoLectureInterface {
     }
     @Override
     public List<Lecture> findLecturesByTeacherAndPeriod(Teacher teacher, LocalDate start, LocalDate end) {
-        LocalDateTime start_l = start.atStartOfDay();
-        LocalDateTime end_l = end.atTime(LocalTime.MAX);
+        LocalDateTime startLecture = start.atStartOfDay();
+        LocalDateTime endLecture = end.atTime(LocalTime.MAX);
         return entityManager.createNamedQuery("findLecturesByTeacherAndPeriod", Lecture.class)
-                .setParameter("start_l", start_l)
-                .setParameter("end_l", end_l)
+                .setParameter("startLecture", startLecture)
+                .setParameter("endLecture", endLecture)
                 .setParameter("teacherId", teacher.getId())
                 .getResultList();
     }
@@ -127,19 +127,19 @@ public class HibernateLecture implements DaoLectureInterface {
     @Override
     public boolean findByAudienceDateAndLectureTimeForCreate(Audience audience, LectureTime time) {
         Long result = entityManager.createNamedQuery("findByAudienceDateAndLectureTimeForCreate", Long.class)
-                .setParameter("audience_id", audience.getId())
-                .setParameter("lecture_time_id", time.getId())
+                .setParameter("audienceId", audience.getId())
+                .setParameter("lectureTimeId", time.getId())
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 
     @Override
     public boolean findByAudienceDateAndLectureTimeForUpdate(Audience audience, LectureTime time, Long id) {
         Long result = entityManager.createNamedQuery("findByAudienceDateAndLectureTimeForUpdate", Long.class)
-                .setParameter("audience_id", audience.getId())
-                .setParameter("lecture_time_id", time.getId())
-                .setParameter("lecture_id", id)
+                .setParameter("audienceId", audience.getId())
+                .setParameter("lectureTimeId", time.getId())
+                .setParameter("lectureId", id)
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 }

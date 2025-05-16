@@ -36,13 +36,13 @@ public class HibernateStudent implements DaoStudentInterface {
 
     @Override
     public void deleteById(Long id) {
-        Student s = entityManager.find(Student.class, id);
-        if (s != null) {
-            if (s.getGroup() != null) {
-                s.getGroup().getStudents().remove(s);
-                s.setGroup(null);
+        Student student = entityManager.find(Student.class, id);
+        if (Objects.nonNull(student)) {
+            if (Objects.nonNull(student.getGroup())) {
+                student.getGroup().getStudents().remove(student);
+                student.setGroup(null);
             }
-            entityManager.remove(s);
+            entityManager.remove(student);
             logger.debug("Student with id {} was deleted", id);
         }
     }

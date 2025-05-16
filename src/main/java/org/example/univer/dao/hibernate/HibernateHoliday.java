@@ -26,7 +26,7 @@ public class HibernateHoliday implements DaoHolidayInterface {
         Long result = entityManager.createNamedQuery("countHolidayByDescript", Long.class)
                 .setParameter("description", holiday.getDescription())
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class HibernateHoliday implements DaoHolidayInterface {
         Long result = entityManager.createNamedQuery("findHolidayByDate", Long.class)
                 .setParameter("date", date)
                 .getSingleResult();
-        return Objects.nonNull(result)  && result > 0;
+        return Objects.nonNull(result) && result > 0;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class HibernateHoliday implements DaoHolidayInterface {
     @Override
     public void deleteById(Long id) {
         Holiday holiday = entityManager.find(Holiday.class, id);
-        if (holiday != null) {
+        if (Objects.nonNull(holiday)) {
             entityManager.remove(holiday);
             logger.debug("Holiday with id {} was deleted", id);
         } else {
