@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoTeacherInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Teacher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +18,15 @@ public class TeacherService {
     private DaoTeacherInterface daoTeacherInterface;
     private SubjectService subjectService;
     private static final Logger logger = LoggerFactory.getLogger(TeacherService.class);
-
-    @Value("#{${genderTeacher:FEMALE}}")
+    private AppSettings appSettings;
     private String genderTeacher;
 
     @Autowired
-    public TeacherService(DaoTeacherInterface daoTeacherInterface, SubjectService subjectService) {
+    public TeacherService(DaoTeacherInterface daoTeacherInterface, SubjectService subjectService, AppSettings appSettings) {
         this.daoTeacherInterface = daoTeacherInterface;
         this.subjectService = subjectService;
+        this.appSettings = appSettings;
+        this.genderTeacher = appSettings.getGenderTeacher();
     }
 
     public enum ValidationContext {
@@ -81,17 +82,7 @@ public class TeacherService {
 
     public void update(Teacher teacher) {
         logger.debug("Start update teacher");
-        try {/*
-            validate(teacher, ValidationContext.METHOD_UPDATE);
-            Teacher teacherOld = findById(teacher.getId())
-                    .orElseThrow(() -> new RuntimeException("Lecture not found with id: " + teacher.getId()));
-
-            List<Subject> subjects = daoTeacherInterface.getListSubjectForTeacher(teacherOld.getId()).stream()
-                    .map(groupId -> subjectService.findById(groupId).orElse(null))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            teacherOld.setSubjects(subjects);
-            daoTeacherInterface.update(teacher, teacherOld);*/
+        try {
             daoTeacherInterface.update(teacher);
             logger.debug("Teacher updated");
         } catch (TeacherExeption e) {
@@ -112,9 +103,9 @@ public class TeacherService {
         }
     }
 
-    public void deleteEntity(Teacher teacher) {
-        logger.debug("Delete teacher width id: {}", teacher.getId());
-        daoTeacherInterface.deleteEntity(teacher);
+    public void deleteById(Long id) {
+        logger.debug("Delete teacher width id: {}", id);
+        daoTeacherInterface.deleteById(id);
     }
 
     public Optional<Teacher> findById(Long id) {

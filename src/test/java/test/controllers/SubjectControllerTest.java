@@ -131,6 +131,6 @@ public class SubjectControllerTest {
         mockMvc.perform(delete("/subjects/{id}", 1))
                 .andExpect(redirectedUrl("/subjects"));
 
-        verify(subjectService).deleteEntity(subject);
+        verify(subjectService).deleteById(1L);
     }
 }

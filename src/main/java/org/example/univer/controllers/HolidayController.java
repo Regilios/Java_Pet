@@ -96,8 +96,8 @@ public class HolidayController {
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Holiday holiday) {
-        holidayService.deleteEntity(holiday);
+    public String delete(@PathVariable("id") Long id) {
+        holidayService.deleteById(id);
         logger.debug("Deleted holiday");
         return "redirect:/holidays";
     }

@@ -18,7 +18,12 @@ import java.util.Objects;
         @NamedQuery(
                 name =  "findListVacantion",
                 query = "FROM Vacation v WHERE v.teacher.id = :teacher_id"
+        ),
+        @NamedQuery(
+                name =  "findVacantionWithTeacher",
+                query = "SELECT v FROM Vacation v JOIN FETCH v.teacher WHERE v.id = :vacId"
         )
+
 })
 @Entity
 @Table(name = "vacation")
@@ -29,11 +34,11 @@ public class Vacation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "startJob", nullable = false)
+    @Column(name = "startjob", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     private LocalDate startJob;
 
-    @Column(name = "endJob", nullable = false)
+    @Column(name = "endjob", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     private LocalDate endJob;
 

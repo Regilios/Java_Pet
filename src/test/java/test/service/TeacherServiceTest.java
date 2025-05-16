@@ -1,19 +1,22 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoTeacherInterface;
 import org.example.univer.exeption.TeacherExeption;
 import org.example.univer.models.Cathedra;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Teacher;
+import org.example.univer.services.SubjectService;
 import org.example.univer.services.TeacherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,17 +25,23 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class TeacherServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoTeacherInterface mockTeacher;
+
+    @Mock
+    private SubjectService subjectService;
     @InjectMocks
     private TeacherService teacherService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(teacherService, "genderTeacher", "FEMALE");
+        appSettings.setGenderTeacher("FEMALE");
+        teacherService = new TeacherService(mockTeacher, subjectService, appSettings);
     }
 
     @Test
@@ -91,9 +100,10 @@ public class TeacherServiceTest {
     @Test
     void deleteById_deletedTeacher_deleted() {
         Teacher teacher = new Teacher();
-        teacherService.deleteEntity(teacher);
+        teacher.setId(1L);
+        teacherService.deleteById(1L);
 
-        verify(mockTeacher, times(1)).deleteEntity(teacher);
+        verify(mockTeacher, times(1)).deleteById(1L);
     }
 
     @Test

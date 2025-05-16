@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoGroupInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +17,14 @@ import java.util.Optional;
 public class GroupService {
     private DaoGroupInterface daoGroupInterface;
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
-
-    @Value("#{${minLengthNameGroup}}")
+    private AppSettings appSettings;
     private Integer minLengthNameGroup;
 
     @Autowired
-    public GroupService(DaoGroupInterface daoGroupInterface) {
+    public GroupService(DaoGroupInterface daoGroupInterface, AppSettings appSettings) {
         this.daoGroupInterface = daoGroupInterface;
+        this.appSettings = appSettings;
+        this.minLengthNameGroup = appSettings.getMinLengthNameGroup();
     }
 
     public enum ValidationContext {
@@ -97,9 +98,9 @@ public class GroupService {
         }
     }
 
-    public void deleteEntity(Group group) {
-        logger.debug("Delete group width id: {}", group.getId());
-        daoGroupInterface.deleteEntity(group);
+    public void deleteById(Long id) {
+        logger.debug("Delete group width id: {}", id);
+        daoGroupInterface.deleteById(id);
     }
 
     public Optional<Group> findById(Long id) {

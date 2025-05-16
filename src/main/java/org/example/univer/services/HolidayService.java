@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Holiday;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +19,16 @@ import java.util.Optional;
 public class HolidayService {
     DaoHolidayInterface daoHolidayInterface;
     private static final Logger logger = LoggerFactory.getLogger(HolidayService.class);
-
-    @Value("#{${maxDayHoliday}}")
+    private AppSettings appSettings;
     private Integer maxDayHoliday;
-
-    @Value("#{${startDayHoliday}}")
     private String startDayHoliday;
 
     @Autowired
-    public HolidayService(DaoHolidayInterface daoHolidayInterface) {
+    public HolidayService(DaoHolidayInterface daoHolidayInterface, AppSettings appSettings) {
         this.daoHolidayInterface = daoHolidayInterface;
+        this.appSettings = appSettings;
+        this.maxDayHoliday = appSettings.getMaxDayHoliday();
+        this.startDayHoliday = appSettings.getStartDayHoliday();
     }
 
     public enum ValidationContext {
@@ -114,9 +114,9 @@ public class HolidayService {
         logger.debug("Holiday updated");
     }
 
-    public void deleteEntity(Holiday holiday) {
-        logger.debug("Delete holiday width id: {}", holiday.getId());
-        daoHolidayInterface.deleteEntity(holiday);
+    public void deleteById(Long id) {
+        logger.debug("Delete holiday width id: {}", id);
+        daoHolidayInterface.deleteById(id);
     }
 
     public Optional<Holiday> findById(Long id) {

@@ -1,17 +1,17 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateSubject;
 import org.example.univer.models.Subject;
 import org.example.univer.models.Teacher;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,20 +19,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateSubjectTest {
     @Mock
-    Session session;
-    @Mock
-    SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
     HibernateSubject mockSubject;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
 
     @Test
     void whenCreateSubject_thenSubjectIsPersisted() {
@@ -40,7 +33,7 @@ public class HibernateSubjectTest {
         subject.setId(1L);
 
         mockSubject.create(subject);
-        verify(session).persist(subject);
+        verify(entityManager).persist(subject);
     }
 
     @Test
@@ -49,7 +42,7 @@ public class HibernateSubjectTest {
         subject.setId(1L);
 
         mockSubject.update(subject);
-        verify(session).merge(subject);
+        verify(entityManager).merge(subject);
     }
 
     @Test
@@ -57,8 +50,10 @@ public class HibernateSubjectTest {
         Subject subject = new Subject();
         subject.setId(1L);
 
-        mockSubject.deleteEntity(subject);
-        verify(session).remove(subject);
+        when(entityManager.find(Subject.class, 1L)).thenReturn(subject);
+        mockSubject.deleteById(1L);
+
+        verify(entityManager).remove(subject);
     }
 
 
@@ -67,7 +62,7 @@ public class HibernateSubjectTest {
         Subject subject = new Subject();
         subject.setId(1L);
 
-        when(session.get(Subject.class, 1L)).thenReturn(subject);
+        when(entityManager.find(Subject.class, 1L)).thenReturn(subject);
         Optional<Subject> result = mockSubject.findById(1L);
         assertTrue(result.isPresent());
         assertEquals(subject, result.get());
@@ -81,7 +76,7 @@ public class HibernateSubjectTest {
         subject2.setId(2L);
 
         Query<Subject> query = mock(Query.class);
-        when(session.createNamedQuery("findAllSubjects", Subject.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findAllSubjects", Subject.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(subject,subject2));
 
         List<Subject> result = mockSubject.findAll();
@@ -98,9 +93,9 @@ public class HibernateSubjectTest {
         subject.setName("test");
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("countAllSubjects", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("countAllSubjects", Long.class)).thenReturn(query);
         when(query.setParameter("name", subject.getName())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(query.getSingleResult()).thenReturn(1L);
 
         boolean result = mockSubject.isSingle(subject);
         assertTrue(result);
@@ -114,10 +109,10 @@ public class HibernateSubjectTest {
         teacher.setId(1L);
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("checkTeacherAssignedSubject", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("checkTeacherAssignedSubject", Long.class)).thenReturn(query);
         when(query.setParameter("teacher_id", 1L)).thenReturn(query);
         when(query.setParameter("subject_id", 1L)).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(query.getSingleResult()).thenReturn(1L);
 
         boolean result = mockSubject.checkTeacherAssignedSubject(teacher,subject);
         assertTrue(result);
@@ -129,7 +124,7 @@ public class HibernateSubjectTest {
         subject.setId(1L);
 
         Query<Subject> query = mock(Query.class);
-        when(session.createNamedQuery("findSubjectsByTeacherId", Subject.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findSubjectsByTeacherId", Subject.class)).thenReturn(query);
         when(query.setParameter("teacher_id", 1L)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(subject));
 

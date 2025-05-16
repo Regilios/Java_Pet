@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoGroupInterface;
 import org.example.univer.exeption.InvalidParameterException;
 import org.example.univer.models.Group;
@@ -9,9 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,19 +24,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class GroupServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoGroupInterface mockGroup;
-
     @InjectMocks
     private GroupService groupService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(groupService, "minLengthNameGroup", 3);
+        appSettings.setMinLengthNameGroup(3);
+        groupService = new GroupService(mockGroup, appSettings);
     }
+
     @Test
     void create_groupNameMore3_createGroup() {
         Group group = new Group();
@@ -73,9 +78,10 @@ public class GroupServiceTest {
     @Test
     void deleteById_deletedGroup_deleted() {
         Group group = new Group();
-        groupService.deleteEntity(group);
+        group.setId(1L);
+        groupService.deleteById(1L);
 
-        verify(mockGroup, times(1)).deleteEntity(group);
+        verify(mockGroup, times(1)).deleteById(1L);
     }
 
     @Test

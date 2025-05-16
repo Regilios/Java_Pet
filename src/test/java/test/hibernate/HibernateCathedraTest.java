@@ -1,16 +1,16 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateCathedra;
 import org.example.univer.models.Cathedra;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,28 +18,21 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateCathedraTest {
     @Mock
-    Session session;
-    @Mock
-    SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
-    HibernateCathedra mockCthedra;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
+    HibernateCathedra mockCathedra;
 
     @Test
     void whenCreateCathedra_thenCathedraIsPersisted() {
         Cathedra cathedra = new Cathedra();
         cathedra.setId(1L);
 
-        mockCthedra.create(cathedra);
-        verify(session).persist(cathedra);
+        mockCathedra.create(cathedra);
+        verify(entityManager).persist(cathedra);
     }
 
     @Test
@@ -47,8 +40,8 @@ public class HibernateCathedraTest {
         Cathedra cathedra = new Cathedra();
         cathedra.setId(1L);
 
-        mockCthedra.update(cathedra);
-        verify(session).merge(cathedra);
+        mockCathedra.update(cathedra);
+        verify(entityManager).merge(cathedra);
     }
 
     @Test
@@ -56,8 +49,10 @@ public class HibernateCathedraTest {
         Cathedra cathedra = new Cathedra();
         cathedra.setId(1L);
 
-        mockCthedra.deleteEntity(cathedra);
-        verify(session).remove(cathedra);
+        when(entityManager.find(Cathedra.class, 1L)).thenReturn(cathedra);
+        mockCathedra.deleteById(1L);
+
+        verify(entityManager).remove(cathedra);
     }
 
     @Test
@@ -65,9 +60,9 @@ public class HibernateCathedraTest {
         Long id = 1L;
         Cathedra cathedra = new Cathedra();
         cathedra.setId(id);
-        when(session.get(Cathedra.class, id)).thenReturn(cathedra);
+        when(entityManager.find(Cathedra.class, id)).thenReturn(cathedra);
 
-        Optional<Cathedra> result = mockCthedra.findById(id);
+        Optional<Cathedra> result = mockCathedra.findById(id);
 
         assertTrue(result.isPresent());
         assertEquals(cathedra, result.get());
@@ -80,10 +75,10 @@ public class HibernateCathedraTest {
         Cathedra cathedra2 = new Cathedra();
         cathedra2.setId(2L);
         Query<Cathedra> query =  mock(Query.class);
-        when(session.createNamedQuery("findAllCathedras", Cathedra.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findAllCathedras", Cathedra.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(cathedra, cathedra2));
 
-        List<Cathedra> result = mockCthedra.findAll();
+        List<Cathedra> result = mockCathedra.findAll();
 
         assertEquals(2, result.size());
         assertEquals(cathedra, result.get(0));
@@ -97,11 +92,11 @@ public class HibernateCathedraTest {
         cathedra.setId(1L);
         Query<Long> query =  mock(Query.class);
 
-        when(session.createNamedQuery("findCathedraByName", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findCathedraByName", Long.class)).thenReturn(query);
         when(query.setParameter("name", cathedra.getName())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(query.getSingleResult()).thenReturn(1L);
 
-        boolean result = mockCthedra.isSingle(cathedra);
+        boolean result = mockCathedra.isSingle(cathedra);
 
         assertTrue(result);
     }

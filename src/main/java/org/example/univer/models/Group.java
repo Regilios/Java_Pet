@@ -32,7 +32,7 @@ public class Group implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cathedra_id", referencedColumnName = "id")
     private Cathedra cathedra;
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "group", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private List<Student> students = new ArrayList<>();
     @ManyToMany(mappedBy = "groups", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Lecture> lections = new ArrayList<>();

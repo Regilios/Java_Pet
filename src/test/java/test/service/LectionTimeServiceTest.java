@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoLectureTimeInterface;
 import org.example.univer.exeption.LectureTimeExeption;
 import org.example.univer.models.LectureTime;
@@ -9,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,18 +24,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class LectionTimeServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoLectureTimeInterface mockLectureTime;
-
     @InjectMocks
     private LectureTimeService lectureTimeService;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(lectureTimeService, "minimumLectureTimeMinutes", 30);
+        appSettings.setMinimumLectureTimeMinutes(30);
+        lectureTimeService = new LectureTimeService(mockLectureTime, appSettings);
     }
+
     private DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Test
@@ -88,9 +95,10 @@ public class LectionTimeServiceTest {
     @Test
     void deleteById_deletedLectionTime_deleted() {
         LectureTime lectureTime = new LectureTime();
-        lectureTimeService.deleteEntity(lectureTime);
+        lectureTime.setId(1L);
+        lectureTimeService.deleteById(1L);
 
-        verify(mockLectureTime, times(1)).deleteEntity(lectureTime);
+        verify(mockLectureTime, times(1)).deleteById(1L);
     }
 
     @Test

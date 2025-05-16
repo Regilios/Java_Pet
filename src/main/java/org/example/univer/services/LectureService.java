@@ -1,6 +1,6 @@
 package org.example.univer.services;
 
-import jakarta.annotation.PostConstruct;
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.dao.interfaces.DaoLectureInterface;
 import org.example.univer.dao.interfaces.DaoSubjectInterface;
@@ -10,7 +10,6 @@ import org.example.univer.models.Teacher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,31 +26,24 @@ public class LectureService {
     private DaoLectureInterface daoLectureInterface;
     private DaoHolidayInterface daoHolidayInterface;
     private DaoSubjectInterface daoSubjectInterface;
-
-
     private GroupService groupService;
-
-    @Value("#{${startLectionDay}}")
-    private String startLection;
-    private LocalTime startLectionDay;
-
-    @Value("#{${endLectionDay}}")
-    private String endLection;
+    private AppSettings appSettings;
+    private LocalTime startLectionDay ;
     private LocalTime endLectionDay;
 
-    @PostConstruct
-    public void init() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        this.startLectionDay = LocalTime.parse(startLection, formatter);
-        this.endLectionDay = LocalTime.parse(endLection, formatter);
-    }
-
     @Autowired
-    public LectureService(DaoLectureInterface daoLectureInterface, DaoHolidayInterface daoHolidayInterface, DaoSubjectInterface daoSubjectInterface, GroupService groupService) {
+    public LectureService(DaoLectureInterface daoLectureInterface, DaoHolidayInterface daoHolidayInterface, DaoSubjectInterface daoSubjectInterface, GroupService groupService, AppSettings appSettings) {
         this.daoLectureInterface = daoLectureInterface;
         this.daoHolidayInterface = daoHolidayInterface;
         this.daoSubjectInterface = daoSubjectInterface;
         this.groupService = groupService;
+
+        if (appSettings.getStartLectionDay() != null && appSettings.getEndLectionDay() != null) {
+            this.startLectionDay = LocalTime.parse(appSettings.getStartLectionDay(), DateTimeFormatter.ofPattern("HH:mm"));
+            this.endLectionDay = LocalTime.parse(appSettings.getEndLectionDay(), DateTimeFormatter.ofPattern("HH:mm"));
+        } else {
+            throw new IllegalArgumentException("Start and end lection day must be set in configuration.");
+        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(LectureService.class);
@@ -79,7 +71,7 @@ public class LectureService {
                 if (isAudienceFreeForUpdate(lecture)) {
                     throw new LectureExeption("Невозможно обновить лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStartLection());
                 }
-                if (!isTeacherBusyForUpdate(lecture)) {
+                if (isTeacherBusyForUpdate(lecture)) {
                     throw new LectureExeption("Невозможно обновить лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLection());
                 }
                 validateCommon(lecture, "обновить");
@@ -131,16 +123,6 @@ public class LectureService {
         logger.debug("Start update holiday");
         try {
             validate(lecture, ValidationContext.METHOD_UPDATE);
-          /*  Lecture lectureOld = findById(lecture.getId())
-                    .orElseThrow(() -> new RuntimeException("Lecture not found with id: " + lecture.getId()));
-
-            List<Group> groups = daoLectureInterface.getListGroupForLecture(lectureOld.getId()).stream()
-                    .map(groupId -> groupService.findById(groupId).orElse(null))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            lectureOld.setGroups(groups);
-            daoLectureInterface.update(lecture, lectureOld);*/
-
             daoLectureInterface.update(lecture);
             logger.debug("Lecture updated");
         } catch (LectureExeption e) {
@@ -161,9 +143,9 @@ public class LectureService {
         }
     }
 
-    public void deleteEntity(Lecture lecture) {
-        logger.debug("Delete lecture width id: {}", lecture.getId());
-        daoLectureInterface.deleteEntity(lecture);
+    public void deleteById(Long id) {
+        logger.debug("Delete lecture width id: {}", id);
+        daoLectureInterface.deleteById(id);
     }
 
     public Optional<Lecture> findById(Long id) {
@@ -220,11 +202,32 @@ public class LectureService {
         List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForCreate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()));
         return lectureList.stream().filter(lecture1 -> lecture1.getTime().getStartLocal().equals(lecture.getTime().getStartLocal())).findAny().isEmpty();
     }
-
+/*
     private boolean isTeacherBusyForUpdate(Lecture lecture) {
-        logger.debug("Check if the teacher is busy on the current date for create");
-        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForUpdate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()), lecture);
-        return lectureList.stream().filter(lecture1 -> lecture1.getTime().getStartLocal().equals(lecture.getTime().getStartLocal())).findAny().isEmpty();
+        logger.debug("Проверяем, занято ли время у учителя при обновлении...");
+
+        if (lecture == null || lecture.getTime() == null || lecture.getTime().getStartLocal() == null) {
+            logger.warn("Лекция или её время не определены");
+            throw new IllegalArgumentException("Лекция или время не могут быть null");
+        }
+
+        LocalDate lectureDate = LocalDate.from(lecture.getTime().getStartLocal());
+        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForUpdate(lecture.getTeacher(), lectureDate, lecture);
+
+        logger.debug("Найдено лекций в это время: {}", lectureList.size());
+
+        return lectureList.stream()
+                .filter(l -> l.getTime() != null && l.getTime().getStartLocal() != null)
+                .anyMatch(l -> l.getTime().getId().equals(lecture.getTime().getId()));
+    }*/
+    private boolean isTeacherBusyForUpdate(Lecture lecture) {
+        if (lecture == null || lecture.getTime() == null || lecture.getTime().getId() == null) {
+            throw new IllegalArgumentException("Lecture или время не может быть null");
+        }
+
+        List<Lecture> conflictingLectures = daoLectureInterface.getTimetableTeacherForUpdate(lecture.getTeacher(), lecture);
+
+        return !conflictingLectures.isEmpty();
     }
 
     public List<Lecture> findByTeacherIdAndPeriod(Teacher teacher, LocalDate start, LocalDate end) {

@@ -100,8 +100,8 @@ public class AudienceController {
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Audience audience) {
-        audienceService.deleteEntity(audience);
+    public String delete(@PathVariable("id") Long id) {
+        audienceService.deleteById(id);
         logger.debug("Deleted audience");
         return "redirect:/audiences";
     }

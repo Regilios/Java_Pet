@@ -1,16 +1,16 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateLectureTime;
 import org.example.univer.models.LectureTime;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,20 +19,14 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateLectureTimeTest {
+
     @Mock
-    private Session session;
-    @Mock
-    private SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
     private HibernateLectureTime mockLectureTime;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
 
     @Test
     void whenCreateLectureTime_thenLectureTimeIsPersisted() {
@@ -40,8 +34,7 @@ public class HibernateLectureTimeTest {
         lectureTime.setId(1L);
 
         mockLectureTime.create(lectureTime);
-
-        verify(session).persist(lectureTime);
+        verify(entityManager).persist(lectureTime);
     }
 
     @Test
@@ -50,8 +43,7 @@ public class HibernateLectureTimeTest {
         lectureTime.setId(1L);
 
         mockLectureTime.update(lectureTime);
-
-        verify(session).merge(lectureTime);
+        verify(entityManager).merge(lectureTime);
     }
 
     @Test
@@ -59,9 +51,10 @@ public class HibernateLectureTimeTest {
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(1L);
 
-        mockLectureTime.deleteEntity(lectureTime);
+        when(entityManager.find(LectureTime.class, 1L)).thenReturn(lectureTime);
+        mockLectureTime.deleteById(1L);
 
-        verify(session).remove(lectureTime);
+        verify(entityManager).remove(lectureTime);
     }
 
     @Test
@@ -69,7 +62,7 @@ public class HibernateLectureTimeTest {
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(1L);
 
-        when(session.get(LectureTime.class, 1L)).thenReturn(lectureTime);
+        when(entityManager.find(LectureTime.class, 1L)).thenReturn(lectureTime);
 
         Optional<LectureTime> result = mockLectureTime.findById(1L);
         assertTrue(result.isPresent());
@@ -84,7 +77,7 @@ public class HibernateLectureTimeTest {
         lectureTime2.setId(2L);
 
         Query<LectureTime> query = mock(Query.class);
-        when(session.createNamedQuery("findAllLectureTime", LectureTime.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findAllLectureTime", LectureTime.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(lectureTime,lectureTime2));
 
         List<LectureTime> result = mockLectureTime.findAll();
@@ -102,10 +95,10 @@ public class HibernateLectureTimeTest {
         lectureTime.setEndLection(LocalDateTime.of(2025,10,10,11,0,0));
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("findLectureTime", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findLectureTime", Long.class)).thenReturn(query);
         when(query.setParameter("start_lection", lectureTime.getStartLocal())).thenReturn(query);
         when(query.setParameter("end_lection", lectureTime.getEndLocal())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(query.getSingleResult()).thenReturn(1L);
 
         boolean result =mockLectureTime.isSingle(lectureTime);
         assertTrue(result);

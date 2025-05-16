@@ -1,0 +1,58 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/spring_db
+    username: root
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false  # отключаем, чтобы убедиться в корректности транзакций
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG                 # Показывает SQL-запросы
+    org.hibernate.type.descriptor.sql: TRACE # Показывает значения параметров (binding values)
+    org.hibernate.engine.transaction: DEBUG  # Показывает статус транзакций
+    org.springframework.orm.jpa: DEBUG       # Показывает JPA-операции
+    org.springframework.transaction: DEBUG   # Показывает обработку транзакций
+    org.springframework.web.servlet: DEBUG   # Показывает обработку HTTP-запросов
+    org.springframework.boot.autoconfigure.orm.jpa: DEBUG
+
+app:
+  jndi-url: java:comp/env/jdbc/MyDataSource
+  max-length-name-cathedra: 10
+  start-symbol-name-cathedra: "G"
+  min-length-name-audience: 3
+  min-length-name-group: 3
+  room-settings:
+    size-max: 100
+    size-min: 10
+  max-day-holiday: 14
+  start-day-holiday: "MONDAY"
+  minimum-lecture-time-minutes: 30
+  start-lection-day: "08:00"
+  end-lection-day: "19:00"
+  max-group-size: 4
+  min-size-description: 20
+  gender-teacher: "FEMALE"
+  min-vacation-day: 7
+  max-vacation-day: 20
+  default-page-size: 3

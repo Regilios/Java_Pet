@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoAudienceInterface;
 import org.example.univer.exeption.AudienceExeption;
 import org.example.univer.models.Audience;
@@ -9,9 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,19 +21,24 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class AudienceServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoAudienceInterface mockAudience;
-
     @InjectMocks
     private AudienceService audienceService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(audienceService, "minSize", 20);
-        ReflectionTestUtils.setField(audienceService, "maxSize", 100);
+        AppSettings.RoomSettings settings = new AppSettings.RoomSettings();
+        settings.setSizeMin(20);
+        settings.setSizeMax(100);
+        appSettings.setRoomSettings(settings);
+
+        audienceService = new AudienceService(mockAudience, appSettings);
     }
 
     @Test
@@ -74,9 +81,10 @@ public class AudienceServiceTest {
     @Test
     void deleteById_deletedAudience_deleted() {
         Audience audience = new Audience();
-        audienceService.deleteEntity(audience);
+        audience.setId(1L);
+        audienceService.deleteById(1L);
 
-        verify(mockAudience, times(1)).deleteEntity(audience);
+        verify(mockAudience, times(1)).deleteById(1L);
     }
 
     @Test

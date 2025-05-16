@@ -1,16 +1,16 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateAudience;
 import org.example.univer.models.Audience;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,20 +20,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateAudienceTest {
     @Mock
-    private Session session;
-    @Mock
-    private SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
     private HibernateAudience mockAudience;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
 
     @Test
     void whenCreateAudience_thenAudienceIsPersisted() {
@@ -42,8 +35,7 @@ public class HibernateAudienceTest {
         audience.setCapacity(200);
 
         mockAudience.create(audience);
-
-        verify(session).persist(audience);
+        verify(entityManager).persist(audience);
     }
 
     @Test
@@ -53,8 +45,7 @@ public class HibernateAudienceTest {
         audience.setCapacity(200);
 
         mockAudience.update(audience);
-
-        verify(session).merge(audience);
+        verify(entityManager).merge(audience);
     }
 
     @Test
@@ -62,9 +53,10 @@ public class HibernateAudienceTest {
         Audience audience = new Audience();
         audience.setId(1L);
 
-        mockAudience.deleteEntity(audience);
+        when(entityManager.find(Audience.class, 1L)).thenReturn(audience);
+        mockAudience.deleteById(1L);
 
-        verify(session).remove(audience);
+        verify(entityManager).remove(audience);
     }
 
     @Test
@@ -72,7 +64,7 @@ public class HibernateAudienceTest {
         Long id = 1L;
         Audience audience = new Audience();
         audience.setId(id);
-        when(session.get(Audience.class, id)).thenReturn(audience);
+        when(entityManager.find(Audience.class, id)).thenReturn(audience);
 
         Optional<Audience> result = mockAudience.findById(id);
 
@@ -88,7 +80,7 @@ public class HibernateAudienceTest {
         audience2.setId(2L);
         Query<Audience> audienceQuery = mock(Query.class);
 
-        when(session.createNamedQuery("findAllAudiences", Audience.class)).thenReturn(audienceQuery);
+        when(entityManager.createNamedQuery("findAllAudiences", Audience.class)).thenReturn(audienceQuery);
         when(audienceQuery.getResultList()).thenReturn(List.of(audience1, audience2));
 
         List<Audience> result = mockAudience.findAll();
@@ -109,11 +101,11 @@ public class HibernateAudienceTest {
         when(pageable.getPageSize()).thenReturn(10);
 
         Query<Long> countQuery = mock(Query.class);
-        when(session.createNamedQuery("countAllAudiences", Long.class)).thenReturn(countQuery);
-        when(countQuery.uniqueResult()).thenReturn(2L);
+        when(entityManager.createNamedQuery("countAllAudiences", Long.class)).thenReturn(countQuery);
+        when(countQuery.getSingleResult()   ).thenReturn(2L);
 
         Query<Audience> audienceQuery = mock(Query.class);
-        when(session.createNamedQuery("findAllAudiencesPaginated", Audience.class)).thenReturn(audienceQuery);
+        when(entityManager.createNamedQuery("findAllAudiencesPaginated", Audience.class)).thenReturn(audienceQuery);
         when(audienceQuery.setFirstResult(0)).thenReturn(audienceQuery);
         when(audienceQuery.setMaxResults(10)).thenReturn(audienceQuery);
         when(audienceQuery.getResultList()).thenReturn(List.of(audience1, audience2));
@@ -133,9 +125,9 @@ public class HibernateAudienceTest {
         audience.setRoom(10);
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("countAudiencesByRoomNumber", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("countAudiencesByRoomNumber", Long.class)).thenReturn(query);
         when(query.setParameter("roomNumber", audience.getRoom())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(query.getSingleResult()).thenReturn(1L);
 
 
         boolean result = mockAudience.isSingle(audience);
