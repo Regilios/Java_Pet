@@ -135,8 +135,8 @@ public class TeacherController {
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Teacher teacher) {
-        teacherService.deleteEntity(teacher);
+    public String delete(@PathVariable("id") Long id) {
+        teacherService.deleteById(id);
         logger.debug("Deleted teacher");
         return "redirect:/teachers";
     }

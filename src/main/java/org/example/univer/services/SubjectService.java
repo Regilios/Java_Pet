@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoSubjectInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +17,14 @@ import java.util.Optional;
 public class SubjectService {
     private DaoSubjectInterface daoSubjectInterface;
     private static final Logger logger = LoggerFactory.getLogger(SubjectService.class);
-
-    @Value("#{${minSizeDescription}}")
+    private AppSettings appSettings;
     private Integer minSizeDescription;
 
     @Autowired
-    public SubjectService(DaoSubjectInterface daoSubjectInterface) {
+    public SubjectService(DaoSubjectInterface daoSubjectInterface, AppSettings appSettings) {
         this.daoSubjectInterface = daoSubjectInterface;
+        this.appSettings = appSettings;
+        this.minSizeDescription = appSettings.getMinSizeDescription();
     }
 
     public enum ValidationContext {
@@ -101,9 +102,9 @@ public class SubjectService {
             throw new ServiceException("Неизвестная ошибка при создании объекта предмета", e);
         }
     }
-    public void deleteEntity(Subject subject) {
-        logger.debug("Delete subject width id: {}", subject.getId());
-        daoSubjectInterface.deleteEntity(subject);
+    public void deleteById(Long id) {
+        logger.debug("Delete subject width id: {}", id);
+        daoSubjectInterface.deleteById(id);
     }
 
     public Optional<Subject> findById(Long id) {

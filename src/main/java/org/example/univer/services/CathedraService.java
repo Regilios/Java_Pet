@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoCathedraInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Cathedra;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +17,16 @@ import java.util.Optional;
 public class CathedraService {
     private DaoCathedraInterface daoCathedraInterface;
     private static final Logger logger = LoggerFactory.getLogger(CathedraService.class);
-    @Value("#{${maxLengthNameCathedra}}")
+    private AppSettings appSettings;
     private Integer maxLengthNameCathedra;
-
-    @Value("#{${startSymbolNameCathedra}}")
     private String startSymbolNameCathedra;
 
     @Autowired
-    public CathedraService(DaoCathedraInterface daoCathedraInterface) {
+    public CathedraService(DaoCathedraInterface daoCathedraInterface, AppSettings appSettings) {
         this.daoCathedraInterface = daoCathedraInterface;
+        this.appSettings = appSettings;
+        this.maxLengthNameCathedra = appSettings.getMaxLengthNameCathedra();
+        this.startSymbolNameCathedra = appSettings.getStartSymbolNameCathedra();
     }
 
     public enum ValidationContext {
@@ -110,9 +111,9 @@ public class CathedraService {
         logger.debug("Cathedra updated");
     }
 
-    public void deleteEntity(Cathedra cathedra) {
-        logger.debug("Delete cathedra width id: {}", cathedra.getId());
-        daoCathedraInterface.deleteEntity(cathedra);
+    public void deleteById(Long id) {
+        logger.debug("Delete cathedra width id: {}", id);
+        daoCathedraInterface.deleteById(id);
     }
 
     public Optional<Cathedra> findById(Long id) {

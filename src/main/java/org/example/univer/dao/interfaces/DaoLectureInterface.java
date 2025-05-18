@@ -10,7 +10,8 @@ import java.util.List;
 public interface DaoLectureInterface extends DaoInterfaces<Lecture> {
     Page<Lecture> findPaginatedLecture(Pageable pageable);
     List<Lecture> getTimetableTeacherForCreate(Teacher entity, LocalDate localDate);
-    List<Lecture> getTimetableTeacherForUpdate(Teacher teacher, LocalDate localDate, Lecture lecture);
+/*   List<Lecture> getTimetableTeacherForUpdate(Teacher teacher, LocalDate localDate, Lecture lecture);*/
+    List<Lecture> getTimetableTeacherForUpdate(Teacher teacher, Lecture lecture);
     List<Lecture> findLecturesByTeacherAndPeriod(Teacher teacher, LocalDate start, LocalDate end);
     boolean isSingle(Lecture lecture);
     boolean findByAudienceDateAndLectureTimeForCreate(Audience audience, LectureTime time);

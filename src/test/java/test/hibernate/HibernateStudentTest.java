@@ -1,17 +1,17 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateStudent;
 import org.example.univer.models.Group;
 import org.example.univer.models.Student;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,20 +21,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateStudentTest {
     @Mock
-    private Session session;
-    @Mock
-    private SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
     private HibernateStudent mockStudent;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
 
     @Test
     void whenCreateStudent_thenStudentIsPersisted() {
@@ -42,7 +35,7 @@ public class HibernateStudentTest {
         student.setId(1L);
 
         mockStudent.create(student);
-        verify(session).persist(student);
+        verify(entityManager).persist(student);
     }
 
     @Test
@@ -51,7 +44,7 @@ public class HibernateStudentTest {
         student.setId(1L);
 
         mockStudent.update(student);
-        verify(session).merge(student);
+        verify(entityManager).merge(student);
     }
 
     @Test
@@ -59,8 +52,10 @@ public class HibernateStudentTest {
         Student student = new Student();
         student.setId(1L);
 
-        mockStudent.deleteEntity(student);
-        verify(session).remove(student);
+        when(entityManager.find(Student.class, 1L)).thenReturn(student);
+        mockStudent.deleteById(1L);
+
+        verify(entityManager).remove(student);
     }
 
     @Test
@@ -68,7 +63,7 @@ public class HibernateStudentTest {
         Student student = new Student();
         student.setId(1L);
 
-        when(session.get(Student.class, student.getId())).thenReturn(student);
+        when(entityManager.find(Student.class, student.getId())).thenReturn(student);
         Optional<Student> result = mockStudent.findById(1l);
 
         assertTrue(result.isPresent());
@@ -83,7 +78,7 @@ public class HibernateStudentTest {
         student2.setId(2L);
 
         Query<Student> query = mock(Query.class);
-        when(session.createNamedQuery("findAllStudents", Student.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findAllStudents", Student.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(student,student2));
 
         List<Student> result = mockStudent.findAll();
@@ -103,11 +98,11 @@ public class HibernateStudentTest {
         when(pageable.getPageSize()).thenReturn(10);
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("countAllStudents", Long.class)).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(2L);
+        when(entityManager.createNamedQuery("countAllStudents", Long.class)).thenReturn(query);
+        when(query.getSingleResult()).thenReturn(2L);
 
         Query<Student> queryAll = mock(Query.class);
-        when(session.createNamedQuery("findAllStudentPaginated", Student.class)).thenReturn(queryAll);
+        when(entityManager.createNamedQuery("findAllStudentPaginated", Student.class)).thenReturn(queryAll);
         when(queryAll.setFirstResult(0)).thenReturn(queryAll);
         when(queryAll.setMaxResults(10)).thenReturn(queryAll);
         when(queryAll.getResultList()).thenReturn(List.of(student,student2));
@@ -128,10 +123,10 @@ public class HibernateStudentTest {
         student.setLastName("test2");
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("countStudentByName", Long.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("countStudentByName", Long.class)).thenReturn(query);
         when(query.setParameter("firstName", student.getFirstName())).thenReturn(query);
         when(query.setParameter("lastName", student.getLastName())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1l);
+        when(query.getSingleResult()).thenReturn(1l);
 
         boolean result = mockStudent.isSingle(student);
         assertTrue(result);
@@ -140,16 +135,15 @@ public class HibernateStudentTest {
     @Test
     void whenCheckGroupSizeStudent_thenReturnsCorrectResult() {
         Group group = new Group();
-        group.setId(1l);
+        group.setId(1L);
         Student student = new Student();
         student.setId(1L);
         student.setGroup(group);
 
-
-        Query<Integer> query = mock(Query.class);
-        when(session.createNamedQuery("findStudentsByGroupId", Integer.class)).thenReturn(query);
-        when(query.setParameter("group_id", student.getGroup().getId())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1);
+        Query<Long> query = mock(Query.class);
+        when(entityManager.createNamedQuery("findStudentsByGroupId", Long.class)).thenReturn(query);
+        when(query.setParameter("groupId", student.getGroup().getId())).thenReturn(query);
+        when(query.getSingleResult()).thenReturn(1L);
 
         Integer result = mockStudent.checkGroupSize(student);
         assertEquals(1, result);

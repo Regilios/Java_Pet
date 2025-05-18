@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoSubjectInterface;
 import org.example.univer.exeption.SubjectExeption;
 import org.example.univer.models.Subject;
@@ -9,9 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,18 +21,20 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class SubjectServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoSubjectInterface mockSubject;
-
     @InjectMocks
     private SubjectService subjectService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(subjectService, "minSizeDescription", 20);
+        appSettings.setMinSizeDescription(20);
+        subjectService = new SubjectService(mockSubject, appSettings);
     }
 
     @Test
@@ -71,10 +75,10 @@ public class SubjectServiceTest {
     @Test
     void deleteById_deletedSubject_deleted() {
         Subject subject = new Subject();
+        subject.setId(1L);
+        subjectService.deleteById(1L);
 
-        subjectService.deleteEntity(subject);
-
-        verify(mockSubject, times(1)).deleteEntity(subject);
+        verify(mockSubject, times(1)).deleteById(1L);
     }
 
     @Test

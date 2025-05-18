@@ -1,22 +1,25 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.dao.interfaces.DaoLectureInterface;
 import org.example.univer.dao.interfaces.DaoSubjectInterface;
 import org.example.univer.exeption.LectureExeption;
 import org.example.univer.models.*;
+import org.example.univer.services.GroupService;
 import org.example.univer.services.LectureService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -24,23 +27,29 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class LectureServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoLectureInterface mockLecture;
     @Mock
     private DaoSubjectInterface mockSubject;
     @Mock
+    private GroupService groupService;
+    @Mock
     private DaoHolidayInterface mockHoliday;
-    @InjectMocks
+
     private LectureService lectureService;
 
     private DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(lectureService, "startLectionDay", LocalTime.parse("08:00"));
-        ReflectionTestUtils.setField(lectureService, "endLectionDay", LocalTime.parse("19:00"));
+        appSettings.setStartLectionDay("08:00");
+        appSettings.setEndLectionDay("19:00");
+        lectureService = new LectureService( mockLecture, mockHoliday, mockSubject, groupService, appSettings);
     }
 
     @Test
@@ -184,9 +193,10 @@ public class LectureServiceTest {
     @Test
     void deleteById_deletedLecture_deleted() {
         Lecture lecture = new Lecture();
-        lectureService.deleteEntity(lecture);
+        lecture.setId(1L);
+        lectureService.deleteById(1L);
 
-        verify(mockLecture, times(1)).deleteEntity(lecture);
+        verify(mockLecture, times(1)).deleteById(1L);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoStudentInterface;
 import org.example.univer.exeption.StudentExeption;
 import org.example.univer.models.Gender;
@@ -11,9 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,8 +24,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class StundetServiceTest {
+public class StudentServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoStudentInterface mockStudent;
     @InjectMocks
@@ -31,8 +36,8 @@ public class StundetServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(studentService, "maxGroupSize", 4);
+        appSettings.setMaxGroupSize(4);
+        studentService = new StudentService(mockStudent, appSettings);
     }
 
     @Test
@@ -93,9 +98,10 @@ public class StundetServiceTest {
     @Test
     void deleteById_deletedStudent_deleted() {
         Student student = new Student();
-        studentService.deleteEntity(student);
+        student.setId(1L);
+        studentService.deleteById(1L);
 
-        verify(mockStudent, times(1)).deleteEntity(student);
+        verify(mockStudent, times(1)).deleteById(1L);
     }
 
     @Test

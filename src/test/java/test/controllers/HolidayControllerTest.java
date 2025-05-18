@@ -141,7 +141,7 @@ public class HolidayControllerTest {
         mockMvc.perform(delete("/holidays/{id}", 1))
                 .andExpect(redirectedUrl("/holidays"));
 
-        verify(holidayService).deleteEntity(holiday);
+        verify(holidayService).deleteById(1L);
     }
 
 }

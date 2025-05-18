@@ -1,16 +1,16 @@
 package test.hibernate;
 
+import jakarta.persistence.EntityManager;
+import org.example.univer.UniverApplication;
 import org.example.univer.dao.hibernate.HibernateLecture;
 import org.example.univer.models.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,20 +21,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-
+@SpringBootTest(classes = UniverApplication.class)
 @ExtendWith(MockitoExtension.class)
 public class HibernateLectureTest {
     @Mock
-    Session session;
-    @Mock
-    SessionFactory sessionFactory;
+    private EntityManager entityManager;
     @InjectMocks
     HibernateLecture mockLecture;
-
-    @BeforeEach
-    void setUp() {
-        when(sessionFactory.getCurrentSession()).thenReturn(session);
-    }
 
     @Test
     void whenCreateLecture_thenLectureIsPersisted() {
@@ -42,8 +35,7 @@ public class HibernateLectureTest {
         lecture.setId(1L);
 
         mockLecture.create(lecture);
-
-        verify(session).persist(lecture);
+        verify(entityManager).persist(lecture);
     }
 
     @Test
@@ -52,8 +44,7 @@ public class HibernateLectureTest {
         lecture.setId(1L);
 
         mockLecture.update(lecture);
-
-        verify(session).merge(lecture);
+        verify(entityManager).merge(lecture);
     }
 
     @Test
@@ -61,9 +52,10 @@ public class HibernateLectureTest {
         Lecture lecture = new Lecture();
         lecture.setId(1L);
 
-        mockLecture.deleteEntity(lecture);
+        when(entityManager.find(Lecture.class, 1L)).thenReturn(lecture);
+        mockLecture.deleteById(1L);
 
-        verify(session).remove(lecture);
+        verify(entityManager).remove(lecture);
     }
 
     @Test
@@ -72,7 +64,7 @@ public class HibernateLectureTest {
         lecture.setId(1L);
 
         Query<Lecture> query = mock(Query.class);
-        when(session.createNamedQuery("findLectureWidthGroups", Lecture.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findLectureWidthGroups", Lecture.class)).thenReturn(query);
         when(query.setParameter("lecture_id", 1L)).thenReturn(query);
         when(query.getSingleResult()).thenReturn(lecture);
 
@@ -91,7 +83,7 @@ public class HibernateLectureTest {
 
         Query<Lecture> query = mock(Query.class);
 
-        when(session.createNamedQuery("findAllLecture", Lecture.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("findAllLecture", Lecture.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(lecture, lecture2));
 
         List<Lecture> result = mockLecture.findAll();
@@ -113,11 +105,11 @@ public class HibernateLectureTest {
         when(pageable.getPageSize()).thenReturn(10);
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("countAllLecture", Long.class)).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(2L);
+        when(entityManager.createNamedQuery("countAllLecture", Long.class)).thenReturn(query);
+        when(query.getSingleResult()).thenReturn(2L);
 
         Query<Lecture> queryLecture = mock(Query.class);
-        when(session.createNamedQuery("findAllLecturePaginatedWithGroups", Lecture.class)).thenReturn(queryLecture);
+        when(entityManager.createNamedQuery("findAllLecturePaginatedWithGroups", Lecture.class)).thenReturn(queryLecture);
         when(queryLecture.setFirstResult(0)).thenReturn(queryLecture);
         when(queryLecture.setMaxResults(10)).thenReturn(queryLecture);
         when(queryLecture.getResultList()).thenReturn(List.of(lecture, lecture2));
@@ -150,12 +142,12 @@ public class HibernateLectureTest {
 
 
         Query<Long> query = mock(Query.class);
-        when(session.createNamedQuery("countLectureByParam", Long.class)).thenReturn(query);
-        when(query.setParameter("teacher_id", lecture.getTeacher())).thenReturn(query);
-        when(query.setParameter("subject_id", lecture.getSubject())).thenReturn(query);
-        when(query.setParameter("lecture_time_id", lecture.getTime())).thenReturn(query);
-        when(query.setParameter("audience_id", lecture.getAudience())).thenReturn(query);
-        when(query.uniqueResult()).thenReturn(1L);
+        when(entityManager.createNamedQuery("countLectureByParam", Long.class)).thenReturn(query);
+        when(query.setParameter("teacherId", lecture.getTeacher())).thenReturn(query);
+        when(query.setParameter("subjectId", lecture.getSubject())).thenReturn(query);
+        when(query.setParameter("lectureTimeId", lecture.getTime())).thenReturn(query);
+        when(query.setParameter("audienceId", lecture.getAudience())).thenReturn(query);
+        when(query.getSingleResult()).thenReturn(1L);
 
         boolean result = mockLecture.isSingle(lecture);
         assertTrue(result);
@@ -176,10 +168,10 @@ public class HibernateLectureTest {
         LocalDate localDate = LocalDate.of(2025,10,10);
 
         Query<Lecture> query = mock(Query.class);
-        when(session.createNamedQuery("getTimetableTeacherForCreate", Lecture.class)).thenReturn(query);
+        when(entityManager.createNamedQuery("getTimetableTeacherForCreate", Lecture.class)).thenReturn(query);
         when(query.setParameter("teacherId", teacher.getId())).thenReturn(query);
-        when(query.setParameter("day_l", localDate.getDayOfMonth())).thenReturn(query);
-        when(query.setParameter("month_l", localDate.getMonthValue())).thenReturn(query);
+        when(query.setParameter("dayLecture", localDate.getDayOfMonth())).thenReturn(query);
+        when(query.setParameter("monthLecture", localDate.getMonthValue())).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(lecture, lecture2));
 
         List<Lecture> results = mockLecture.getTimetableTeacherForCreate(teacher,localDate);

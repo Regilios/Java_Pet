@@ -167,8 +167,8 @@ public class LectureController {
 
     /* Обарботка удаления */
     @DeleteMapping("{id}")
-    public String delete(@ModelAttribute Lecture lecture) {
-        lectureService.deleteEntity(lecture);
+    public String delete(@PathVariable("id") Long id) {
+        lectureService.deleteById(id);
         logger.debug("Deleted lecture");
         return "redirect:/lectures";
     }

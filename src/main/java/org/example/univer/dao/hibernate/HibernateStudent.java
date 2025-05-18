@@ -1,68 +1,68 @@
 package org.example.univer.dao.hibernate;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.univer.dao.interfaces.DaoStudentInterface;
 import org.example.univer.models.Student;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 @Component
 @Transactional
 public class HibernateStudent implements DaoStudentInterface {
-
     private static final Logger logger = LoggerFactory.getLogger(HibernateStudent.class);
-    @Autowired
-    private final SessionFactory sessionFactory;
-    @Autowired
-    public HibernateStudent(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public void create(Student student) {
         logger.debug("create student {}", student);
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(student);
+        entityManager.persist(student);
     }
 
     @Override
     public void update(Student student) {
         logger.debug("update student {}", student);
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(student);
+        entityManager.merge(student);
     }
 
     @Override
-    public void deleteEntity(Student student) {
-        logger.debug("Student with id {} was deleted", student.getId());
-        sessionFactory.getCurrentSession().remove(student);
+    public void deleteById(Long id) {
+        Student student = entityManager.find(Student.class, id);
+        if (Objects.nonNull(student)) {
+            if (Objects.nonNull(student.getGroup())) {
+                student.getGroup().getStudents().remove(student);
+                student.setGroup(null);
+            }
+            entityManager.remove(student);
+            logger.debug("Student with id {} was deleted", id);
+        }
     }
 
     @Override
     public Optional<Student> findById(Long id) {
         logger.debug("Find Student by id: {}", id);
-        return Optional.ofNullable(sessionFactory.getCurrentSession().get(Student.class, id));
+        return Optional.ofNullable(entityManager.find(Student.class, id));
     }
 
     @Override
     public List<Student> findAll() {
         logger.debug("Find all students");
-        return sessionFactory.getCurrentSession().createNamedQuery("findAllStudents", Student.class).getResultList();
+        return entityManager.createNamedQuery("findAllStudents", Student.class).getResultList();
     }
+
     @Override
     public Page<Student> findPaginatedStudents(Pageable pageable) {
-        Session session = sessionFactory.getCurrentSession();
-        Long total = session.createNamedQuery("countAllStudents", Long.class).uniqueResult();
-        List<Student> audiences = session.createNamedQuery("findAllStudentPaginated", Student.class)
+        Long total = entityManager.createNamedQuery("countAllStudents", Long.class).getSingleResult();
+        List<Student> audiences = entityManager.createNamedQuery("findAllStudentPaginated", Student.class)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
@@ -71,23 +71,20 @@ public class HibernateStudent implements DaoStudentInterface {
         return new PageImpl<>(audiences, pageable, total);
     }
 
-
     @Override
     public boolean isSingle(Student student) {
-        Long result = sessionFactory.getCurrentSession()
-                .createNamedQuery("countStudentByName", Long.class)
+        Long result = entityManager.createNamedQuery("countStudentByName", Long.class)
                 .setParameter("firstName", student.getFirstName())
                 .setParameter("lastName", student.getLastName())
-                .uniqueResult();
+                .getSingleResult();
         return Objects.nonNull(result)  && result > 0;
     }
 
     @Override
     public Integer checkGroupSize(Student student) {
-        Integer result = sessionFactory.getCurrentSession()
-                .createNamedQuery("findStudentsByGroupId", Integer.class)
-                .setParameter("group_id", student.getGroup().getId())
-                .uniqueResult();
-       return result;
+        Long result = entityManager.createNamedQuery("findStudentsByGroupId", Long.class)
+                .setParameter("groupId", student.getGroup().getId())
+                .getSingleResult();
+       return result.intValue();
     }
 }

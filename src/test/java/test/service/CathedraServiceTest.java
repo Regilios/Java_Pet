@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoCathedraInterface;
 import org.example.univer.exeption.CathedraExeption;
 import org.example.univer.models.Cathedra;
@@ -9,29 +10,31 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class CathedraServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoCathedraInterface mockCathedra;
-
     @InjectMocks
     private CathedraService cathedraService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(cathedraService, "maxLengthNameCathedra", 10);
-        ReflectionTestUtils.setField(cathedraService, "startSymbolNameCathedra", "А");
+        appSettings.setMaxLengthNameCathedra(10);
+        appSettings.setStartSymbolNameCathedra("А");
+        cathedraService = new CathedraService(mockCathedra, appSettings);
     }
 
     @Test
@@ -71,9 +74,10 @@ public class CathedraServiceTest {
     @Test
     void deleteById_deletedCathedra_deleted() {
         Cathedra cathedra = new Cathedra();
-        cathedraService.deleteEntity(cathedra);
+        cathedra.setId(1L);
+        cathedraService.deleteById(1L);
 
-        verify(mockCathedra, times(1)).deleteEntity(cathedra);
+        verify(mockCathedra, times(1)).deleteById(1L);
     }
 
     @Test

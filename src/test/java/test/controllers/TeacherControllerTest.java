@@ -1,14 +1,16 @@
 package test.controllers;
 
 import org.example.univer.controllers.TeacherController;
-import org.example.univer.models.*;
+import org.example.univer.models.Cathedra;
+import org.example.univer.models.Gender;
+import org.example.univer.models.Subject;
+import org.example.univer.models.Teacher;
 import org.example.univer.services.CathedraService;
 import org.example.univer.services.SubjectService;
 import org.example.univer.services.TeacherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -23,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -208,13 +209,11 @@ public class TeacherControllerTest {
 
     @Test
     void whenDeleteTeacher_thenTeacherDeleted() throws Exception {
+        Teacher teacher = new Teacher();
+        teacher.setId(1L);
         mockMvc.perform(delete("/teachers/{id}", 1))
                 .andExpect(redirectedUrl("/teachers"));
 
-        ArgumentCaptor<Teacher> teacherArgumentCaptor = ArgumentCaptor.forClass(Teacher.class);
-        verify(teacherService).deleteEntity(teacherArgumentCaptor.capture());
-
-        Teacher actual = teacherArgumentCaptor.getValue();
-        assertEquals(1L, actual.getId());
+        verify(teacherService).deleteById(1L);
     }
 }

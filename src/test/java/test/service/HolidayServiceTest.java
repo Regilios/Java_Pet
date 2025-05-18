@@ -1,5 +1,6 @@
 package test.service;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.exeption.HolidaysExeption;
 import org.example.univer.models.Holiday;
@@ -9,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,18 +23,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class HolidayServiceTest {
+    @Spy
+    private AppSettings appSettings = new AppSettings();
     @Mock
     private DaoHolidayInterface mockHoliday;
-
     @InjectMocks
     private HolidayService holidayService;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(holidayService, "maxDayHoliday", 14);
-        ReflectionTestUtils.setField(holidayService, "startDayHoliday", "MONDAY");
+        appSettings.setMaxDayHoliday(14);
+        appSettings.setStartDayHoliday("MONDAY");
+        holidayService = new HolidayService(mockHoliday, appSettings);
     }
 
     @Test
@@ -75,9 +81,10 @@ public class HolidayServiceTest {
     @Test
     void deleteById_deletedHoliday_deleted() {
         Holiday holiday = new Holiday();
-        holidayService.deleteEntity(holiday);
+        holiday.setId(1L);
+        holidayService.deleteById(1L);
 
-        verify(mockHoliday, times(1)).deleteEntity(holiday);
+        verify(mockHoliday, times(1)).deleteById(1L);
     }
 
     @Test

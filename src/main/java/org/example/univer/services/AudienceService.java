@@ -1,12 +1,12 @@
 package org.example.univer.services;
 
+import org.example.univer.config.AppSettings;
 import org.example.univer.dao.interfaces.DaoAudienceInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Audience;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,15 +19,12 @@ import java.util.Optional;
 public class AudienceService {
     private DaoAudienceInterface daoAudienceInterfaces;
     private static final Logger logger = LoggerFactory.getLogger(AudienceService.class);
-    @Value("${roomSettings.SIZE_MAX}")
-    private Integer maxSize;
-    @Value("${roomSettings.SIZE_MIN}")
-    private Integer minSize;
+    private AppSettings appSettings;
     @Autowired
-    public AudienceService(DaoAudienceInterface daoAudienceInterfaces) {
+    public AudienceService(DaoAudienceInterface daoAudienceInterfaces, AppSettings appSettings) {
         this.daoAudienceInterfaces = daoAudienceInterfaces;
+        this.appSettings = appSettings;
     }
-
     public enum ValidationContext {
         METHOD_CREATE,
         METHOD_UPDATE
@@ -51,7 +48,7 @@ public class AudienceService {
     }
 
     private void validateCommon(Audience audience, String action) {
-        if (audience.getCapacity() < minSize || audience.getCapacity() > maxSize) {
+        if (audience.getCapacity() < appSettings.getRoomSettings().getSizeMin() || audience.getCapacity() > appSettings.getRoomSettings().getSizeMax()) {
             throw new AudienceExeption("Невозможно " + action + " аудиенцию! Размер аудиенции не попадает в рамки критериев!");
         }
     }
@@ -104,9 +101,9 @@ public class AudienceService {
         }
     }
 
-    public void deleteEntity(Audience audience) {
-        logger.debug("Delete audience width id: {}", audience.getId());
-        daoAudienceInterfaces.deleteEntity(audience);
+    public void deleteById(Long id) {
+        logger.debug("Delete audience width id: {}", id);
+        daoAudienceInterfaces.deleteById(id);
     }
 
     public Optional<Audience> findById(Long id) {
