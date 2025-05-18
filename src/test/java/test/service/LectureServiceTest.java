@@ -11,7 +11,6 @@ import org.example.univer.services.LectureService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,11 +58,11 @@ public class LectureServiceTest {
         Subject subject = new Subject();
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
-        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
+        lectureTime.setStartLecture(LocalDateTime.parse("2025-02-02 14:30:00", formatter1));
+        lectureTime.setEndLecture(LocalDateTime.parse("2025-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
-        audience.setRoom(1);
+        audience.setRoomNumber(1);
         audience.setCapacity(100);
 
         Lecture lecture = new Lecture();
@@ -74,14 +73,14 @@ public class LectureServiceTest {
         lecture.setAudience(audience);
 
         LectureTime mockLectureTime = new LectureTime();
-        mockLectureTime.setStartLection(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
-        mockLectureTime.setEndLection(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
+        mockLectureTime.setStartLecture(LocalDateTime.parse("2025-03-02 14:30:00", formatter1));
+        mockLectureTime.setEndLecture(LocalDateTime.parse("2025-03-02 16:30:00", formatter1));
 
         when(mockLecture.isSingle(lecture)).thenReturn(false);
-        when(mockHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(false);
+        when(mockHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLecture())).thenReturn(false);
         when(mockSubject.checkTeacherAssignedSubject(teacher, subject)).thenReturn(true);
         when(mockLecture.findByAudienceDateAndLectureTimeForCreate(lecture.getAudience(), lecture.getTime())).thenReturn(false);
-        when(mockLecture.getTimetableTeacherForCreate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()))).thenReturn(List.of(new Lecture() {{
+        when(mockLecture.getTimetableTeacherForCreate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLecture()))).thenReturn(List.of(new Lecture() {{
             setTime(mockLectureTime);
         }}));
 
@@ -93,8 +92,8 @@ public class LectureServiceTest {
     @Test
     void create_LectureWidthIncorrectLectionTime_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 08:30:00", formatter1));
-        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 20:30:00", formatter1));
+        lectureTime.setStartLecture(LocalDateTime.parse("2025-02-02 08:30:00", formatter1));
+        lectureTime.setEndLecture(LocalDateTime.parse("2025-02-02 20:30:00", formatter1));
 
         Lecture lecture = new Lecture();
         lecture.setTime(lectureTime);
@@ -109,13 +108,13 @@ public class LectureServiceTest {
     @Test
     void create_LectureOnHolidays_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStartLection(LocalDateTime.parse("2024-01-02 08:30:00", formatter1));
-        lectureTime.setEndLection(LocalDateTime.parse("2024-01-02 10:30:00", formatter1));
+        lectureTime.setStartLecture(LocalDateTime.parse("2024-01-02 08:30:00", formatter1));
+        lectureTime.setEndLecture(LocalDateTime.parse("2024-01-02 10:30:00", formatter1));
 
         Lecture lecture = new Lecture();
         lecture.setTime(lectureTime);
 
-        when(mockHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(true);
+        when(mockHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLecture())).thenReturn(true);
 
         assertThrows(LectureExeption.class, () -> {
             lectureService.validate(lecture, LectureService.ValidationContext.METHOD_CREATE);
@@ -130,15 +129,15 @@ public class LectureServiceTest {
         Subject subject = new Subject();
 
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStartLection(LocalDateTime.parse("2025-02-02 10:30:00", formatter1));
-        lectureTime.setEndLection(LocalDateTime.parse("2025-02-02 12:30:00", formatter1));
+        lectureTime.setStartLecture(LocalDateTime.parse("2025-02-02 10:30:00", formatter1));
+        lectureTime.setEndLecture(LocalDateTime.parse("2025-02-02 12:30:00", formatter1));
 
         Lecture lecture = new Lecture();
         lecture.setTeacher(teacher);
         lecture.setSubject(subject);
         lecture.setTime(lectureTime);
 
-        when(mockHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal())).thenReturn(false);
+        when(mockHoliday.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLecture())).thenReturn(false);
         when(mockSubject.checkTeacherAssignedSubject(lecture.getTeacher(), lecture.getSubject())).thenReturn(false);
 
         assertThrows(LectureExeption.class, () -> {
@@ -152,11 +151,11 @@ public class LectureServiceTest {
     @Test
     void create_AudienceNotFree_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStartLection(LocalDateTime.parse("2035-02-02 14:30:00", formatter1));
-        lectureTime.setEndLection(LocalDateTime.parse("2035-02-02 16:30:00", formatter1));
+        lectureTime.setStartLecture(LocalDateTime.parse("2035-02-02 14:30:00", formatter1));
+        lectureTime.setEndLecture(LocalDateTime.parse("2035-02-02 16:30:00", formatter1));
 
         Audience audience = new Audience();
-        audience.setRoom(1);
+        audience.setRoomNumber(1);
         audience.setCapacity(100);
 
         Teacher teacher = new Teacher();

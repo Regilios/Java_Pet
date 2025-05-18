@@ -18,14 +18,14 @@
                     <thead>
                     <tr>
                         <th>Subject</th>
-                        <th>Time lection</th>
+                        <th>Time lecture</th>
                         <th>Show</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="lecture: ${lectures}">
                         <td><a th:text="${lecture.getSubject().getName()}">Subject</a></td>
-                        <td><a th:text="${lecture.getTimeStart()} + ' : ' + ${lecture.getTimeEnd()}">Start end</a></td>
+                        <td><a th:text="${lecture.getTime().getStartLecture()} + ' : ' + ${lecture.getTime().getEndLecture()}">Start end</a></td>
                         <td><a class="btn btn-primary" th:href="@{/lectures/{id}(id=${lecture.getId()})}">show</a></td>
                     </tr>
                     </tbody>

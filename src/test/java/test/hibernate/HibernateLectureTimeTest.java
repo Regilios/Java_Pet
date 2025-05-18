@@ -91,13 +91,13 @@ public class HibernateLectureTimeTest {
     void whenCheckIsSingleLectureTime_thenReturnsCorrectResult() {
         LectureTime lectureTime = new LectureTime();
         lectureTime.setId(1L);
-        lectureTime.setStartLection(LocalDateTime.of(2025,10,10,10,0,0));
-        lectureTime.setEndLection(LocalDateTime.of(2025,10,10,11,0,0));
+        lectureTime.setStartLecture(LocalDateTime.of(2025,10,10,10,0,0));
+        lectureTime.setEndLecture(LocalDateTime.of(2025,10,10,11,0,0));
 
         Query<Long> query = mock(Query.class);
         when(entityManager.createNamedQuery("findLectureTime", Long.class)).thenReturn(query);
-        when(query.setParameter("start_lection", lectureTime.getStartLocal())).thenReturn(query);
-        when(query.setParameter("end_lection", lectureTime.getEndLocal())).thenReturn(query);
+        when(query.setParameter("startLecture", lectureTime.getStartLecture())).thenReturn(query);
+        when(query.setParameter("endLecture", lectureTime.getEndLecture())).thenReturn(query);
         when(query.getSingleResult()).thenReturn(1L);
 
         boolean result =mockLectureTime.isSingle(lectureTime);

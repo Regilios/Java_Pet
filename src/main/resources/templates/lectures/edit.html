@@ -45,7 +45,7 @@
                             <option th:each="anyAudience : ${audiences}"
                                     th:field="*{audience.id}"
                                     th:value="${anyAudience?.id}"
-                                    th:text="${anyAudience?.room}">Room
+                                    th:text="${anyAudience?.roomNumber}">Room
                             </option>
                         </select>
                     </div>
@@ -65,7 +65,7 @@
                             <option th:each="anyTime : ${times}"
                                     th:field="*{time.id}"
                                     th:value="${anyTime?.id}"
-                                    th:text="${anyTime?.startLocal} + ' - ' + ${anyTime?.endLocal}">start
+                                    th:text="${anyTime?.startLecture} + ' - ' + ${anyTime?.endLecture}">start
                             </option>
                         </select>
                     </div>

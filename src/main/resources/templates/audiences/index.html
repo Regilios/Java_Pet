@@ -25,7 +25,7 @@
                     <tbody>
                     <tr th:each="audience: ${audiences.content}">
                         <td><a th:text="${audience.getId()}">Id</a></td>
-                        <td><a th:text="${audience.getRoom()}">Room</a></td>
+                        <td><a th:text="${audience.getRoomNumber()}">Room</a></td>
                         <td><a class="btn btn-primary" th:href="@{/audiences/{id}(id=${audience.getId()})}">show</a>
                         </td>
                         <td>

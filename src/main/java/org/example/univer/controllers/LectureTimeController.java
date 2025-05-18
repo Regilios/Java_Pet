@@ -50,12 +50,12 @@ public class LectureTimeController {
                            @RequestParam("end_time") String endTime,
                            Model model, RedirectAttributes redirectAttributes) {
         try {
-            LocalDateTime startLection = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
-            LocalDateTime endLection = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
+            LocalDateTime startLecture = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
+            LocalDateTime endLecture = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
 
             LectureTime lectureTime = new LectureTime();
-            lectureTime.setStartLection(startLection);
-            lectureTime.setEndLection(endLection);
+            lectureTime.setStartLecture(startLecture);
+            lectureTime.setEndLecture(endLecture);
             lectureTimeService.create(lectureTime);
             logger.debug("Create new group. Id {}", lectureTime.getId());
         } catch (ServiceException e) {
@@ -88,13 +88,13 @@ public class LectureTimeController {
                          @RequestParam("end_time") String endTime,
                          @PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            LocalDateTime startLection = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
-            LocalDateTime endLection = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
+            LocalDateTime startLecture = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
+            LocalDateTime endLecture = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
 
             LectureTime lectureTime = new LectureTime();
             lectureTime.setId(id);
-            lectureTime.setStartLection(startLection);
-            lectureTime.setEndLection(endLection);
+            lectureTime.setStartLecture(startLecture);
+            lectureTime.setEndLecture(endLecture);
             lectureTimeService.update(lectureTime);
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());

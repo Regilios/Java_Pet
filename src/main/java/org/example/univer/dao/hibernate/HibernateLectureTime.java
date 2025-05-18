@@ -57,8 +57,8 @@ public class HibernateLectureTime implements DaoLectureTimeInterface {
     @Override
     public boolean isSingle(LectureTime lectureTime) {
         Long result = entityManager.createNamedQuery("findLectureTime", Long.class)
-                .setParameter("start_lection", lectureTime.getStartLocal())
-                .setParameter("end_lection", lectureTime.getEndLocal())
+                .setParameter("startLecture", lectureTime.getStartLecture())
+                .setParameter("endLecture", lectureTime.getEndLecture())
                 .getSingleResult();
         return Objects.nonNull(result) && result > 0;
     }

@@ -34,7 +34,7 @@ public class AudienceService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(audience)) {
-                    throw new InvalidParameterException("Невозможно создать аудиенцию! Аудиенция с номером: " + audience.getRoom() + " уже существует");
+                    throw new InvalidParameterException("Невозможно создать аудиенцию! Аудиенция с номером: " + audience.getRoomNumber() + " уже существует");
                 }
                 validateCommon(audience, "создать");
                 break;

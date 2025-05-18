@@ -36,7 +36,7 @@ public class LectureTimeService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lectureTime)) {
-                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStartLection() + " по " + lectureTime.getEndLection() + "уже существует!");
+                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStartLecture() + " по " + lectureTime.getEndLecture() + "уже существует!");
                 }
                 validateCommon(lectureTime, "создать");
                 break;
@@ -128,10 +128,10 @@ public class LectureTimeService {
     }
 
     public boolean isTimeLectionCorrect(LectureTime lectureTime) {
-        return lectureTime.getStartLocal().isBefore(lectureTime.getEndLocal());
+        return lectureTime.getStartLecture().isBefore(lectureTime.getEndLecture());
     }
 
     public boolean timeLectionIsNotLessAssignedTime(LectureTime lectureTime) {
-        return Duration.between(lectureTime.getStartLocal(), lectureTime.getEndLocal()).abs().toMinutes() >= minimumLectureTimeMinutes;
+        return Duration.between(lectureTime.getStartLecture(), lectureTime.getEndLecture()).abs().toMinutes() >= minimumLectureTimeMinutes;
     }
 }

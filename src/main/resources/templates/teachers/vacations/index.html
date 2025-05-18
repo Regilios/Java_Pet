@@ -26,8 +26,8 @@
                     <tbody>
                     <tr th:each="vacation: ${vacations}">
                         <td><a th:text="${vacation.getId()}">Id</a></td>
-                        <td><a th:text="${vacation.getStartJobString()}">Start</a></td>
-                        <td><a th:text="${vacation.getEndJobString()}">End</a></td>
+                            <td><a th:text="${vacation.getStartJob()}">Start</a></td>
+                        <td><a th:text="${vacation.getEndJob()}">End</a></td>
 
                         <td><a class="btn btn-primary"
                                th:href="@{/teachers/{id}/vacations/{vacId}(id=${teacher.getId()}, vacId=${vacation.getId()})}">show</a>

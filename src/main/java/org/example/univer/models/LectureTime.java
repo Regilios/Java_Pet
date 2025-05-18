@@ -1,5 +1,6 @@
 package org.example.univer.models;
 
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -14,10 +15,15 @@ import java.util.Objects;
                 ),
                 @NamedQuery(
                         name = "findLectureTime",
-                        query = "SELECT COUNT(*) FROM LectureTime WHERE startLection=:start_lection AND endLection=:end_lection "
+                        query = "SELECT COUNT(*) FROM LectureTime WHERE startLecture=:startLecture AND endLecture=:endLecture "
                 )
         })
 @Entity
+@Getter
+@Setter
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "lectiontime")
 public class LectureTime implements Serializable {
     private static final long serialVersionUID = -4670760351992342275L;
@@ -27,60 +33,33 @@ public class LectureTime implements Serializable {
     private Long id;
     @Column(name = "start_lection", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_LECTURE_TIME)
-    private LocalDateTime startLection;
+    private LocalDateTime startLecture;
     @Column(name = "end_lection", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_LECTURE_TIME)
-    private LocalDateTime endLection;
+    private LocalDateTime endLecture;
 
-    public LectureTime(Long id, LocalDateTime start, LocalDateTime end) {
-        this.id = id;
-        this.startLection = start;
-        this.endLection = end;
-    }
-
-    public LectureTime() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getStartLection() {
-        return Objects.nonNull(startLection) ? startLection.format(DateTimeFormatter.ofPattern(DATE_PATTERN_LECTURE_TIME)) : null;
+/*
+    public String getStartLecture() {
+        return Objects.nonNull(startLecture) ? startLecture.format(DateTimeFormatter.ofPattern(DATE_PATTERN_LECTURE_TIME)) : null;
     }
     public LocalDateTime getStartLocal() {
-        return startLection;
+        return startLecture;
     }
 
-    public void setStartLection(LocalDateTime startLection) {
-        this.startLection = startLection;
+    public void setStartLecture(LocalDateTime startLecture) {
+        this.startLecture = startLecture;
     }
 
-    public String getEndLection() {
-        return Objects.nonNull(endLection) ? endLection.format(DateTimeFormatter.ofPattern(DATE_PATTERN_LECTURE_TIME)) : null;
+    public String getEndLecture() {
+        return Objects.nonNull(endLecture) ? endLecture.format(DateTimeFormatter.ofPattern(DATE_PATTERN_LECTURE_TIME)) : null;
     }
 
-    public LocalDateTime getEndLocal() {
-        return endLection;
+    public LocalDateTime getEndLocal() {*
+        return endLecture;
     }
 
-    public void setEndLection(LocalDateTime endLection) {
-        this.endLection = endLection;
+    public void setEndLecture(LocalDateTime endLecture) {
+        this.endLecture = endLecture;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LectureTime that = (LectureTime) o;
-        return Objects.equals(id, that.id) && Objects.equals(startLection, that.startLection) && Objects.equals(endLection, that.endLection);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, startLection, endLection);
-    }
+*/
 }

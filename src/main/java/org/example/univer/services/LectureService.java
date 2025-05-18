@@ -60,19 +60,19 @@ public class LectureService {
                     throw new InvalidParameterException("Невозможно создать лекцию! Лекция с такими параметрами уже существует!");
                 }
                 if (isAudienceFreeForCreate(lecture)) {
-                    throw new LectureExeption("Невозможно создать лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStartLection());
+                    throw new LectureExeption("Невозможно создать лекцию! Аудитория: " + lecture.getAudience().getRoomNumber() + " уже занята на время: " + lecture.getTime().getStartLecture());
                 }
                 if (!isTeacherBusyForCreate(lecture)) {
-                    throw new LectureExeption("Невозможно создать лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLection());
+                    throw new LectureExeption("Невозможно создать лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLecture());
                 }
                 validateCommon(lecture, "создать");
                 break;
             case METHOD_UPDATE:
                 if (isAudienceFreeForUpdate(lecture)) {
-                    throw new LectureExeption("Невозможно обновить лекцию! Аудитория: " + lecture.getAudience().getRoomString() + " уже занята на время: " + lecture.getTime().getStartLection());
+                    throw new LectureExeption("Невозможно обновить лекцию! Аудитория: " + lecture.getAudience().getRoomNumber() + " уже занята на время: " + lecture.getTime().getStartLecture());
                 }
                 if (isTeacherBusyForUpdate(lecture)) {
-                    throw new LectureExeption("Невозможно обновить лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLection());
+                    throw new LectureExeption("Невозможно обновить лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLecture());
                 }
                 validateCommon(lecture, "обновить");
                 break;
@@ -169,17 +169,17 @@ public class LectureService {
     }
 
     private boolean beginningAndEndLectureCorrect(Lecture lecture) {
-        logger.debug("Check startLectionLocal and endLectionLocal correct");
-        LocalTime startLectionLocal = LocalTime.from(lecture.getLocalTimeStart());
-        LocalTime endLectionLocal = LocalTime.from(lecture.getLocalTimeEnd());
+        logger.debug("Check startLectureLocal and endLectureLocal correct");
+        LocalTime startLectureLocal = LocalTime.from(lecture.getTime().getStartLecture());
+        LocalTime endLectureLocal = LocalTime.from(lecture.getTime().getEndLecture());
 
-        return (startLectionLocal.isAfter(startLectionDay) || startLectionLocal.equals(startLectionDay)) &&
-                (endLectionLocal.isBefore(endLectionDay) || endLectionLocal.equals(endLectionDay));
+        return (startLectureLocal.isAfter(startLectionDay) || startLectureLocal.equals(startLectionDay)) &&
+                (endLectureLocal.isBefore(endLectionDay) || endLectureLocal.equals(endLectionDay));
     }
 
     private boolean lectureNotOnHoliday(Lecture lecture) {
         logger.debug("Check lecture does not fall on the holiday");
-        return daoHolidayInterface.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLocal());
+        return daoHolidayInterface.lectureDoesNotFallOnHoliday(lecture.getTime().getStartLecture());
     }
 
     private boolean isTeacherSubject(Lecture lecture) {
@@ -199,27 +199,10 @@ public class LectureService {
 
     private boolean isTeacherBusyForCreate(Lecture lecture) {
         logger.debug("Check if the teacher is busy on the current date for create");
-        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForCreate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLocal()));
-        return lectureList.stream().filter(lecture1 -> lecture1.getTime().getStartLocal().equals(lecture.getTime().getStartLocal())).findAny().isEmpty();
+        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForCreate(lecture.getTeacher(), LocalDate.from(lecture.getTime().getStartLecture()));
+        return lectureList.stream().filter(lecture1 -> lecture1.getTime().getStartLecture().equals(lecture.getTime().getStartLecture())).findAny().isEmpty();
     }
-/*
-    private boolean isTeacherBusyForUpdate(Lecture lecture) {
-        logger.debug("Проверяем, занято ли время у учителя при обновлении...");
 
-        if (lecture == null || lecture.getTime() == null || lecture.getTime().getStartLocal() == null) {
-            logger.warn("Лекция или её время не определены");
-            throw new IllegalArgumentException("Лекция или время не могут быть null");
-        }
-
-        LocalDate lectureDate = LocalDate.from(lecture.getTime().getStartLocal());
-        List<Lecture> lectureList = daoLectureInterface.getTimetableTeacherForUpdate(lecture.getTeacher(), lectureDate, lecture);
-
-        logger.debug("Найдено лекций в это время: {}", lectureList.size());
-
-        return lectureList.stream()
-                .filter(l -> l.getTime() != null && l.getTime().getStartLocal() != null)
-                .anyMatch(l -> l.getTime().getId().equals(lecture.getTime().getId()));
-    }*/
     private boolean isTeacherBusyForUpdate(Lecture lecture) {
         if (lecture == null || lecture.getTime() == null || lecture.getTime().getId() == null) {
             throw new IllegalArgumentException("Lecture или время не может быть null");

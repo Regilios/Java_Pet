@@ -29,8 +29,8 @@
                     <tr th:each="lecture: ${lectures.content}">
                         <td th:text="${lecture.getId()}">Id</td>
                         <td th:text="${lecture.getSubject().getName()}">Subject</td>
-                        <td th:text="${lecture.getTimeStart()} + ' ' + ${lecture.getTimeEnd()}">Time</td>
-                        <td th:text="${lecture.getAudience().getRoom()}">Room</td>
+                        <td th:text="${lecture.getTime().getStartLecture()} + ' ' + ${lecture.getTime().getEndLecture()}">Time</td>
+                        <td th:text="${lecture.getAudience().getRoomNumber()}">Room</td>
                         <td>
                             <ul th:if="${#lists.isEmpty(lecture.groups)}">
                                 <li>No groups assigned</li>

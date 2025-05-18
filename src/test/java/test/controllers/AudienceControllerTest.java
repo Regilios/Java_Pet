@@ -52,12 +52,12 @@ public class AudienceControllerTest {
     @Test
     public void whenGetAllAudiences_thenAllAudiencesReturned() throws Exception {
         Audience audience1 = new Audience();
-        audience1.setRoom(1);
+        audience1.setRoomNumber(1);
         audience1.setCapacity(50);
         audienceService.create(audience1);
 
         Audience audience2 = new Audience();
-        audience2.setRoom(3);
+        audience2.setRoomNumber(3);
         audience2.setCapacity(33);
         audienceService.create(audience2);
 
@@ -76,7 +76,7 @@ public class AudienceControllerTest {
     @Test
     public void whenGetOneAudience_thenOneAudienceReturned() throws Exception {
         Audience audience = new Audience();
-        audience.setRoom(1);
+        audience.setRoomNumber(1);
         audience.setCapacity(50);
         audienceService.create(audience);
 
@@ -103,7 +103,7 @@ public class AudienceControllerTest {
     @Test
     void whenEditAudience_thenAudienceFound() throws Exception {
         Audience audience = new Audience();
-        audience.setRoom(1);
+        audience.setRoomNumber(1);
         audience.setCapacity(50);
 
         when(audienceService.findById(1L)).thenReturn(Optional.of(audience));
@@ -122,7 +122,7 @@ public class AudienceControllerTest {
     @Test
     public void whenUpdateAudience_thenAudienceUpdated() throws Exception {
         Audience audience = new Audience();
-        audience.setRoom(1);
+        audience.setRoomNumber(1);
         audience.setCapacity(50);
 
         mockMvc.perform(patch("/audiences/{id}", 1)

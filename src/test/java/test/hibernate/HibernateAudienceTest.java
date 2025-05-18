@@ -122,11 +122,11 @@ public class HibernateAudienceTest {
     void whenCheckIsSingleAudience_thenReturnsCorrectResult() {
         Audience audience = new Audience();
         audience.setCapacity(101);
-        audience.setRoom(10);
+        audience.setRoomNumber(10);
 
         Query<Long> query = mock(Query.class);
         when(entityManager.createNamedQuery("countAudiencesByRoomNumber", Long.class)).thenReturn(query);
-        when(query.setParameter("roomNumber", audience.getRoom())).thenReturn(query);
+        when(query.setParameter("roomNumber", audience.getRoomNumber())).thenReturn(query);
         when(query.getSingleResult()).thenReturn(1L);
 
 

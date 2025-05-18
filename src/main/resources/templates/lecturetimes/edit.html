@@ -23,13 +23,13 @@
                         <div class="col-6">
                             <label class="form-label" for="start_date">Start Date</label>
                             <input class="form-control" type="date"
-                                   th:value="*{startLocal != null ? startLocal.toLocalDate() : ''}" id="start_date"
+                                   th:value="*{startLecture != null ? startLecture.toLocalDate() : ''}" id="start_date"
                                    name="start_date"/>
                         </div>
                         <div class="col-6">
                             <label class="form-label" for="start_time">Start Time</label>
                             <input class="form-control" type="time"
-                                   th:value="*{startLocal != null ? startLocal.toLocalTime() : ''}" id="start_time"
+                                   th:value="*{startLecture != null ? startLecture.toLocalTime() : ''}" id="start_time"
                                    name="start_time"/>
                         </div>
                     </div>
@@ -37,13 +37,13 @@
                         <div class="col-6">
                             <label class="form-label" for="end_date">End Date</label>
                             <input class="form-control" type="date"
-                                   th:value="*{endLocal != null ? endLocal.toLocalDate() : ''}" id="end_date"
+                                   th:value="*{endLecture != null ? endLecture.toLocalDate() : ''}" id="end_date"
                                    name="end_date"/>
                         </div>
                         <div class="col-6">
                             <label class="form-label" for="end_time">End Time</label>
                             <input class="form-control" type="time"
-                                   th:value="*{endLocal != null ? endLocal.toLocalTime() : ''}" id="end_time"
+                                   th:value="*{endLecture != null ? endLecture.toLocalTime() : ''}" id="end_time"
                                    name="end_time"/>
                         </div>
                     </div>

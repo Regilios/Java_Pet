@@ -29,8 +29,8 @@
                         <td th:text="${vacation.getTeacher().getFirstName()} + ' ' + ${vacation.getTeacher().getLastName()} ">
                             Start vacation
                         </td>
-                        <td th:text="${vacation.getStartJobString()}">Start vacation</td>
-                        <td th:text="${vacation.getEndJobString()}">End vacation</td>
+                        <td th:text="${vacation.getStartJob()}">Start vacation</td>
+                        <td th:text="${vacation.getEndJob()}">End vacation</td>
                         <td>
                             <a class="btn btn-outline-primary"
                                th:href="@{/teachers/{id}/vacations/{vacId}/edit(id=${vacation.getTeacher().getId()}, vacId=${vacation.getId()})}">
@@ -60,7 +60,7 @@
             </div>
             <div class="col-12 mt-5">
                 <a class="btn btn-outline-primary"
-                   th:href="@{/teachers/{id}/vacations/(id=${vacation.teacher.id})}">Back</a>
+                   th:href="@{/teachers/{id}/vacations(id=${vacation.teacher.id})}">Back</a>
             </div>
         </div>
     </div>

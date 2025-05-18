@@ -175,7 +175,7 @@ public class VacationController {
             logger.debug("Vacation with id {} was deleted", id);
         } catch (ResourceNotFoundException ex) {
             logger.warn("Attempted to delete non-existing vacation with id {}", id);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+            throw new ResponseStatusException(HttpStatus.GONE, ex.getMessage(), ex);
         }
         logger.debug("Deleted teacher");
         return "redirect:/teachers/{teacherId}/vacations";

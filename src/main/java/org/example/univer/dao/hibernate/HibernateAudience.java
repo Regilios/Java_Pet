@@ -76,7 +76,7 @@ public class HibernateAudience implements DaoAudienceInterface {
     @Override
     public boolean isSingle(Audience audience) {
         Long result = entityManager.createNamedQuery("countAudiencesByRoomNumber", Long.class)
-                .setParameter("roomNumber", audience.getRoom())
+                .setParameter("roomNumber", audience.getRoomNumber())
                 .getSingleResult();
         return Objects.nonNull(result) && result > 0;
     }

@@ -44,7 +44,7 @@ public class AudienceServiceTest {
     @Test
     void create_audienceCapacity50_createAudience() {
         Audience audience = new Audience();
-        audience.setRoom(1);
+        audience.setRoomNumber(1);
         audience.setCapacity(50);
 
         when(mockAudience.isSingle(audience)).thenReturn(false);
@@ -56,7 +56,7 @@ public class AudienceServiceTest {
     @Test
     void create_audienceCapacity200_throwException() {
         Audience audience = new Audience();
-        audience.setRoom(1);
+        audience.setRoomNumber(1);
         audience.setCapacity(200);
 
         when(mockAudience.isSingle(audience)).thenReturn(false);
