@@ -51,13 +51,4 @@ public class Vacation implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")
     private Teacher teacher;
-
-/*
-    public String getStartJobString() {
-        return Objects.nonNull(startJob) ? startJob.format(DateTimeFormatter.ofPattern(DATE_PATTERN_VACATION)) : null;
-    }
-    public String getEndJobString() {
-        return Objects.nonNull(endJob) ? endJob.format(DateTimeFormatter.ofPattern(DATE_PATTERN_VACATION)) : null;
-    }
-*/
 }

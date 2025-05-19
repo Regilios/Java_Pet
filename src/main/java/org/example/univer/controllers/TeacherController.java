@@ -1,7 +1,10 @@
 package org.example.univer.controllers;
 
+import org.example.univer.dto.TeacherDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
+import org.example.univer.mappers.SubjectMapper;
+import org.example.univer.mappers.TeacherMapper;
 import org.example.univer.models.Subject;
 import org.example.univer.models.Teacher;
 import org.example.univer.services.CathedraService;
@@ -25,11 +28,19 @@ public class TeacherController {
     private TeacherService teacherService;
     private CathedraService cathedraService;
     private SubjectService subjectService;
+    private final SubjectMapper subjectMapper;
+    private final TeacherMapper teacherMapper;
 
-    public TeacherController(TeacherService teacherService, CathedraService cathedraService, SubjectService subjectService) {
+    public TeacherController(TeacherService teacherService,
+                             CathedraService cathedraService,
+                             SubjectService subjectService,
+                             SubjectMapper subjectMapper,
+                             TeacherMapper teacherMapper) {
         this.teacherService = teacherService;
         this.cathedraService = cathedraService;
         this.subjectService = subjectService;
+        this.subjectMapper = subjectMapper;
+        this.teacherMapper = teacherMapper;
     }
 
     /* Общая страница */
@@ -52,29 +63,16 @@ public class TeacherController {
     }
 
     @PostMapping
-    public String newTeacher(@ModelAttribute Teacher teacher,
-                             @RequestParam("subjectIds") List<Long> subjectIds,
-                             Model model,
+    public String newLecture(@ModelAttribute TeacherDto teacherDto,
+                             @RequestParam(value = "subjectIds", required = false) List<Long> subjectIds,
                              RedirectAttributes redirectAttributes) {
         try {
-            logger.debug("Received subject IDs: {}", subjectIds);
-            for (Long subjectId : subjectIds) {
-                logger.debug("Test findById and get name: {}", subjectService.findById(subjectId).get().getName());
-            }
-            List<Subject> subjects = subjectIds.stream()
-                    .map(subjectId -> subjectService.findById(subjectId).orElse(null))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());;
-            logger.debug("Subjects finded: {}", subjects);
-            teacher.setSubjects(subjects);
-            logger.debug("Subjects added: {}",teacher.getSubjects());
-            teacherService.create(teacher);
+            teacherDto.setSubjectIds(subjectIds);
+            teacherService.create(teacherMapper.toEntity(teacherDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/teachers/new";
         }
-
-        logger.debug("Create new teacher. Id {}", teacher.getId());
         return "redirect:/teachers";
     }
 

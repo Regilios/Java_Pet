@@ -41,7 +41,7 @@ public class HibernateLecture implements DaoLectureInterface {
         Lecture lecture = entityManager.find(Lecture.class, id);
         if (Objects.nonNull(lecture)) {
             for (Group group : lecture.getGroups()) {
-                group.getLections().remove(lecture);
+                group.getLectures().remove(lecture);
             }
             lecture.getGroups().clear();
             lecture.setTime(null);

@@ -62,12 +62,15 @@ public class Lecture implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lecture_time_id", referencedColumnName = "id")
     private LectureTime time;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")
     private Teacher teacher;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "group_lection",
@@ -75,6 +78,7 @@ public class Lecture implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     private List<Group> groups = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "audience_id", referencedColumnName = "id")
     private Audience audience;
@@ -82,9 +86,8 @@ public class Lecture implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id", referencedColumnName = "id")
     private Subject subject;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cathedra_id", referencedColumnName = "id")
     private Cathedra cathedra;
-
-
 }

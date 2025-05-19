@@ -31,35 +31,12 @@ public class LectureTime implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "start_lection", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_LECTURE_TIME)
     private LocalDateTime startLecture;
+
     @Column(name = "end_lection", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_LECTURE_TIME)
     private LocalDateTime endLecture;
-
-/*
-    public String getStartLecture() {
-        return Objects.nonNull(startLecture) ? startLecture.format(DateTimeFormatter.ofPattern(DATE_PATTERN_LECTURE_TIME)) : null;
-    }
-    public LocalDateTime getStartLocal() {
-        return startLecture;
-    }
-
-    public void setStartLecture(LocalDateTime startLecture) {
-        this.startLecture = startLecture;
-    }
-
-    public String getEndLecture() {
-        return Objects.nonNull(endLecture) ? endLecture.format(DateTimeFormatter.ofPattern(DATE_PATTERN_LECTURE_TIME)) : null;
-    }
-
-    public LocalDateTime getEndLocal() {*
-        return endLecture;
-    }
-
-    public void setEndLecture(LocalDateTime endLecture) {
-        this.endLecture = endLecture;
-    }
-*/
 }

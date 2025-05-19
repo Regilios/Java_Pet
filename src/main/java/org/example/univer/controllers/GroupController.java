@@ -1,7 +1,9 @@
 package org.example.univer.controllers;
 
+import org.example.univer.dto.GroupDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
+import org.example.univer.mappers.GroupMapper;
 import org.example.univer.models.Group;
 import org.example.univer.services.CathedraService;
 import org.example.univer.services.GroupService;
@@ -12,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("/groups")
 public class GroupController {
@@ -19,9 +23,12 @@ public class GroupController {
     private GroupService groupService;
     private CathedraService cathedraService;
 
-    public GroupController(GroupService groupService, CathedraService cathedraService) {
+    private final GroupMapper groupMapper;
+
+    public GroupController(GroupService groupService, CathedraService cathedraService,GroupMapper groupMapper) {
         this.groupService = groupService;
         this.cathedraService = cathedraService;
+        this.groupMapper = groupMapper;
     }
 
     /* Общая страница */
@@ -29,16 +36,16 @@ public class GroupController {
     public String index(Model model) {
         logger.debug("Show all groups");
         model.addAttribute("title", "All Groups");
-        model.addAttribute("groups", groupService.findAll());
+        model.addAttribute("groups", groupService.findAll().stream().map(groupMapper::toDto).collect(Collectors.toList()));
         return "groups/index";
     }
 
     /* Обарботка добавления */
     @GetMapping("/new")
-    public String create(Group group, Model model) {
+    public String create(Model model) {
+        model.addAttribute("groupDto", new GroupDto());
         model.addAttribute("title", "All Groups");
         model.addAttribute("cathedras", cathedraService.findAll());
-        model.addAttribute(group);
         logger.debug("Show create page");
         return "groups/new";
     }

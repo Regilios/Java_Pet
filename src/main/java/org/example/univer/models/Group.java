@@ -6,7 +6,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 @NamedQueries(
         {
                 @NamedQuery(
@@ -34,15 +34,17 @@ public class Group implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "name", nullable = false)
     private String name;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cathedra_id", referencedColumnName = "id")
     private Cathedra cathedra;
+
     @OneToMany(mappedBy = "group", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private List<Student> students = new ArrayList<>();
+
     @ManyToMany(mappedBy = "groups", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private List<Lecture> lections = new ArrayList<>();
-
-
+    private List<Lecture> lectures = new ArrayList<>();
 }

@@ -39,21 +39,15 @@ public class Holiday implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private String description;
+
     @Column(name = "start_holiday", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_HOLIDAY)
     private LocalDate startHoliday;
+
     @Column(name = "end_holiday", nullable = false)
     @DateTimeFormat(pattern = DATE_PATTERN_HOLIDAY)
     private LocalDate endHoliday;
-/*
-    public String getStartHolidayLocal() {
-        return  Objects.nonNull(startHoliday) ? startHoliday.format(DateTimeFormatter.ofPattern(DATE_PATTERN_HOLIDAY)) : null;
-    }
-
-    public String getEndHolidayLocal() {
-        return Objects.nonNull(endHoliday) ? endHoliday.format(DateTimeFormatter.ofPattern(DATE_PATTERN_HOLIDAY)) : null;
-    }
-*/
 }

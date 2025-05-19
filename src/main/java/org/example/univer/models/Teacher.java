@@ -30,6 +30,7 @@ public class Teacher extends Person implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "teacher_subject",
@@ -44,5 +45,4 @@ public class Teacher extends Person implements Serializable {
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Vacation> vacation = new ArrayList<>();
-
 }
