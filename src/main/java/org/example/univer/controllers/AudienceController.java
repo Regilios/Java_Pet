@@ -34,7 +34,7 @@ public class AudienceController {
     public String index(Model model, Pageable pageable) {
         Page<AudienceDto> page = audienceService.findAll(pageable).map(audienceMapper::toDto);
         model.addAttribute("title", "All Audiences");
-        model.addAttribute("audiences", page);
+        model.addAttribute("audiencesDto", page);
         logger.debug("Show all audience");
         return "audiences/index";
     }

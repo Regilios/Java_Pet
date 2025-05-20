@@ -50,13 +50,13 @@ public class LectureController {
     public String index(Model model, Pageable pageable) {
         Page<LectureDto> page = lectureService.findAllWithGroup(pageable).map(lectureMapper::toDto);
         model.addAttribute("title", "All Lectures");
-        model.addAttribute("lectures", page);
+        model.addAttribute("lecturesDto", page);
         return "lectures/index";
     }
 
     /* Общая страница */
     @GetMapping("/new")
-    public String index(Model model) {
+    public String create(Model model) {
         model.addAttribute("lectureDto", new LectureDto());
         model.addAttribute("teachers", teacherService.findAll());
         model.addAttribute("cathedras", cathedraService.findAll());
@@ -90,7 +90,6 @@ public class LectureController {
         LectureDto dto = lectureService.findById(id)
                 .map(lectureMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Lecture not found"));
-
         model.addAttribute("lectureDto", dto);
         model.addAttribute("teachers", teacherService.findAll());
         model.addAttribute("cathedras", cathedraService.findAll());
@@ -126,7 +125,7 @@ public class LectureController {
         LectureDto dto = lectureService.findById(id)
                 .map(lectureMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Lecture not found"));
-        model.addAttribute("lecture", dto);
+        model.addAttribute("lectureDto", dto);
         return "lectures/show";
     }
 

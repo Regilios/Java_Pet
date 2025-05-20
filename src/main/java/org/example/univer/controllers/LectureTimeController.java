@@ -1,8 +1,9 @@
 package org.example.univer.controllers;
 
+import org.example.univer.dto.LectureTimeDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
-import org.example.univer.models.LectureTime;
+import org.example.univer.mappers.LectureTimeMapper;
 import org.example.univer.services.LectureTimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,50 +15,58 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/lecturetimes")
 public class LectureTimeController {
     private static final Logger logger = LoggerFactory.getLogger(LectureTimeController.class);
     private LectureTimeService lectureTimeService;
+    private final LectureTimeMapper lectureTimeMapper;
 
-    public LectureTimeController(LectureTimeService lectureTimeService) {
+    public LectureTimeController(LectureTimeService lectureTimeService,
+                                 LectureTimeMapper lectureTimeMapper) {
         this.lectureTimeService = lectureTimeService;
+        this.lectureTimeMapper = lectureTimeMapper;
     }
 
     /* Общая страница */
     @GetMapping()
     public String index(Model model) {
+        model.addAttribute("lectureTimesDto", lectureTimeService.findAll()
+                .stream()
+                .map(lectureTimeMapper::toDto)
+                .collect(Collectors.toList()));
         model.addAttribute("title", "All lecturetimes");
-        model.addAttribute("lectureTimes", lectureTimeService.findAll());
         logger.debug("Show all lecturetimes");
         return "lecturetimes/index";
     }
 
     /* Обарботка добавления */
     @GetMapping("/new")
-    public String create(LectureTime lectureTime, Model model) {
+    public String create(Model model) {
         model.addAttribute("title", "All lecturetimes");
-        model.addAttribute(lectureTime);
+        model.addAttribute("lectureTimeDto", new LectureTimeDto());
         logger.debug("Show create page");
         return "lecturetimes/new";
     }
 
     @PostMapping
-    public String newLetureTime(@RequestParam("start_date") String startDate,
+    public String newLectureTime(
+                           @RequestParam("start_date") String startDate,
                            @RequestParam("start_time") String startTime,
                            @RequestParam("end_date") String endDate,
                            @RequestParam("end_time") String endTime,
-                           Model model, RedirectAttributes redirectAttributes) {
+                           RedirectAttributes redirectAttributes) {
         try {
             LocalDateTime startLecture = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
             LocalDateTime endLecture = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
 
-            LectureTime lectureTime = new LectureTime();
-            lectureTime.setStartLecture(startLecture);
-            lectureTime.setEndLecture(endLecture);
-            lectureTimeService.create(lectureTime);
-            logger.debug("Create new group. Id {}", lectureTime.getId());
+            LectureTimeDto lectureTimeDto = new LectureTimeDto();
+            lectureTimeDto.setStartLecture(startLecture);
+            lectureTimeDto.setEndLecture(endLecture);
+            lectureTimeService.create(lectureTimeMapper.toEntity(lectureTimeDto));
+            logger.debug("Create new group. Id {}", lectureTimeDto.getId());
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/lecturetimes/new";
@@ -69,14 +78,10 @@ public class LectureTimeController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        lectureTimeService.findById(id).ifPresentOrElse(lectureTime -> {
-                    model.addAttribute("lectureTime", lectureTime);
-                    logger.debug("Found and edited lectureTime with id: {}", id);
-                }, () -> {
-                    throw new ResourceNotFoundException("LectureTime not found");
-                }
-        );
-
+        LectureTimeDto dto = lectureTimeService.findById(id)
+                .map(lectureTimeMapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException("LectureTime not found"));
+        model.addAttribute("lectureTimeDto", dto);
         logger.debug("Edit lectureTime");
         return "lecturetimes/edit";
     }
@@ -86,16 +91,18 @@ public class LectureTimeController {
                          @RequestParam("start_time") String startTime,
                          @RequestParam("end_date") String endDate,
                          @RequestParam("end_time") String endTime,
-                         @PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+                         @PathVariable("id") Long id,
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
         try {
             LocalDateTime startLecture = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
             LocalDateTime endLecture = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
 
-            LectureTime lectureTime = new LectureTime();
-            lectureTime.setId(id);
-            lectureTime.setStartLecture(startLecture);
-            lectureTime.setEndLecture(endLecture);
-            lectureTimeService.update(lectureTime);
+            LectureTimeDto lectureTimeDto = new LectureTimeDto();
+            lectureTimeDto.setId(id);
+            lectureTimeDto.setStartLecture(startLecture);
+            lectureTimeDto.setEndLecture(endLecture);
+            lectureTimeService.update(lectureTimeMapper.toEntity(lectureTimeDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/lecturetimes/edit";
@@ -105,19 +112,13 @@ public class LectureTimeController {
         return "redirect:/lecturetimes";
     }
 
-
-
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("lectureTime", lectureTimeService.findById(id));
-        lectureTimeService.findById(id).ifPresentOrElse(lectureTime -> {
-                    model.addAttribute("lectureTime", lectureTime);
-                    logger.debug("Found and edited lectureTime with id: {}", id);
-                }, () -> {
-                    throw new ResourceNotFoundException("LectureTime not found");
-                }
-        );
+        LectureTimeDto dto = lectureTimeService.findById(id)
+                .map(lectureTimeMapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException("LectureTime not found"));
+        model.addAttribute("lectureTimeDto", dto);
 
         logger.debug("Edited lectureTime");
         return "lecturetimes/show";
