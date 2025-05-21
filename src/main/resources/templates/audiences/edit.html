@@ -17,8 +17,8 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/audiences/{id}(id=${audience.getId()})}"
-                      th:object="${audience}">
+                <form id="form1" th:method="PATCH" th:action="@{/audiences/{id}(id=${audienceDto.id})}"
+                      th:object="${audienceDto}">
                     <div class="mb-3">
                         <label class="form-label" for="room">Room</label>
                         <input class="form-control" type="text" th:field="*{roomNumber}" id="room"/>

@@ -185,7 +185,7 @@ public class VacationController {
                 .orElseThrow(() -> new ResourceNotFoundException("Vacation not found"));
 
         model.addAttribute("teacher", teacherMapper.toDto(teacher));
-        model.addAttribute("vacation", dto);
+        model.addAttribute("vacationDto", dto);
 
         return "teachers/vacations/show";
     }

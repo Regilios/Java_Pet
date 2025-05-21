@@ -14,18 +14,18 @@
             <div class="col-12 col-md order-md-0 text-center text-md-start">
                 <table class="table">
                     <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Start lecture</th>
-                        <th>End lecture</th>
-                    </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Start lecture</th>
+                            <th>End lecture</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><a th:text="${lectureTime.getId()}">Id</a></td>
-                        <td><a th:text="${lectureTime.getStartLecture()}">Start lecture</a></td>
-                        <td><a th:text="${lectureTime.getEndLecture()}">End lecture</a></td>
-                    </tr>
+                        <tr>
+                            <td><a th:text="${lectureTimeDto.id}">Id</a></td>
+                            <td><a th:text="${#temporals.format(lectureTimeDto.startLecture, 'yyyy-MM-dd HH:mm')}">Start lecture</a></td>
+                            <td><a th:text="${#temporals.format(lectureTimeDto.endLecture, 'yyyy-MM-dd HH:mm')}">End lecture</a></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

@@ -14,20 +14,20 @@
             <div class="col-12 col-md order-md-0 text-center text-md-start">
                 <table class="table">
                     <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Start holiday</th>
-                        <th>End holiday</th>
-                    </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Start holiday</th>
+                            <th>End holiday</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><a th:text="${holiday.getId()}">Id</a></td>
-                        <td><a th:text="${holiday.getDescription()}">Description</a></td>
-                        <td><a th:text="${holiday.getStartHoliday()}">Start holiday</a></td>
-                        <td><a th:text="${holiday.getEndHoliday()}">End holiday</a></td>
-                    </tr>
+                        <tr>
+                            <td><a th:text="${holidayDto.id}">Id</a></td>
+                            <td><a th:text="${holidayDto.description}">Description</a></td>
+                            <td><a th:text="${holidayDto.startHoliday}">Start holiday</a></td>
+                            <td><a th:text="${holidayDto.endHoliday}">End holiday</a></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

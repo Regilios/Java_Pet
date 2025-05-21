@@ -7,7 +7,7 @@
     <div class="container-lg">
         <div class="row align-items-center">
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <h1 th:text="'Vacation can`t be created or changed becouse ' + ${teacher.getFirstName()} + ' ' + ${teacher.getLastName()} + ' have some lectures this period!'">
+                <h1 th:text="'Vacation can`t be created or changed becouse ' + ${teacher.firstName} + ' ' + ${teacher.lastName} + ' have some lectures this period!'">
                     Error text
                 </h1>
             </div>
@@ -24,16 +24,16 @@
                     </thead>
                     <tbody>
                     <tr th:each="lecture: ${lectures}">
-                        <td><a th:text="${lecture.getSubject().getName()}">Subject</a></td>
-                        <td><a th:text="${lecture.getTime().getStartLecture()} + ' : ' + ${lecture.getTime().getEndLecture()}">Start end</a></td>
-                        <td><a class="btn btn-primary" th:href="@{/lectures/{id}(id=${lecture.getId()})}">show</a></td>
+                        <td><a th:text="${lecture.subject.name}">Subject</a></td>
+                        <td><a th:text="${lecture.time.startLecture} + ' : ' + ${lecture.time.endLecture}">Start end</a></td>
+                        <td><a class="btn btn-primary" th:href="@{/lectures/{id}(id=${lecture.id})}">show</a></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div class="col-12 mt-5">
                 <a class="btn btn-outline-primary" th:href="@{/teachers}">Back to teacher</a>
-                <a class="btn btn-primary" th:href="@{/teachers/{id}/vacations/new(id=${teacher.getId()})}">Add
+                <a class="btn btn-primary" th:href="@{/teachers/{id}/vacations/new(id=${teacher.id})}">Add
                     vacation</a>
             </div>
         </div>

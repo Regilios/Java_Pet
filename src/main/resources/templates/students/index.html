@@ -26,14 +26,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="student: ${students.content}">
-                        <td th:text="${student.getId()}">Id</td>
-                        <td th:text="${student.getFirstName()}">Name</td>
-                        <td th:text="${student.getLastName()}">Family</td>
-                        <td th:text="${student?.getGroup()?.getName()}">group</td>
-                        <td><a class="btn btn-primary" th:href="@{/students/{id}(id=${student.getId()})}">show</a></td>
+                    <tr th:each="student: ${studentsDto}">
+                        <td th:text="${student.id}">Id</td>
+                        <td th:text="${student.firstName}">Name</td>
+                        <td th:text="${student.lastName}">Family</td>
+                        <td th:text="${student?.group?.name}">group</td>
+                        <td><a class="btn btn-primary" th:href="@{/students/{id}(id=${student.id})}">show</a></td>
                         <td>
-                            <a class="btn btn-outline-primary" th:href="@{/students/{id}/edit(id=${student.getId()})}">
+                            <a class="btn btn-outline-primary" th:href="@{/students/{id}/edit(id=${student.id})}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                      class="bi bi-pencil-square" viewBox="0 0 16 16">
                                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
@@ -43,7 +43,7 @@
                                 edit</a>
                         </td>
                         <td>
-                            <form th:method="DELETE" th:action="@{/students/{id}(id=${student.getId()})}">
+                            <form th:method="DELETE" th:action="@{/students/{id}(id=${student.id})}">
                                 <button class="btn btn-danger" type="submit" value="Delete">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                          class="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -58,24 +58,24 @@
                 </table>
             </div>
 
-            <nav aria-label="Pagination" th:if="${students.totalPages > 0}">
+            <nav aria-label="Pagination" th:if="${studentsDto.totalPages > 0}">
                 <ul class="pagination justify-content-center font-weight-bold">
-                    <li class="page-item" th:classappend="${students.number eq 0} ? 'disabled'">
+                    <li class="page-item" th:classappend="${studentsDto.number eq 0} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/students?page={id}(id=${students.number lt 2 ? 1 : students.number})}"
+                           th:href="@{/students?page={id}(id=${studentsDto.number lt 2 ? 1 : studentsDto.number})}"
                            aria-label="Previous" title="Previous Page" data-toggle="tooltip">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    <li class="page-item" th:classappend="${i eq students.number + 1} ? 'active'"
-                        th:each="i : ${#numbers.sequence( 1, students.totalPages, 1)}">
+                    <li class="page-item" th:classappend="${i eq studentsDto.number + 1} ? 'active'"
+                        th:each="i : ${#numbers.sequence( 1, studentsDto.totalPages, 1)}">
                         <a class="page-link" th:href="@{/students?page={id}(id=${i})}"
                            th:text="${i}" th:title="${'Page '+ i}" data-toggle="tooltip">Page number
                         </a>
                     </li>
-                    <li class="page-item" th:classappend="${students.number + 1 eq students.totalPages} ? 'disabled'">
+                    <li class="page-item" th:classappend="${studentsDto.number + 1 eq studentsDto.totalPages} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/students?page={id}(id=${students.number + 2})}"
+                           th:href="@{/students?page={id}(id=${studentsDto.number + 2})}"
                            aria-label="Next" title="Next Page" data-toggle="tooltip">
                             <span aria-hidden="true">&raquo;</span>
                         </a>

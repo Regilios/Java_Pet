@@ -26,11 +26,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="lecture: ${lectures.content}">
-                        <td th:text="${lecture.getId()}">Id</td>
-                        <td th:text="${lecture.getSubject().getName()}">Subject</td>
-                        <td th:text="${lecture.getTime().getStartLecture()} + ' ' + ${lecture.getTime().getEndLecture()}">Time</td>
-                        <td th:text="${lecture.getAudience().getRoomNumber()}">Room</td>
+                    <tr th:each="lecture: ${lecturesDto}">
+                        <td th:text="${lecture.id}">Id</td>
+                        <td th:text="${lecture.subject.name}">Subject</td>
+                        <td th:text="${lecture.time.startLecture} + ' ' + ${lecture.time.endLecture}">Time</td>
+                        <td th:text="${lecture.audience.roomNumber}">Room</td>
                         <td>
                             <ul th:if="${#lists.isEmpty(lecture.groups)}">
                                 <li>No groups assigned</li>
@@ -39,9 +39,9 @@
                                 <li th:text="${group.name}">Group</li>
                             </ul>
                         </td>
-                        <td><a class="btn btn-primary" th:href="@{/lectures/{id}(id=${lecture.getId()})}">show</a></td>
+                        <td><a class="btn btn-primary" th:href="@{/lectures/{id}(id=${lecture.id})}">show</a></td>
                         <td>
-                            <a class="btn btn-outline-primary" th:href="@{/lectures/{id}/edit(id=${lecture.getId()})}">
+                            <a class="btn btn-outline-primary" th:href="@{/lectures/{id}/edit(id=${lecture.id})}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                      class="bi bi-pencil-square" viewBox="0 0 16 16">
                                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
@@ -51,7 +51,7 @@
                                 edit</a>
                         </td>
                         <td>
-                            <form th:method="DELETE" th:action="@{/lectures/{id}(id=${lecture.getId()})}">
+                            <form th:method="DELETE" th:action="@{/lectures/{id}(id=${lecture.id})}">
                                 <button class="btn btn-danger" type="submit" value="Delete">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                          class="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -65,24 +65,24 @@
                     </tbody>
                 </table>
             </div>
-            <nav aria-label="Pagination" th:if="${lectures.totalPages > 0}">
+            <nav aria-label="Pagination" th:if="${lecturesDto.totalPages > 0}">
                 <ul class="pagination justify-content-center font-weight-bold">
-                    <li class="page-item" th:classappend="${lectures.number eq 0} ? 'disabled'">
+                    <li class="page-item" th:classappend="${lecturesDto.number eq 0} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/lectures?page={id}(id=${lectures.number lt 2 ? 1 : lectures.number})}"
+                           th:href="@{/lectures?page={id}(id=${lecturesDto.number lt 2 ? 1 : lecturesDto.number})}"
                            aria-label="Previous" title="Previous Page" data-toggle="tooltip">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    <li class="page-item" th:classappend="${i eq lectures.number + 1} ? 'active'"
-                        th:each="i : ${#numbers.sequence( 1, lectures.totalPages, 1)}">
+                    <li class="page-item" th:classappend="${i eq lecturesDto.number + 1} ? 'active'"
+                        th:each="i : ${#numbers.sequence( 1, lecturesDto.totalPages, 1)}">
                         <a class="page-link" th:href="@{/lectures?page={id}(id=${i})}"
                            th:text="${i}" th:title="${'Page '+ i}" data-toggle="tooltip">Page number
                         </a>
                     </li>
-                    <li class="page-item" th:classappend="${lectures.number + 1 eq lectures.totalPages} ? 'disabled'">
+                    <li class="page-item" th:classappend="${lecturesDto.number + 1 eq lecturesDto.totalPages} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/lectures?page={id}(id=${lectures.number + 2})}"
+                           th:href="@{/lectures?page={id}(id=${lecturesDto.number + 2})}"
                            aria-label="Next" title="Next Page" data-toggle="tooltip">
                             <span aria-hidden="true">&raquo;</span>
                         </a>

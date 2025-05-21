@@ -36,6 +36,10 @@ public class HibernateVacation implements DaoVacationInterface {
     public void deleteById(Long id) {
         Vacation vacation = entityManager.find(Vacation.class, id);
         if (Objects.nonNull(vacation)) {
+            if (Objects.nonNull(vacation.getTeacher())) {
+                vacation.getTeacher().getVacation().remove(vacation);
+                vacation.setTeacher(null);
+            }
             entityManager.remove(vacation);
             logger.debug("Vacation with id {} was deleted", id);
         } else {

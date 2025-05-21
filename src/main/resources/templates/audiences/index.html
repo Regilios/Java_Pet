@@ -23,14 +23,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="audience: ${audiences.content}">
-                        <td><a th:text="${audience.getId()}">Id</a></td>
-                        <td><a th:text="${audience.getRoomNumber()}">Room</a></td>
-                        <td><a class="btn btn-primary" th:href="@{/audiences/{id}(id=${audience.getId()})}">show</a>
+                    <tr th:each="audience: ${audiencesDto.content}">
+                        <td><a th:text="${audience.id}">Id</a></td>
+                        <td><a th:text="${audience.roomNumber}">Room</a></td>
+                        <td><a class="btn btn-primary" th:href="@{/audiences/{id}(id=${audience.id})}">show</a>
                         </td>
                         <td>
                             <a class="btn btn-outline-primary"
-                               th:href="@{/audiences/{id}/edit(id=${audience.getId()})}">
+                               th:href="@{/audiences/{id}/edit(id=${audience.id})}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                      class="bi bi-pencil-square" viewBox="0 0 16 16">
                                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
@@ -40,7 +40,7 @@
                                 edit</a>
                         </td>
                         <td>
-                            <form th:method="DELETE" th:action="@{/audiences/{id}(id=${audience.getId()})}">
+                            <form th:method="DELETE" th:action="@{/audiences/{id}(id=${audience.id})}">
                                 <button class="btn btn-danger" type="submit" value="Delete">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                          class="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -57,24 +57,24 @@
 
             <br>
 
-            <nav aria-label="Pagination" th:if="${audiences.totalPages > 0}">
+            <nav aria-label="Pagination" th:if="${audiencesDto.totalPages > 0}">
                 <ul class="pagination justify-content-center font-weight-bold">
-                    <li class="page-item" th:classappend="${audiences.number eq 0} ? 'disabled'">
+                    <li class="page-item" th:classappend="${audiencesDto.number eq 0} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/audiences?page={id}(id=${audiences.number lt 2 ? 1 : audiences.number})}"
+                           th:href="@{/audiences?page={id}(id=${audiencesDto.number lt 2 ? 1 : audiencesDto.number})}"
                            aria-label="Previous" title="Previous Page" data-toggle="tooltip">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    <li class="page-item" th:classappend="${i eq audiences.number + 1} ? 'active'"
-                        th:each="i : ${#numbers.sequence( 1, audiences.totalPages, 1)}">
+                    <li class="page-item" th:classappend="${i eq audiencesDto.number + 1} ? 'active'"
+                        th:each="i : ${#numbers.sequence( 1, audiencesDto.totalPages, 1)}">
                         <a class="page-link" th:href="@{/audiences?page={id}(id=${i})}"
                            th:text="${i}" th:title="${'Page '+ i}" data-toggle="tooltip">Page number
                         </a>
                     </li>
-                    <li class="page-item" th:classappend="${audiences.number + 1 eq audiences.totalPages} ? 'disabled'">
+                    <li class="page-item" th:classappend="${audiencesDto.number + 1 eq audiencesDto.totalPages} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/audiences?page={id}(id=${audiences.number + 2})}"
+                           th:href="@{/audiences?page={id}(id=${audiencesDto.number + 2})}"
                            aria-label="Next" title="Next Page" data-toggle="tooltip">
                             <span aria-hidden="true">&raquo;</span>
                         </a>

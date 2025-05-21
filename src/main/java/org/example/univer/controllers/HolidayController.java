@@ -74,11 +74,12 @@ public class HolidayController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("holiday") HolidayDto holidayDto,
+    public String update(@ModelAttribute HolidayDto holidayDto,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
         try {
+
             holidayDto.setId(id);
             holidayService.update(holidayMapper.toEntity(holidayDto));
         } catch (ServiceException e) {

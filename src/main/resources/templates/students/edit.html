@@ -18,8 +18,8 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/students/{id}(id=${student.getId()})}"
-                      th:object="${student}">
+                <form id="form1" th:method="PATCH" th:action="@{/students/{id}(id=${studentDto.id})}"
+                      th:object="${studentDto}">
                     <div class="mb-3">
                         <label class="form-label" for="firstName">firstName</label>
                         <input class="form-control" type="text" th:field="*{firstName}" id="firstName"/>
@@ -52,7 +52,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="birthday">birthday</label>
-                        <input class="form-control" type="date" th:field="*{birthday}" id="birthday"/>
+                        <input class="form-control" type="date" th:value="*{birthday}" id="birthday"/>
                     </div>
 
                     <div class="mb-3">

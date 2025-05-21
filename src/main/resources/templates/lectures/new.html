@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form th:method="POST" th:action="@{/lectures}" th:object="${lecture}">
+                <form th:method="POST" th:action="@{/lectures}" th:object="${lectureDto}">
                     <div class="mb-3">
                         <label class="form-label" for="cathedra">Select cathedra: </label>
                         <select class="form-control" id="cathedra" name="cathedra" th:field="*{cathedra.id}" required>

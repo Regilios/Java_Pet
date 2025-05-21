@@ -17,8 +17,8 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/lecturetimes/{id}(id=${lectureTime.getId()})}"
-                      th:object="${lectureTime}">
+                <form id="form1" th:method="PATCH" th:action="@{/lecturetimes/{id}(id=${lectureTimeDto.id})}"
+                      th:object="${lectureTimeDto}">
                     <div class="row mb-3">
                         <div class="col-6">
                             <label class="form-label" for="start_date">Start Date</label>

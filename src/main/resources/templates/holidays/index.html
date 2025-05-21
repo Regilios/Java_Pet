@@ -23,12 +23,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="holiday: ${holidays}">
-                        <td><a th:text="${holiday.getId()}">Id</a></td>
-                        <td><a th:text="${holiday.getDescription()}">Description</a></td>
-                        <td><a class="btn btn-primary" th:href="@{/holidays/{id}(id=${holiday.getId()})}">show</a></td>
+                    <tr th:each="holiday: ${holidaysDto}">
+                        <td><a th:text="${holiday.id}">Id</a></td>
+                        <td><a th:text="${holiday.description}">Description</a></td>
+                        <td><a class="btn btn-primary" th:href="@{/holidays/{id}(id=${holiday.id})}">show</a></td>
                         <td>
-                            <a class="btn btn-outline-primary" th:href="@{/holidays/{id}/edit(id=${holiday.getId()})}">
+                            <a class="btn btn-outline-primary" th:href="@{/holidays/{id}/edit(id=${holiday.id})}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                      class="bi bi-pencil-square" viewBox="0 0 16 16">
                                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
@@ -38,7 +38,7 @@
                                 edit</a>
                         </td>
                         <td>
-                            <form th:method="DELETE" th:action="@{/holidays/{id}(id=${holiday.getId()})}">
+                            <form th:method="DELETE" th:action="@{/holidays/{id}(id=${holiday.id})}">
                                 <button class="btn btn-danger" type="submit" value="Delete">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                          class="bi bi-trash-fill" viewBox="0 0 16 16">

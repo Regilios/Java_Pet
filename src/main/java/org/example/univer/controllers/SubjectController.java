@@ -1,6 +1,5 @@
 package org.example.univer.controllers;
 
-import org.example.univer.dto.StudentDto;
 import org.example.univer.dto.SubjectDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
@@ -43,7 +42,7 @@ public class SubjectController {
     /* Обарботка добавления */
     @GetMapping("/new")
     public String create(Model model) {
-        model.addAttribute("subjectDto", new StudentDto());
+        model.addAttribute("subjectDto", new SubjectDto());
         logger.debug("Show create page");
         return "subjects/new";
     }
