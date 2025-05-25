@@ -7,21 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@NamedQueries(
-        {
-                @NamedQuery(
-                        name = "findAllGroups",
-                        query = "FROM Group"
-                ),
-                @NamedQuery(
-                        name = "findGroupByName",
-                        query = "SELECT COUNT(*) FROM Group WHERE name=:name"
-                ),
-                @NamedQuery(
-                        name = "findGroupsByIds",
-                        query = "SELECT g FROM Group g JOIN FETCH g.cathedra c WHERE g.id IN (:ids)"
-                )
-        })
 @Entity
 @Getter
 @Setter
@@ -38,13 +23,13 @@ public class Group implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cathedra_id", referencedColumnName = "id")
     private Cathedra cathedra;
 
-    @OneToMany(mappedBy = "group", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
     private List<Student> students = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "groups", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "groups", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private List<Lecture> lectures = new ArrayList<>();
 }

@@ -1,11 +1,11 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoStudentInterface;
 import org.example.univer.exeption.StudentExeption;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Group;
 import org.example.univer.models.Student;
+import org.example.univer.repositories.StudentRepository;
 import org.example.univer.services.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ public class StudentServiceTest {
     @Spy
     private AppSettings appSettings = new AppSettings();
     @Mock
-    private DaoStudentInterface mockStudent;
+    private StudentRepository mockStudent;
     @InjectMocks
     private StudentService studentService;
 
@@ -54,11 +54,11 @@ public class StudentServiceTest {
         student.setBirthday(LocalDate.of(1991,10,17));
         student.setGroup(group);
 
-        when(mockStudent.isSingle(student)).thenReturn(false);
-        when(mockStudent.checkGroupSize(student)).thenReturn(3);
+        when(mockStudent.existsByFirstNameAndLastName(student.getFirstName(),student.getLastName())).thenReturn(false);
+        when(mockStudent.countByGroup_Id(student.getGroup().getId())).thenReturn(3);
         studentService.create(student);
 
-        verify(mockStudent, times(1)).create(student);
+        verify(mockStudent, times(1)).save(student);
     }
 
     @Test
@@ -75,24 +75,25 @@ public class StudentServiceTest {
         student.setBirthday(LocalDate.of(1991,10,17));
         student.setGroup(group);
 
-        when(mockStudent.isSingle(student)).thenReturn(false);
-        when(mockStudent.checkGroupSize(student)).thenReturn(6);
+        when(mockStudent.existsByFirstNameAndLastName(student.getFirstName(),student.getLastName())).thenReturn(false);
+        when(mockStudent.countByGroup_Id(student.getGroup().getId())).thenReturn(6);
 
         assertThrows(StudentExeption.class, () -> {
             studentService.validate(student, StudentService.ValidationContext.METHOD_CREATE);
             studentService.create(student);
         });
-        verify(mockStudent, never()).create(any(Student.class));
+        verify(mockStudent, never()).save(any(Student.class));
     }
 
     @Test
     void isSingle_studentIsSingle_true() {
         Student student = new Student();
-
-        when(mockStudent.isSingle(student)).thenReturn(true);
+        student.setFirstName("test");
+        student.setLastName("test2");
+        when(mockStudent.existsByFirstNameAndLastName(student.getFirstName(),student.getLastName())).thenReturn(true);
         assertTrue(studentService.isSingle(student));
 
-        verify(mockStudent, times(1)).isSingle(any(Student.class));
+        verify(mockStudent, times(1)).existsByFirstNameAndLastName(anyString(), anyString());
     }
 
     @Test

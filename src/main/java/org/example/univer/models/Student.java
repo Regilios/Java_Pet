@@ -4,30 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Objects;
-@NamedQueries({
-        @NamedQuery(
-                name = "findAllStudents",
-                query = "FROM Student"
-        ),
-        @NamedQuery(
-                name = "countStudentByName",
-                query = "SELECT COUNT(*) FROM Student WHERE firstName = :firstName AND lastName = :lastName"
-        ),
-        @NamedQuery(
-                name = "countAllStudents",
-                query = "SELECT COUNT(a) FROM Student a"
-        ),
-        @NamedQuery(
-                name = "findAllStudentPaginated",
-                query = "FROM Student ORDER BY id"
-        ),
-        @NamedQuery(
-                name = "findStudentsByGroupId",
-                query = "SELECT COUNT(s) FROM Student s WHERE s.group.id = :groupId"
-        )
-})
+
 @Entity
 @Getter
 @Setter
@@ -41,7 +18,7 @@ public class Student extends Person implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "group_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_group", foreignKeyDefinition = "FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL"))
     private Group group;
 }

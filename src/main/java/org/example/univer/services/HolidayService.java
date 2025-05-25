@@ -1,7 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoHolidayInterface;
+import org.example.univer.repositories.HolidayRepository;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Holiday;
 import org.slf4j.Logger;
@@ -17,15 +17,15 @@ import java.util.Optional;
 
 @Service
 public class HolidayService {
-    DaoHolidayInterface daoHolidayInterface;
+    HolidayRepository holidayRepository;
     private static final Logger logger = LoggerFactory.getLogger(HolidayService.class);
     private AppSettings appSettings;
     private Integer maxDayHoliday;
     private String startDayHoliday;
 
     @Autowired
-    public HolidayService(DaoHolidayInterface daoHolidayInterface, AppSettings appSettings) {
-        this.daoHolidayInterface = daoHolidayInterface;
+    public HolidayService(HolidayRepository holidayRepository, AppSettings appSettings) {
+        this.holidayRepository = holidayRepository;
         this.appSettings = appSettings;
         this.maxDayHoliday = appSettings.getMaxDayHoliday();
         this.startDayHoliday = appSettings.getStartDayHoliday();
@@ -68,7 +68,7 @@ public class HolidayService {
         logger.debug("Start create holiday");
         try {
             validate(holiday, ValidationContext.METHOD_CREATE);
-            daoHolidayInterface.create(holiday);
+            holidayRepository.save(holiday);
             logger.debug("Holiday created");
         } catch (HolidaysExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -93,7 +93,7 @@ public class HolidayService {
         logger.debug("Start update holiday");
         try {
             validate(holiday, ValidationContext.METHOD_UPDATE);
-            daoHolidayInterface.update(holiday);
+            holidayRepository.save(holiday);
             logger.debug("Holiday updated");
         } catch (HolidaysExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -116,21 +116,21 @@ public class HolidayService {
 
     public void deleteById(Long id) {
         logger.debug("Delete holiday width id: {}", id);
-        daoHolidayInterface.deleteById(id);
+        holidayRepository.deleteById(id);
     }
 
     public Optional<Holiday> findById(Long id) {
         logger.debug("Find holiday width id: {}", id);
-        return daoHolidayInterface.findById(id);
+        return holidayRepository.findById(id);
     }
 
     public List<Holiday> findAll() {
         logger.debug("Find all holidays");
-        return daoHolidayInterface.findAll();
+        return holidayRepository.findAll();
     }
 
     public boolean isSingle(Holiday holiday) {
         logger.debug("Check holiday is single");
-        return daoHolidayInterface.isSingle(holiday);
+        return holidayRepository.existsByDescription(holiday.getDescription());
     }
 }

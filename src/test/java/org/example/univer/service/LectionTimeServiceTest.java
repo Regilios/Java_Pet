@@ -1,9 +1,9 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoLectureTimeInterface;
 import org.example.univer.exeption.LectureTimeExeption;
 import org.example.univer.models.LectureTime;
+import org.example.univer.repositories.LectureTimeRepository;
 import org.example.univer.services.LectureTimeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,9 +30,10 @@ public class LectionTimeServiceTest {
     @Spy
     private AppSettings appSettings = new AppSettings();
     @Mock
-    private DaoLectureTimeInterface mockLectureTime;
+    private LectureTimeRepository mockLectureTime;
     @InjectMocks
     private LectureTimeService lectureTimeService;
+
 
     @BeforeEach
     void setUp() {
@@ -48,24 +49,35 @@ public class LectionTimeServiceTest {
         lectureTime.setStartLecture(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
         lectureTime.setEndLecture(LocalDateTime.parse("2024-02-01 16:30:00", formatter1));
 
-        when(mockLectureTime.isSingle(lectureTime)).thenReturn(false);
-        lectureTimeService.create(lectureTime);
+        when(mockLectureTime.countByStartLectureAndEndLecture(
+                lectureTime.getStartLecture(), lectureTime.getEndLecture()
+        )).thenReturn(1L);
 
-        verify(mockLectureTime, times(1)).create(lectureTime);
+        boolean isSingle = lectureTimeService.isSingle(lectureTime);
+
+        assertTrue(isSingle);
+        verify(mockLectureTime, times(1)).countByStartLectureAndEndLecture(
+                lectureTime.getStartLecture(), lectureTime.getEndLecture());
     }
 
     @Test
     void create_lectionTimeDuration20min_throwException() {
         LectureTime lectureTime = new LectureTime();
-        lectureTime.setStartLecture(LocalDateTime.parse("2024-02-01 14:00:00", formatter1));
-        lectureTime.setEndLecture(LocalDateTime.parse("2024-02-01 14:20:00", formatter1));
+        lectureTime.setStartLecture(LocalDateTime.parse("2024-02-01 15:00:00", formatter1));
+        lectureTime.setEndLecture(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
 
-        when(mockLectureTime.isSingle(lectureTime)).thenReturn(false);
+        when(mockLectureTime.countByStartLectureAndEndLecture(
+                lectureTime.getStartLecture(), lectureTime.getEndLecture()
+        )).thenReturn(0L);
+
+        boolean isSingle = lectureTimeService.isSingle(lectureTime);
+        assertFalse(isSingle);
+
         assertThrows(LectureTimeExeption.class, () -> {
             lectureTimeService.validate(lectureTime, LectureTimeService.ValidationContext.METHOD_CREATE);
-            lectureTimeService.create(lectureTime);
         });
-        verify(mockLectureTime, never()).create(any(LectureTime.class));
+
+        verify(mockLectureTime, never()).save(any());
     }
 
     @Test
@@ -74,22 +86,34 @@ public class LectionTimeServiceTest {
         lectureTime.setStartLecture(LocalDateTime.parse("2024-02-01 15:00:00", formatter1));
         lectureTime.setEndLecture(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
 
-        when(mockLectureTime.isSingle(lectureTime)).thenReturn(false);
+        when(mockLectureTime.countByStartLectureAndEndLecture(
+                lectureTime.getStartLecture(), lectureTime.getEndLecture()
+        )).thenReturn(0L);
+
+        boolean isSingle = lectureTimeService.isSingle(lectureTime);
+        assertFalse(isSingle);
+
         assertThrows(LectureTimeExeption.class, () -> {
             lectureTimeService.validate(lectureTime, LectureTimeService.ValidationContext.METHOD_CREATE);
-            lectureTimeService.create(lectureTime);
         });
-        verify(mockLectureTime, never()).create(any(LectureTime.class));
+
+        verify(mockLectureTime, never()).save(any());
     }
 
     @Test
-    void isSingle_lecytionTimeIsSingle_true() {
+    void isSingle_lectionTimeIsSingle_true() {
         LectureTime lectureTime = new LectureTime();
+        lectureTime.setStartLecture(LocalDateTime.parse("2024-02-01 15:00:00", formatter1));
+        lectureTime.setEndLecture(LocalDateTime.parse("2024-02-01 14:30:00", formatter1));
 
-        when(mockLectureTime.isSingle(lectureTime)).thenReturn(true);
+        when(mockLectureTime.countByStartLectureAndEndLecture(
+                lectureTime.getStartLecture(), lectureTime.getEndLecture()
+        )).thenReturn(1L);
+
+        boolean isSingle = lectureTimeService.isSingle(lectureTime);
+
+        assertTrue(isSingle);
         assertTrue(lectureTimeService.isSingle(lectureTime));
-
-        verify(mockLectureTime, times(1)).isSingle(any(LectureTime.class));
     }
 
     @Test

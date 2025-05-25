@@ -1,7 +1,6 @@
 package org.example.univer.controllers;
 
 import org.example.univer.dto.LectureDto;
-import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.mappers.LectureMapper;
 import org.example.univer.services.*;
@@ -48,7 +47,7 @@ public class LectureController {
     }
     @GetMapping()
     public String index(Model model, Pageable pageable) {
-        Page<LectureDto> page = lectureService.findAllWithGroup(pageable).map(lectureMapper::toDto);
+        Page<LectureDto> page = lectureService.findAllWithGroups(pageable);
         model.addAttribute("title", "All Lectures");
         model.addAttribute("lecturesDto", page);
         return "lectures/index";
@@ -87,9 +86,7 @@ public class LectureController {
     /* Обарботка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        LectureDto dto = lectureService.findById(id)
-                .map(lectureMapper::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Lecture not found"));
+        LectureDto dto = lectureService.findById(id);
         model.addAttribute("lectureDto", dto);
         model.addAttribute("teachers", teacherService.findAll());
         model.addAttribute("cathedras", cathedraService.findAll());
@@ -122,9 +119,7 @@ public class LectureController {
     /* Обарботка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        LectureDto dto = lectureService.findById(id)
-                .map(lectureMapper::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Lecture not found"));
+        LectureDto dto = lectureService.findById(id);
         model.addAttribute("lectureDto", dto);
         return "lectures/show";
     }

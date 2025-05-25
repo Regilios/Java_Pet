@@ -1,9 +1,9 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoSubjectInterface;
 import org.example.univer.exeption.SubjectExeption;
 import org.example.univer.models.Subject;
+import org.example.univer.repositories.SubjectRepository;
 import org.example.univer.services.SubjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ public class SubjectServiceTest {
     @Spy
     private AppSettings appSettings = new AppSettings();
     @Mock
-    private DaoSubjectInterface mockSubject;
+    private SubjectRepository mockSubject;
     @InjectMocks
     private SubjectService subjectService;
 
@@ -42,10 +42,10 @@ public class SubjectServiceTest {
         Subject subject = new Subject();
         subject.setName("Test");
         subject.setDescription("Test Test Test Test Test Test Test");
-        when(mockSubject.isSingle(subject)).thenReturn(false);
+        when(mockSubject.existsByName(subject.getName())).thenReturn(false);
         subjectService.create(subject);
 
-        verify(mockSubject, times(1)).create(subject);
+        verify(mockSubject, times(1)).save(subject);
     }
 
     @Test
@@ -53,23 +53,23 @@ public class SubjectServiceTest {
         Subject subject = new Subject();
         subject.setName("Test");
         subject.setDescription("");
-        when(mockSubject.isSingle(subject)).thenReturn(false);
+        when(mockSubject.existsByName(subject.getName())).thenReturn(false);
 
         assertThrows(SubjectExeption.class, () -> {
             subjectService.validate(subject, SubjectService.ValidationContext.METHOD_CREATE);
             subjectService.create(subject);
         });
-        verify(mockSubject, never()).create(any(Subject.class));
+        verify(mockSubject, never()).save(any(Subject.class));
     }
 
     @Test
     void isSingle_subjectIsSingle_true() {
         Subject subject = new Subject();
-
-        when(mockSubject.isSingle(subject)).thenReturn(true);
+        subject.setName("test");
+        when(mockSubject.existsByName(subject.getName())).thenReturn(true);
         assertTrue(subjectService.isSingle(subject));
 
-        verify(mockSubject, times(1)).isSingle(any(Subject.class));
+        verify(mockSubject, times(1)).existsByName(anyString());
     }
 
     @Test

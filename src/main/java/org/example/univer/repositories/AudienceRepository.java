@@ -1,4 +1,4 @@
-package org.example.univer.dao.repositories;
+package org.example.univer.repositories;
 
 import org.example.univer.models.Audience;
 import org.springframework.data.domain.Page;

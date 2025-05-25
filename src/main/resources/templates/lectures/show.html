@@ -29,10 +29,8 @@
                             <td th:text="${lectureDto.id}">Id</td>
                             <td th:text="${lectureDto.cathedra.name}">Cathedra</td>
                             <td th:text="${lectureDto.subject.name}">Subject</td>
-                            <td th:text="${lectureDto.teacher.firstName} + ' ' + ${lectureDto.teacher.lastName}">
-                                Teacher
-                            </td>
-                            <td th:text="${lectureDto.time.startLecture} + ' ' + ${lectureDto.time.endLecture}">Time</td>
+                            <td th:text="${lectureDto.teacher.firstName} + ' ' + ${lectureDto.teacher.lastName}">Teacher</td>
+                            <td th:text="${#temporals.format(lectureDto.time.startLecture, 'yyyy-MM-dd HH:mm')} + ' ' + ${#temporals.format(lectureDto.time.endLecture, 'yyyy-MM-dd HH:mm')}">Time</td>
                             <td th:text="${lectureDto.audience.roomNumber}">Room</td>
                             <td>
                                 <ul th:each="group : ${lectureDto.groups}">

@@ -21,7 +21,6 @@ public class GroupController {
     private static final Logger logger = LoggerFactory.getLogger(GroupController.class);
     private GroupService groupService;
     private CathedraService cathedraService;
-
     private final GroupMapper groupMapper;
 
     public GroupController(GroupService groupService, CathedraService cathedraService,GroupMapper groupMapper) {

@@ -1,9 +1,9 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoHolidayInterface;
 import org.example.univer.exeption.HolidaysExeption;
 import org.example.univer.models.Holiday;
+import org.example.univer.repositories.HolidayRepository;
 import org.example.univer.services.HolidayService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ public class HolidayServiceTest {
     @Spy
     private AppSettings appSettings = new AppSettings();
     @Mock
-    private DaoHolidayInterface mockHoliday;
+    private HolidayRepository mockHoliday;
     @InjectMocks
     private HolidayService holidayService;
 
@@ -47,10 +47,10 @@ public class HolidayServiceTest {
         holiday.setStartHoliday(LocalDate.parse("2024-01-01"));
         holiday.setEndHoliday(LocalDate.parse("2024-01-14"));
 
-        when(mockHoliday.isSingle(holiday)).thenReturn(false);
+        when(mockHoliday.existsByDescription(holiday.getDescription())).thenReturn(false);
         holidayService.create(holiday);
 
-        verify(mockHoliday, times(1)).create(holiday);
+        verify(mockHoliday, times(1)).save(holiday);
     }
 
     @Test
@@ -60,22 +60,22 @@ public class HolidayServiceTest {
         holiday.setStartHoliday(LocalDate.parse("2024-01-02"));
         holiday.setEndHoliday(LocalDate.parse("2024-01-14"));
 
-        when(mockHoliday.isSingle(holiday)).thenReturn(false);
+        when(mockHoliday.existsByDescription(holiday.getDescription())).thenReturn(false);
         assertThrows(HolidaysExeption.class, () -> {
             holidayService.validate(holiday, HolidayService.ValidationContext.METHOD_CREATE);
             holidayService.create(holiday);
         });
-        verify(mockHoliday, never()).create(any(Holiday.class));
+        verify(mockHoliday, never()).save(any(Holiday.class));
     }
 
     @Test
     void isSingle_holidayIsSingle_true() {
         Holiday holiday = new Holiday();
-
-        when(mockHoliday.isSingle(holiday)).thenReturn(true);
+        holiday.setDescription("test test test test test");
+        when(mockHoliday.existsByDescription(holiday.getDescription())).thenReturn(true);
         assertTrue(holidayService.isSingle(holiday));
 
-        verify(mockHoliday, times(1)).isSingle(any(Holiday.class));
+        verify(mockHoliday, times(1)).existsByDescription(anyString());
     }
 
     @Test

@@ -4,52 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-@NamedQueries({
-        @NamedQuery(
-                name = "findAllLecture",
-                query = "FROM Lecture"
-        ),
-        @NamedQuery(
-                name = "countAllLecture",
-                query = "SELECT COUNT(a) FROM Lecture a"
-        ),
-        @NamedQuery(
-                name = "findAllLecturePaginatedWithGroups",
-                query = "SELECT DISTINCT l FROM Lecture l LEFT JOIN FETCH l.groups g ORDER BY l.id"
-        ),
-        @NamedQuery(
-                name = "countLectureByParam",
-                query = "SELECT COUNT(*) FROM Lecture WHERE teacher = :teacherId AND subject = :subjectId AND time = :lectureTimeId  AND audience = :audienceId"
-        ),
-        @NamedQuery(
-                name = "findLectureWidthGroups",
-                query = "SELECT DISTINCT l FROM Lecture l LEFT JOIN FETCH l.groups g WHERE l.id = :lecture_id"
-        ),
-        @NamedQuery(
-                name = "getTimetableTeacherForCreate",
-                query = "SELECT l FROM Lecture l JOIN l.time t WHERE l.teacher.id = :teacherId AND EXTRACT(DAY FROM t.startLecture) = :dayLecture AND EXTRACT(MONTH FROM t.startLecture) = :monthLecture"
-        ),
-        @NamedQuery(
-                name = "getTimetableTeacherForUpdate",
-                query = "SELECT l FROM Lecture l WHERE l.teacher.id = :teacherId AND l.time.id = :timeId AND l.id <> :lectureId"
-        ),
-        @NamedQuery(
-                name = "findLecturesByTeacherAndPeriod",
-                query = "SELECT l FROM Lecture l JOIN l.time t WHERE t.startLecture BETWEEN :startLecture AND :endLecture AND l.teacher.id = :teacherId"
-        ),
-        @NamedQuery(
-                name = "findByAudienceDateAndLectureTimeForCreate",
-                query = "SELECT COUNT(l) FROM Lecture l JOIN l.audience a JOIN l.time t WHERE t.id = :lectureTimeId AND  a.id = :audienceId"
-        ),
-        @NamedQuery(
-                name = "findByAudienceDateAndLectureTimeForUpdate",
-                query = "SELECT COUNT(l) FROM Lecture l JOIN l.audience a JOIN l.time t WHERE t.id = :lectureTimeId AND  a.id = :audienceId AND l.id = :lectureId AND l.id <> :lectureId"
-        )
- })
+
 @Entity
 @Getter
 @Setter
@@ -63,31 +20,40 @@ public class Lecture implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "lecture_time_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "lecture_time_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_lecture_time", foreignKeyDefinition =
+                    "FOREIGN KEY (lecture_time_id) REFERENCES lectionTime(id) ON DELETE SET NULL"))
     private LectureTime time;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_lecture_teacher", foreignKeyDefinition =
+                    "FOREIGN KEY (teacher_id) REFERENCES teacher(id) ON DELETE SET NULL"))
     private Teacher teacher;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "audience_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_lecture_audience", foreignKeyDefinition =
+                    "FOREIGN KEY (audience_id) REFERENCES audience(id) ON DELETE SET NULL"))
+    private Audience audience;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "subject_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_lecture_subject", foreignKeyDefinition =
+                    "FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE SET NULL"))
+    private Subject subject;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "cathedra_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_lecture_cathedra", foreignKeyDefinition =
+                    "FOREIGN KEY (cathedra_id) REFERENCES cathedra(id) ON DELETE SET NULL"))
+    private Cathedra cathedra;
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "group_lection",
             joinColumns = @JoinColumn(name = "lection_id"),
-            inverseJoinColumns = @JoinColumn(name = "group_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     private List<Group> groups = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "audience_id", referencedColumnName = "id")
-    private Audience audience;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    private Subject subject;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cathedra_id", referencedColumnName = "id")
-    private Cathedra cathedra;
 }

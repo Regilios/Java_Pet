@@ -74,6 +74,7 @@
                         <select class="form-control" id="groups" name="groupIds" multiple required>
                             <option th:each="group : ${groups}"
                                     th:value="${group.id}"
+                                    th:selected="${lectureDto.groupIds.contains(group.id)}"
                                     th:text="${group.name}">
                             </option>
                         </select>

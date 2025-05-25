@@ -4,8 +4,10 @@ import org.example.univer.dto.VacationDto;
 import org.example.univer.models.Vacation;
 import org.example.univer.services.TeacherService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class VacationMapper {
     private final TeacherService teacherService;
     private final TeacherMapper teacherMapper;

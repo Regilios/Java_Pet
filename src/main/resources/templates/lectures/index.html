@@ -29,7 +29,7 @@
                     <tr th:each="lecture: ${lecturesDto}">
                         <td th:text="${lecture.id}">Id</td>
                         <td th:text="${lecture.subject.name}">Subject</td>
-                        <td th:text="${lecture.time.startLecture} + ' ' + ${lecture.time.endLecture}">Time</td>
+                        <td th:text="${#temporals.format(lecture.time.startLecture, 'yyyy-MM-dd HH:mm')} + ' ' + ${#temporals.format(lecture.time.endLecture, 'yyyy-MM-dd HH:mm')}">Time</td>
                         <td th:text="${lecture.audience.roomNumber}">Room</td>
                         <td>
                             <ul th:if="${#lists.isEmpty(lecture.groups)}">

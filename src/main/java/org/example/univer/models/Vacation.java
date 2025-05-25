@@ -1,31 +1,12 @@
 package org.example.univer.models;
 
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
-@NamedQueries({
-        @NamedQuery(
-                name = "findAllVacation",
-                query = "FROM Vacation"
-        ),
-        @NamedQuery(
-                name = "countVacantion",
-                query = "SELECT COUNT(v) FROM Vacation v WHERE v.startJob =:startJob AND v.endJob =:endJob AND v.teacher.id =:teacher_id"
-        ),
-        @NamedQuery(
-                name =  "findListVacantion",
-                query = "FROM Vacation v WHERE v.teacher.id = :teacher_id"
-        ),
-        @NamedQuery(
-                name =  "findVacantionWithTeacher",
-                query = "SELECT v FROM Vacation v JOIN FETCH v.teacher WHERE v.id = :vacId"
-        )
 
-})
 @Entity
 @Getter
 @Setter
@@ -48,7 +29,7 @@ public class Vacation implements Serializable {
     @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     private LocalDate endJob;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")
     private Teacher teacher;
 }

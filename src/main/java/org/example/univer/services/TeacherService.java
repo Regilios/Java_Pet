@@ -1,7 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoTeacherInterface;
+import org.example.univer.repositories.TeacherRepository;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Teacher;
 import org.slf4j.Logger;
@@ -15,15 +15,15 @@ import java.util.Optional;
 
 @Service
 public class TeacherService {
-    private DaoTeacherInterface daoTeacherInterface;
+    private TeacherRepository teacherRepository;
     private SubjectService subjectService;
     private static final Logger logger = LoggerFactory.getLogger(TeacherService.class);
     private AppSettings appSettings;
     private String genderTeacher;
 
     @Autowired
-    public TeacherService(DaoTeacherInterface daoTeacherInterface, SubjectService subjectService, AppSettings appSettings) {
-        this.daoTeacherInterface = daoTeacherInterface;
+    public TeacherService(TeacherRepository teacherRepository, SubjectService subjectService, AppSettings appSettings) {
+        this.teacherRepository = teacherRepository;
         this.subjectService = subjectService;
         this.appSettings = appSettings;
         this.genderTeacher = appSettings.getGenderTeacher();
@@ -60,7 +60,7 @@ public class TeacherService {
         logger.debug("Start create teacher");
         try {
             validate(teacher, ValidationContext.METHOD_CREATE);
-            daoTeacherInterface.create(teacher);
+            teacherRepository.save(teacher);
             logger.debug("Teacher created");
         } catch (TeacherExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -83,7 +83,7 @@ public class TeacherService {
     public void update(Teacher teacher) {
         logger.debug("Start update teacher");
         try {
-            daoTeacherInterface.update(teacher);
+            teacherRepository.save(teacher);
             logger.debug("Teacher updated");
         } catch (TeacherExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -105,28 +105,24 @@ public class TeacherService {
 
     public void deleteById(Long id) {
         logger.debug("Delete teacher width id: {}", id);
-        daoTeacherInterface.deleteById(id);
+        teacherRepository.deleteById(id);
     }
 
     public Optional<Teacher> findById(Long id) {
         logger.debug("Find teacher width id: {}", id);
-        return daoTeacherInterface.findById(id);
+        return teacherRepository.findById(id);
     }
 
     public List<Teacher> findAll() {
         logger.debug("Find all teachers");
-        return daoTeacherInterface.findAll();
+        return teacherRepository.findAll();
     }
 
     public boolean isSingle(Teacher teacher) {
         logger.debug("Check teacher is single");
-        return daoTeacherInterface.isSingle(teacher);
+        return teacherRepository.existsByFirstNameAndLastName(teacher.getFirstName(),teacher.getLastName());
     }
-/*
-    public List<Long> getListSubjectForTeacher(Long teacherId) {
-        logger.debug("Get list subject by id teacher");
-        return daoTeacherInterface.getListSubjectForTeacher(teacherId);
-    }*/
+
     private boolean checkGender(Teacher teacher) {
         return teacher.getGender().toString().equals(genderTeacher);
     }

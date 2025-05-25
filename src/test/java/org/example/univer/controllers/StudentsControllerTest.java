@@ -1,7 +1,7 @@
 package org.example.univer.controllers;
 
-import org.example.univer.models.Gender;
-import org.example.univer.models.Group;
+import org.example.univer.dto.StudentDto;
+import org.example.univer.mappers.StudentMapper;
 import org.example.univer.models.Student;
 import org.example.univer.services.GroupService;
 import org.example.univer.services.StudentService;
@@ -10,192 +10,131 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentsControllerTest {
     private MockMvc mockMvc;
     @Mock
+    private GroupService groupService;
+    @Mock
     private StudentService studentService;
     @Mock
-    private GroupService groupService;
+    private StudentMapper studentMapper;
     @InjectMocks
     private StudentsController studentsController;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(studentService, "maxGroupSize", 4);
-        PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
-        resolver.setFallbackPageable(PageRequest.of(0, 1));
-        mockMvc = MockMvcBuilders.standaloneSetup(studentsController).setCustomArgumentResolvers(resolver).build();
+        PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
+        pageableResolver.setFallbackPageable(PageRequest.of(0, 10));
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(studentsController)
+                .setCustomArgumentResolvers(pageableResolver)
+                .build();
     }
 
     @Test
-    public void whenGetAllStudents_thenAllStudentsReturned() throws Exception {
-        Group group = new Group();
+    void whenFindAllStudents_thenAllStudentsReturned() throws Exception {
+        Student student = new Student();
+        StudentDto dto = new StudentDto();
 
-        Student student1 = new Student();
-        student1.setFirstName("Pavel");
-        student1.setLastName("Yarinov");
-        student1.setGender(Gender.MALE);
-        student1.setAddress("Armany str 24");
-        student1.setEmail("pavel@gmail.com");
-        student1.setPhone("8978474666");
-        student1.setBirthday(LocalDate.of(1991, 10, 17));
-        student1.setGroup(group);
-        studentService.create(student1);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Student> studentPage = new PageImpl<>(List.of(student), pageable, 1);
 
-        Student student2 = new Student();
-        student2.setFirstName("TEST");
-        student2.setLastName("TEST");
-        student2.setGender(Gender.MALE);
-        student2.setAddress("TEST str 24");
-        student2.setEmail("TEST@gmail.com");
-        student2.setPhone("8978474666");
-        student2.setBirthday(LocalDate.of(1991, 10, 17));
-        student2.setGroup(group);
-        studentService.create(student2);
+        when(studentService.findAll(any(Pageable.class))).thenReturn(studentPage);
+        when(studentMapper.toDto(student)).thenReturn(dto);
 
-        List<Student> students = Arrays.asList(student1, student2);
-        Page<Student> page = new PageImpl<>(students, PageRequest.of(0, 1), 2);
-        when(studentService.findAll(isA(Pageable.class))).thenReturn(page);
-
-        mockMvc.perform(get("/students"))
+        mockMvc.perform(get("/students").param("page", "0").param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("students/index"))
-                .andExpect(forwardedUrl("students/index"))
-                .andExpect(model().attribute("students", page))
-                .andDo(print());
-        ;
+                .andExpect(model().attributeExists("studentsDto"))
+                .andExpect(model().attribute("title", "All Students"));
     }
 
     @Test
-    public void whenGetOneStudent_thenOneStudentReturned() throws Exception {
-        Group group = new Group();
-
-        Student student = new Student();
-        student.setFirstName("Pavel");
-        student.setLastName("Yarinov");
-        student.setGender(Gender.MALE);
-        student.setAddress("Armany str 24");
-        student.setEmail("pavel@gmail.com");
-        student.setPhone("8978474666");
-        student.setBirthday(LocalDate.of(1991, 10, 17));
-        student.setGroup(group);
-        studentService.create(student);
-
-        when(studentService.findById(1L)).thenReturn(Optional.of(student));
-
-        mockMvc.perform(get("/students/{id}", 1))
-                .andExpect(status().isOk())
-                .andExpect(view().name("students/show"))
-                .andExpect(model().attributeExists("student"))
-                .andExpect(model().attribute("student", student))
-                .andExpect(forwardedUrl("students/show"))
-                .andDo(print());
-    }
-
-    @Test
-    void whenCreateNewStudent_thenNewStudentCreated() throws Exception {
-        Group group = new Group();
-        group.setName("test");
-        when(groupService.findAll()).thenReturn(Arrays.asList(group));
-
+    void whenGetCreateForm_thenEmptyFormReturned() throws Exception {
         mockMvc.perform(get("/students/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("students/new"))
-                .andExpect(model().attributeExists("groups"))
-                .andExpect(model().attributeExists("student"))
-                .andDo(print());
+                .andExpect(model().attributeExists("studentDto"));
 
-        verify(groupService, times(1)).findAll();
     }
 
     @Test
-    void whenEditStudent_thenStudentFound() throws Exception {
-        Group group = new Group();
+    void whenPostNewValidAStudent_thenRedirectToIndex() throws Exception {
+        StudentDto dto = new StudentDto();
+        Student entity = new Student();
+        when(studentMapper.toEntity(any())).thenReturn(entity);
 
+        mockMvc.perform(post("/students"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students"));
+
+        verify(studentService).create(any(Student.class));
+    }
+
+    @Test
+    void whenEditStudent_thenStudentReturnedToForm() throws Exception {
         Student student = new Student();
-        student.setFirstName("Pavel");
-        student.setLastName("Yarinov");
-        student.setGender(Gender.MALE);
-        student.setAddress("Armany str 24");
-        student.setEmail("pavel@gmail.com");
-        student.setPhone("8978474666");
-        student.setBirthday(LocalDate.of(1991, 10, 17));
-        student.setGroup(group);
-
-        List<Group> groupList = List.of(group);
-
+        StudentDto dto = new StudentDto();
         when(studentService.findById(1L)).thenReturn(Optional.of(student));
-        when(groupService.findAll()).thenReturn(groupList);
+        when(studentMapper.toDto(student)).thenReturn(dto);
 
-        mockMvc.perform(get("/students/{id}/edit", 1))
+        mockMvc.perform(get("/students/1/edit"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("students/edit"))
-                .andExpect(model().attributeExists("groups"))
-                .andExpect(model().attributeExists("student"))
-                .andExpect(forwardedUrl("students/edit"))
-                .andExpect(model().attribute("groups", groupList))
-                .andExpect(model().attribute("student", student))
-                .andDo(print());
-
-        verify(studentService, times(1)).findById(1L);
-        verify(groupService, times(1)).findAll();
+                .andExpect(model().attributeExists("studentDto"));
     }
 
     @Test
-    public void whenUpdateStudent_thenStudentUpdated() throws Exception {
-        Group group = new Group();
+    void whenUpdateValidStudent_thenRedirectToIndex() throws Exception {
+        StudentDto dto = new StudentDto();
+        Student entity = new Student();
+        when(studentMapper.toEntity(any())).thenReturn(entity);
 
-        Student student = new Student();
-        student.setFirstName("Pavel");
-        student.setLastName("Yarinov");
-        student.setGender(Gender.MALE);
-        student.setAddress("Armany str 24");
-        student.setEmail("pavel@gmail.com");
-        student.setPhone("8978474666");
-        student.setBirthday(LocalDate.of(1991, 10, 17));
-        student.setGroup(group);
-
-        mockMvc.perform(patch("/students/{id}", 1)
-                        .flashAttr("student", student))
+        mockMvc.perform(patch("/students/1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/students"))
-                .andDo(print());
+                .andExpect(redirectedUrl("/students"));
 
-        verify(studentService, times(1)).update(student);
+        verify(studentService).update(any(Student.class));
     }
 
     @Test
-    void whenDeleteStudent_thenStudentDeleted() throws Exception {
-        Student student = new Student();
-        student.setId(1L);
-        mockMvc.perform(delete("/students/{id}", 1))
+    void whenFindById_thenStudentReturned() throws Exception {
+        Student audience = new Student();
+        StudentDto dto = new StudentDto();
+        when(studentService.findById(1L)).thenReturn(Optional.of(audience));
+        when(studentMapper.toDto(audience)).thenReturn(dto);
+
+        mockMvc.perform(get("/students/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("students/show"))
+                .andExpect(model().attributeExists("studentDto"));
+    }
+
+    @Test
+    void whenDeleteStudent_thenRedirectToIndex() throws Exception {
+        mockMvc.perform(delete("/students/1"))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/students"));
 
         verify(studentService).deleteById(1L);
     }
-
 }

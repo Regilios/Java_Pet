@@ -3,8 +3,10 @@ package org.example.univer.mappers;
 import org.example.univer.dto.AudienceDto;
 import org.example.univer.models.Audience;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class AudienceMapper {
     public Audience toEntity(AudienceDto dto) {
         Audience audience = new Audience();

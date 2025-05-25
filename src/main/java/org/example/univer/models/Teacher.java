@@ -4,20 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-@NamedQueries({
-        @NamedQuery(
-                name = "findAllTeachers",
-                query = "FROM Teacher"
-        ),
-        @NamedQuery(
-                name = "countTeachers",
-                query = "SELECT COUNT(t) FROM Teacher t WHERE t.firstName =:firstName AND t.lastName =:lastName"
-        )
-})
+
 @Entity
 @Getter
 @Setter
@@ -31,7 +20,7 @@ public class Teacher extends Person implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "teacher_subject",
             joinColumns = @JoinColumn(name = "teacher_id"),
@@ -39,10 +28,10 @@ public class Teacher extends Person implements Serializable {
     )
     private List<Subject> subjects = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cathedra_id", referencedColumnName = "id")
     private Cathedra cathedra;
 
-    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Vacation> vacation = new ArrayList<>();
 }

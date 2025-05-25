@@ -3,8 +3,10 @@ package org.example.univer.mappers;
 import org.example.univer.dto.LectureTimeDto;
 import org.example.univer.models.LectureTime;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class LectureTimeMapper {
     public LectureTime toEntity(LectureTimeDto dto) {
         LectureTime lectureTime = new LectureTime();

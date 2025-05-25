@@ -3,8 +3,10 @@ package org.example.univer.mappers;
 import org.example.univer.dto.SubjectDto;
 import org.example.univer.models.Subject;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class SubjectMapper {
     public Subject toEntity(SubjectDto dto) {
         Subject subject = new Subject();

@@ -1,11 +1,11 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoTeacherInterface;
 import org.example.univer.exeption.TeacherExeption;
 import org.example.univer.models.Cathedra;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Teacher;
+import org.example.univer.repositories.TeacherRepository;
 import org.example.univer.services.SubjectService;
 import org.example.univer.services.TeacherService;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ public class TeacherServiceTest {
     @Spy
     private AppSettings appSettings = new AppSettings();
     @Mock
-    private DaoTeacherInterface mockTeacher;
+    private TeacherRepository mockTeacher;
 
     @Mock
     private SubjectService subjectService;
@@ -58,10 +58,10 @@ public class TeacherServiceTest {
         teacher.setBirthday(LocalDate.parse("1983-02-01"));
         teacher.setCathedra(cathedra);
 
-        when(mockTeacher.isSingle(teacher)).thenReturn(false);
+        when(mockTeacher.existsByFirstNameAndLastName(teacher.getFirstName(),teacher.getLastName())).thenReturn(false);
         teacherService.create(teacher);
 
-        verify(mockTeacher, times(1)).create(teacher);
+        verify(mockTeacher, times(1)).save(teacher);
     }
 
     @Test
@@ -78,23 +78,24 @@ public class TeacherServiceTest {
         teacher.setBirthday(LocalDate.parse("1983-02-01"));
         teacher.setCathedra(cathedra);
 
-        when(mockTeacher.isSingle(teacher)).thenReturn(false);
+        when(mockTeacher.existsByFirstNameAndLastName(teacher.getFirstName(),teacher.getLastName())).thenReturn(false);
 
         assertThrows(TeacherExeption.class, () -> {
             teacherService.validate(teacher, TeacherService.ValidationContext.METHOD_CREATE);
             teacherService.create(teacher);
         });
-        verify(mockTeacher, never()).create(any(Teacher.class));
+        verify(mockTeacher, never()).save(any(Teacher.class));
     }
 
     @Test
     void isSingle_teacherIsSingle_true() {
         Teacher teacher = new Teacher();
-
-        when(mockTeacher.isSingle(teacher)).thenReturn(true);
+        teacher.setFirstName("test");
+        teacher.setLastName("test2");
+        when(mockTeacher.existsByFirstNameAndLastName(teacher.getFirstName(),teacher.getLastName())).thenReturn(true);
         assertTrue(teacherService.isSingle(teacher));
 
-        verify(mockTeacher, times(1)).isSingle(any(Teacher.class));
+        verify(mockTeacher, times(1)).existsByFirstNameAndLastName(anyString(),anyString());
     }
 
     @Test

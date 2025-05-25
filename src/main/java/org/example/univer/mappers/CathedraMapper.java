@@ -3,8 +3,10 @@ package org.example.univer.mappers;
 import org.example.univer.dto.CathedraDto;
 import org.example.univer.models.Cathedra;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class CathedraMapper {
     public Cathedra toEntity(CathedraDto dto) {
         Cathedra cathedra = new Cathedra();

@@ -76,7 +76,7 @@ public class StudentsController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("student") StudentDto studentDto,
+    public String update(@ModelAttribute("studentDto") StudentDto studentDto,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {

@@ -4,18 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Objects;
-@NamedQueries(
-    {
-            @NamedQuery(
-                    name = "findAllCathedras",
-                    query = "FROM Cathedra"
-            ),
-            @NamedQuery(
-                    name = "findCathedraByName",
-                    query = "SELECT COUNT(*) FROM Cathedra WHERE name=:name"
-            )
-    })
+
 @Entity
 @Getter
 @Setter

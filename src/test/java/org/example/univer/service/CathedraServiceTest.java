@@ -1,9 +1,9 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoCathedraInterface;
 import org.example.univer.exeption.CathedraExeption;
 import org.example.univer.models.Cathedra;
+import org.example.univer.repositories.CathedraRepository;
 import org.example.univer.services.CathedraService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ public class CathedraServiceTest {
     @Spy
     private AppSettings appSettings = new AppSettings();
     @Mock
-    private DaoCathedraInterface mockCathedra;
+    private CathedraRepository mockCathedra;
     @InjectMocks
     private CathedraService cathedraService;
 
@@ -42,33 +42,33 @@ public class CathedraServiceTest {
         Cathedra cathedra = new Cathedra();
         cathedra.setName("Андромеда");
 
-        when(mockCathedra.isSingle(cathedra)).thenReturn(false);
+        when(mockCathedra.existsByName(cathedra.getName())).thenReturn(false);
         cathedraService.create(cathedra);
 
-        verify(mockCathedra, times(1)).create(cathedra);
+        verify(mockCathedra, times(1)).save(cathedra);
     }
 
     @Test
     void create_cathedraStartSymbolA_throwException() {
         Cathedra cathedra = new Cathedra();
         cathedra.setName("Персиваль");
-        when(mockCathedra.isSingle(cathedra)).thenReturn(false);
+        when(mockCathedra.existsByName(cathedra.getName())).thenReturn(false);
 
         assertThrows(CathedraExeption.class, () -> {
             cathedraService.validate(cathedra, CathedraService.ValidationContext.METHOD_CREATE);
             cathedraService.create(cathedra);
         });
-        verify(mockCathedra, never()).create(any(Cathedra.class));
+        verify(mockCathedra, never()).save(any(Cathedra.class));
     }
 
     @Test
     void isSingle_cathedraIsSingle_true() {
         Cathedra cathedra = new Cathedra();
-
-        when(mockCathedra.isSingle(cathedra)).thenReturn(true);
+        cathedra.setName("test");
+        when(mockCathedra.existsByName(cathedra.getName())).thenReturn(true);
         assertTrue(cathedraService.isSingle(cathedra));
 
-        verify(mockCathedra, times(1)).isSingle(any(Cathedra.class));
+        verify(mockCathedra, times(1)).existsByName(anyString());
     }
 
     @Test

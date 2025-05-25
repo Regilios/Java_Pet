@@ -1,9 +1,9 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoGroupInterface;
 import org.example.univer.exeption.InvalidParameterException;
 import org.example.univer.models.Group;
+import org.example.univer.repositories.GroupRepository;
 import org.example.univer.services.GroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ public class GroupServiceTest {
     @Spy
     private AppSettings appSettings = new AppSettings();
     @Mock
-    private DaoGroupInterface mockGroup;
+    private GroupRepository mockGroup;
     @InjectMocks
     private GroupService groupService;
 
@@ -45,10 +45,10 @@ public class GroupServiceTest {
         Group group = new Group();
         group.setName("Абривель");
 
-        when(mockGroup.isSingle(group)).thenReturn(false);
+        when(mockGroup.existsByName(group.getName())).thenReturn(false);
         groupService.create(group);
 
-        verify(mockGroup, times(1)).create(group);
+        verify(mockGroup, times(1)).save(group);
     }
 
     @Test
@@ -56,23 +56,23 @@ public class GroupServiceTest {
         Group group = new Group();
         group.setName("Аб");
 
-        when(mockGroup.isSingle(group)).thenReturn(false);
+        when(mockGroup.existsByName(group.getName())).thenReturn(false);
         assertThrows(InvalidParameterException.class, () -> {
             groupService.validate(group, GroupService.ValidationContext.METHOD_CREATE);
             groupService.create(group);
         });
-        verify(mockGroup, never()).create(any(Group.class));
+        verify(mockGroup, never()).save(any(Group.class));
     }
 
 
     @Test
     void isSingle_groupIsSingle_true() {
         Group group = new Group();
-
-        when(mockGroup.isSingle(group)).thenReturn(true);
+        group.setName("test");
+        when(mockGroup.existsByName(group.getName())).thenReturn(true);
         assertTrue(groupService.isSingle(group));
 
-        verify(mockGroup, times(1)).isSingle(any(Group.class));
+        verify(mockGroup, times(1)).existsByName(anyString());
     }
 
     @Test

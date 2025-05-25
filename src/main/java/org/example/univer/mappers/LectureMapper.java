@@ -1,5 +1,6 @@
 package org.example.univer.mappers;
 
+import org.example.univer.dto.GroupDto;
 import org.example.univer.dto.LectureDto;
 import org.example.univer.models.Group;
 import org.example.univer.models.Lecture;
@@ -22,6 +23,7 @@ public class LectureMapper {
     private final SubjectMapper subjectMapper;
     private final LectureTimeMapper lectureTimeMapper;
     private final TeacherMapper teacherMapper;
+    private final GroupMapper groupMapper;
 
     public LectureMapper(TeacherMapper teacherMapper,
                         LectureTimeMapper lectureTimeMapper,
@@ -33,7 +35,8 @@ public class LectureMapper {
                         AudienceService audienceService,
                         SubjectService subjectService,
                         CathedraService cathedraService,
-                        LectureTimeService lectureTimeService) {
+                        LectureTimeService lectureTimeService,
+                        GroupMapper groupMapper) {
         this.audienceMapper = audienceMapper;
         this.teacherService = teacherService;
         this.groupService = groupService;
@@ -45,6 +48,7 @@ public class LectureMapper {
         this.subjectMapper = subjectMapper;
         this.lectureTimeMapper = lectureTimeMapper;
         this.teacherMapper = teacherMapper;
+        this.groupMapper = groupMapper;
     }
 
     public Lecture toEntity(LectureDto dto) {
@@ -78,6 +82,11 @@ public class LectureMapper {
                 .map(Group::getId)
                 .collect(Collectors.toList());
         dto.setGroupIds(groupIds);
+
+        List<GroupDto> groups = lecture.getGroups().stream()
+                .map(groupMapper::toDto)
+                .collect(Collectors.toList());
+        dto.setGroups(groups);
 
         return dto;
     }

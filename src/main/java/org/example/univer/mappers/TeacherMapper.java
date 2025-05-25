@@ -6,11 +6,13 @@ import org.example.univer.models.Teacher;
 import org.example.univer.services.CathedraService;
 import org.example.univer.services.SubjectService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Transactional(readOnly = true)
 public class TeacherMapper {
     private final SubjectService subjectService;
     private final SubjectMapper subjectMapper;

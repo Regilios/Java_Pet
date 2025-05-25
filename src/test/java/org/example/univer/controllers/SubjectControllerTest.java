@@ -1,133 +1,117 @@
 package org.example.univer.controllers;
 
+import org.example.univer.dto.SubjectDto;
+import org.example.univer.mappers.SubjectMapper;
 import org.example.univer.models.Subject;
 import org.example.univer.services.SubjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
 public class SubjectControllerTest {
-    private MockMvc mockMvc;
-    @Mock
     private SubjectService subjectService;
-    @InjectMocks
+    private SubjectMapper subjectMapper;
     private SubjectController subjectController;
+    private MockMvc mockMvc;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
+        subjectService = mock(SubjectService.class);
+        subjectMapper = mock(SubjectMapper.class);
+        subjectController = new SubjectController(subjectService, subjectMapper);
         mockMvc = MockMvcBuilders.standaloneSetup(subjectController).build();
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(subjectService, "minSizeDescription", 20);
     }
 
     @Test
-    public void whenGetAllSubjects_thenAllSubjectsReturned() throws Exception {
-        Subject subject1 = new Subject();
-        subject1.setName("Test");
-        subject1.setDescription("Test Test Test Test Test Test Test");
-        subjectService.create(subject1);
-
-        Subject subject2 = new Subject();
-        subject2.setName("Test22");
-        subject2.setDescription("Test Test Test Test Test Test Test");
-        subjectService.create(subject2);
-
-        List<Subject> subjects = Arrays.asList(subject1, subject2);
-
-        when(subjectService.findAll()).thenReturn(subjects);
+    void whenFindAll_thenAllSubjectsReturned() throws Exception {
+        Subject subject = new Subject();
+        SubjectDto dto = new SubjectDto();
+        when(subjectService.findAll()).thenReturn(List.of(subject));
+        when(subjectMapper.toDto(subject)).thenReturn(dto);
 
         mockMvc.perform(get("/subjects"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("subjects/index"))
-                .andExpect(forwardedUrl("subjects/index"))
-                .andExpect(model().attribute("subjects", subjects))
-                .andDo(print());
+                .andExpect(model().attributeExists("subjectsDto"))
+                .andExpect(model().attribute("title", "All Subjects"));
     }
 
     @Test
-    public void whenGetOneSubject_thenOneSubjectReturned() throws Exception {
-        Subject subject = new Subject();
-        subject.setName("Test");
-        subject.setDescription("Test Test Test Test Test Test Test");
-        subjectService.create(subject);
-
-        when(subjectService.findById(1L)).thenReturn(Optional.of(subject));
-
-        mockMvc.perform(get("/subjects/{id}", 1))
-                .andExpect(status().isOk())
-                .andExpect(view().name("subjects/show"))
-                .andExpect(model().attributeExists("subject"))
-                .andExpect(model().attribute("subject", subject))
-                .andExpect(forwardedUrl("subjects/show"))
-                .andDo(print());
-    }
-
-    @Test
-    void whenCreateNewSubject_thenNewSubjectCreated() throws Exception {
+    void whenGetCreateForm_thenEmptyFormReturned() throws Exception {
         mockMvc.perform(get("/subjects/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("subjects/new"))
-                .andExpect(model().attributeExists("subject"))
-                .andDo(print());
+                .andExpect(model().attributeExists("subjectDto"));
     }
 
     @Test
-    void whenEditSubject_thenSubjectFound() throws Exception {
+    void whenPostNewValidSubject_thenRedirectToIndex() throws Exception {
+        SubjectDto dto = new SubjectDto();
+        Subject entity = new Subject();
+        when(subjectMapper.toEntity(any(SubjectDto.class))).thenReturn(entity);
+
+        mockMvc.perform(post("/subjects")
+                        .param("name", "Math")
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/subjects"));
+
+        verify(subjectService).create(any(Subject.class));
+    }
+
+    @Test
+    void whenEditSubject_thenSubjectReturnedToForm() throws Exception {
         Subject subject = new Subject();
-        subject.setName("Test");
-        subject.setDescription("Test Test Test Test Test Test Test");
-
+        SubjectDto dto = new SubjectDto();
         when(subjectService.findById(1L)).thenReturn(Optional.of(subject));
+        when(subjectMapper.toDto(subject)).thenReturn(dto);
 
-
-        mockMvc.perform(get("/subjects/{id}/edit", 1))
+        mockMvc.perform(get("/subjects/1/edit"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("subjects/edit"))
-                .andExpect(model().attributeExists("subject"))
-                .andExpect(forwardedUrl("subjects/edit"))
-                .andExpect(model().attribute("subject", subject))
-                .andDo(print());
-
-        verify(subjectService, times(1)).findById(1L);
+                .andExpect(model().attributeExists("subjectDto"));
     }
 
     @Test
-    public void whenUpdateSubject_thenSubjectUpdated() throws Exception {
-        Subject subject = new Subject();
-        subject.setName("Test");
-        subject.setDescription("Test Test Test Test Test Test Test");
+    void whenUpdateValidSubject_thenRedirectToIndex() throws Exception {
+        SubjectDto dto = new SubjectDto();
+        Subject entity = new Subject();
+        when(subjectMapper.toEntity(any(SubjectDto.class))).thenReturn(entity);
 
-        mockMvc.perform(patch("/subjects/{id}", 1)
-                        .flashAttr("subject", subject))
+        mockMvc.perform(patch("/subjects/1")
+                        .param("name", "Physics"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/subjects"))
-                .andDo(print());
+                .andExpect(redirectedUrl("/subjects"));
 
-        verify(subjectService, times(1)).update(subject);
+        verify(subjectService).update(any(Subject.class));
     }
 
     @Test
-    void whenDeleteSubject_thenSubjectDeleted() throws Exception {
+    void whenFindById_thenSubjectReturned() throws Exception {
         Subject subject = new Subject();
-        subject.setId(1L);
-        mockMvc.perform(delete("/subjects/{id}", 1))
+        SubjectDto dto = new SubjectDto();
+        when(subjectService.findById(1L)).thenReturn(Optional.of(subject));
+        when(subjectMapper.toDto(subject)).thenReturn(dto);
+
+        mockMvc.perform(get("/subjects/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("subjects/show"))
+                .andExpect(model().attributeExists("subjectDto"));
+    }
+
+    @Test
+    void whenDeleteSubject_thenRedirectToIndex() throws Exception {
+        mockMvc.perform(delete("/subjects/1"))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/subjects"));
 
         verify(subjectService).deleteById(1L);

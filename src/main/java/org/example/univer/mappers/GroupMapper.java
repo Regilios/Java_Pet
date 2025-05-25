@@ -4,8 +4,10 @@ import org.example.univer.dto.GroupDto;
 import org.example.univer.models.Group;
 import org.example.univer.services.CathedraService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class GroupMapper {
     private final CathedraService cathedraService;
     private final CathedraMapper cathedraMapper;

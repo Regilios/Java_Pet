@@ -43,7 +43,7 @@ public class HolidayController {
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("title", "All Holidays");
-        model.addAttribute("holidaysDto", new HolidayDto());
+        model.addAttribute("holidayDto", new HolidayDto());
         logger.debug("Show create page");
         return "holidays/new";
     }

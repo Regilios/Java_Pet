@@ -3,8 +3,10 @@ package org.example.univer.mappers;
 import org.example.univer.dto.HolidayDto;
 import org.example.univer.models.Holiday;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class HolidayMapper {
     public Holiday toEntity(HolidayDto dto) {
         Holiday holiday = new Holiday();

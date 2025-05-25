@@ -1,7 +1,7 @@
 package org.example.univer.service;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.repositories.AudienceRepository;
+import org.example.univer.repositories.AudienceRepository;
 import org.example.univer.exeption.AudienceExeption;
 import org.example.univer.models.Audience;
 import org.example.univer.services.AudienceService;

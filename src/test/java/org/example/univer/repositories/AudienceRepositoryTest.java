@@ -1,6 +1,5 @@
 package org.example.univer.repositories;
 
-import org.example.univer.dao.repositories.AudienceRepository;
 import org.example.univer.models.Audience;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AudienceRepositoryTest {
     @Autowired
     private AudienceRepository audienceRepository;
-
 
     @Test
     void whenSaveAudience_thenAudienceIsPersisted() {

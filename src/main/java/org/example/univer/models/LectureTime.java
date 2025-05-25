@@ -1,23 +1,12 @@
 package org.example.univer.models;
 
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
-@NamedQueries(
-        {
-                @NamedQuery(
-                        name = "findAllLectureTime",
-                        query = "FROM LectureTime"
-                ),
-                @NamedQuery(
-                        name = "findLectureTime",
-                        query = "SELECT COUNT(*) FROM LectureTime WHERE startLecture=:startLecture AND endLecture=:endLecture "
-                )
-        })
+
 @Entity
 @Getter
 @Setter

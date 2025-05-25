@@ -3,29 +3,10 @@ package org.example.univer.models;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
-@NamedQueries(
-        {
-                @NamedQuery(
-                        name = "findAllHoliday",
-                        query = "FROM Holiday"
-                ),
-                @NamedQuery(
-                        name = "findHolidayByName",
-                        query = "SELECT COUNT(*) FROM Holiday WHERE description=:desc"
-                ),
-                @NamedQuery(
-                        name = "countHolidayByDescript",
-                        query = "SELECT COUNT(*) FROM Holiday WHERE description = :description"
-                ),
-                @NamedQuery(
-                        name = "findHolidayByDate",
-                        query = "SELECT COUNT(h) FROM Holiday h WHERE :date BETWEEN h.startHoliday AND h.endHoliday"
-                )
-        })
+
 @Entity
 @Getter
 @Setter

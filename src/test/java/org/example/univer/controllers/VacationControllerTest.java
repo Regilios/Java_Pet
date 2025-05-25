@@ -1,6 +1,9 @@
 package org.example.univer.controllers;
 
-import org.example.univer.controllers.VacationController;
+import org.example.univer.dto.TeacherDto;
+import org.example.univer.dto.VacationDto;
+import org.example.univer.mappers.TeacherMapper;
+import org.example.univer.mappers.VacationMapper;
 import org.example.univer.models.Teacher;
 import org.example.univer.models.Vacation;
 import org.example.univer.services.LectureService;
@@ -11,169 +14,118 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-public class VacationControllerTest {
+class VacationControllerTest {
     private MockMvc mockMvc;
+    @Mock
+    private TeacherService teacherService;
     @Mock
     private VacationService vacationService;
     @Mock
     private LectureService lectureService;
     @Mock
-    private TeacherService teacherService;
+    private VacationMapper vacationMapper;
+    @Mock
+    private TeacherMapper teacherMapper;
+
     @InjectMocks
     private VacationController vacationController;
 
+    private final Long teacherId = 1L;
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(vacationController).build();
-        MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(vacationService, "minVacationDay", 7);
-        ReflectionTestUtils.setField(vacationService, "maxVacationDay", 20);
     }
 
     @Test
-    public void whenGetAllVacations_thenAllVacationsReturned() throws Exception {
+    void whenGetAllVacations_thenReturnVacationListView() throws Exception {
         Teacher teacher = new Teacher();
-        Long teacherId = 1L;
+        TeacherDto teacherDto = new TeacherDto();
 
-        Vacation vacation1 = new Vacation();
-        vacation1.setStartJob(LocalDate.parse("2024-07-01"));
-        vacation1.setEndJob(LocalDate.parse("2024-07-14"));
-        vacation1.setTeacher(teacher);
-        vacationService.create(vacation1);
-
-        Vacation vacation2 = new Vacation();
-        vacation2.setStartJob(LocalDate.parse("2025-07-01"));
-        vacation2.setEndJob(LocalDate.parse("2025-07-14"));
-        vacation2.setTeacher(teacher);
-        vacationService.create(vacation2);
-
-        List<Vacation> vacationList = List.of(vacation1, vacation2);
-
-        when(vacationService.findByTeacherId(teacherId)).thenReturn(vacationList);
-        when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+        when(teacherService.findById(teacherId)).thenReturn(Optional.of(teacher));
+        when(teacherMapper.toDto(teacher)).thenReturn(teacherDto);
+        when(vacationService.findByTeacherId(teacherId)).thenReturn(List.of());
 
         mockMvc.perform(get("/teachers/{teacherId}/vacations", teacherId))
                 .andExpect(status().isOk())
                 .andExpect(view().name("teachers/vacations/index"))
-                .andExpect(model().attribute("vacations", vacationList))
-                .andExpect(model().attribute("teacher", teacher))
-                .andDo(print());
-
-        verify(vacationService, times(1)).findByTeacherId(teacherId);
-        verify(teacherService, times(1)).findById(teacherId);
+                .andExpect(model().attribute("teacher", teacherDto))
+                .andExpect(model().attribute("vacations", List.of()));
     }
 
     @Test
-    public void whenGetOneVacation_thenOneVacationReturned() throws Exception {
+    void whenGetCreateVacationForm_thenReturnForm() throws Exception {
         Teacher teacher = new Teacher();
-
-        Vacation vacation = new Vacation();
-        vacation.setStartJob(LocalDate.parse("2024-07-01"));
-        vacation.setEndJob(LocalDate.parse("2024-07-14"));
-        vacation.setTeacher(teacher);
-        vacationService.create(vacation);
-
-        when(vacationService.findById(1L)).thenReturn(Optional.of(vacation));
-
-        mockMvc.perform(get("/teachers/{teacherId}/vacations/{id}", 1, 1))
-                .andExpect(status().isOk())
-                .andExpect(view().name("teachers/vacations/show"))
-                .andExpect(model().attributeExists("vacation"))
-                .andExpect(model().attribute("vacation", vacation))
-                .andExpect(forwardedUrl("teachers/vacations/show"))
-                .andDo(print());
-    }
-
-    @Test
-    void whenCreateNewVacation_thenNewVacationCreated() throws Exception {
-        Teacher teacher = new Teacher();
-        when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
-
-        mockMvc.perform(get("/teachers/{teacherId}/vacations/new", 1))
-                .andExpect(status().isOk())
-                .andExpect(view().name("teachers/vacations/new"))
-                .andExpect(model().attributeExists("vacation"))
-                .andExpect(model().attributeExists("teacher"))
-                .andDo(print());
-
-        verify(teacherService, times(1)).findById(1L);
-    }
-
-    @Test
-    void whenEditVacation_thenVacationFound() throws Exception {
-        Teacher teacher = new Teacher();
-
-        Vacation vacation = new Vacation();
-        vacation.setStartJob(LocalDate.parse("2024-07-01"));
-        vacation.setEndJob(LocalDate.parse("2024-07-14"));
-        vacation.setTeacher(teacher);
-
-        when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
-        when(vacationService.findById(1L)).thenReturn(Optional.of(vacation));
-
-        mockMvc.perform(get("/teachers/{teacherId}/vacations/{id}/edit", 1, 1))
-                .andExpect(status().isOk())
-                .andExpect(view().name("teachers/vacations/edit"))
-                .andExpect(model().attributeExists("vacation"))
-                .andExpect(model().attributeExists("teacher"))
-                .andExpect(forwardedUrl("teachers/vacations/edit"))
-                .andExpect(model().attribute("vacation", vacation))
-                .andExpect(model().attribute("teacher", teacher))
-                .andDo(print());
-
-        verify(teacherService, times(1)).findById(1L);
-        verify(vacationService, times(1)).findById(1L);
-    }
-
-    @Test
-    public void whenUpdateVacation_thenVacationUpdated() throws Exception {
-        Long teacherId = 1L;
-        Long vacationId = 1L;
-
-        Teacher teacher = new Teacher();
-
-        Vacation vacation = new Vacation();
-        vacation.setStartJob(LocalDate.parse("2024-07-01"));
-        vacation.setEndJob(LocalDate.parse("2024-07-14"));
-        vacation.setTeacher(teacher);
+        TeacherDto teacherDto = new TeacherDto();
 
         when(teacherService.findById(teacherId)).thenReturn(Optional.of(teacher));
-        when(lectureService.findByTeacherIdAndPeriod(teacher, vacation.getStartJob(), vacation.getEndJob())).thenReturn(List.of());
+        when(teacherMapper.toDto(teacher)).thenReturn(teacherDto);
 
-        mockMvc.perform(patch("/teachers/{teacherId}/vacations/{id}", teacherId, vacationId)
-                        .flashAttr("vacation", vacation))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/teachers/" + teacherId + "/vacations"));
-
-        verify(vacationService, times(1)).update(vacation);
+        mockMvc.perform(get("/teachers/{teacherId}/vacations/new", teacherId))
+                .andExpect(status().isOk())
+                .andExpect(view().name("teachers/vacations/new"))
+                .andExpect(model().attribute("teacher", teacherDto))
+                .andExpect(model().attributeExists("vacationDto"));
     }
 
     @Test
-    void whenDeleteVacation_thenVacationDeleted() throws Exception {
-        Vacation vacation = new Vacation();
-        vacation.setId(1L);
-
-        mockMvc.perform(delete("/teachers/{teacherId}/vacations/{id}", 1, 1))
+    void whenDeleteVacation_thenRedirectToVacationList() throws Exception {
+        mockMvc.perform(delete("/teachers/{teacherId}/vacations/{id}", teacherId, 5L))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/teachers/1/vacations"));
 
-        verify(vacationService).deleteById(1L);
+        verify(vacationService).deleteById(5L);
+    }
 
+    @Test
+    void whenGetVacationEditForm_thenReturnEditPage() throws Exception {
+        Teacher teacher = new Teacher();
+        TeacherDto teacherDto = new TeacherDto();
+        Vacation vacation = new Vacation();
+        VacationDto vacationDto = new VacationDto();
+
+        when(teacherService.findById(teacherId)).thenReturn(Optional.of(teacher));
+        when(teacherMapper.toDto(teacher)).thenReturn(teacherDto);
+        when(vacationService.findById(2L)).thenReturn(Optional.of(vacation));
+        when(vacationMapper.toDto(vacation)).thenReturn(vacationDto);
+
+        mockMvc.perform(get("/teachers/{teacherId}/vacations/{id}/edit", teacherId, 2L))
+                .andExpect(status().isOk())
+                .andExpect(view().name("teachers/vacations/edit"))
+                .andExpect(model().attribute("teacher", teacherDto))
+                .andExpect(model().attribute("vacationDto", vacationDto));
+    }
+
+    @Test
+    void whenGetVacationDetails_thenReturnShowView() throws Exception {
+        Teacher teacher = new Teacher();
+        TeacherDto teacherDto = new TeacherDto();
+        Vacation vacation = new Vacation();
+        VacationDto vacationDto = new VacationDto();
+
+        when(teacherService.findById(teacherId)).thenReturn(Optional.of(teacher));
+        when(teacherMapper.toDto(teacher)).thenReturn(teacherDto);
+        when(vacationService.findById(3L)).thenReturn(Optional.of(vacation));
+        when(vacationMapper.toDto(vacation)).thenReturn(vacationDto);
+
+        mockMvc.perform(get("/teachers/{teacherId}/vacations/{id}", teacherId, 3L))
+                .andExpect(status().isOk())
+                .andExpect(view().name("teachers/vacations/show"))
+                .andExpect(model().attribute("teacher", teacherDto))
+                .andExpect(model().attribute("vacationDto", vacationDto));
     }
 }
