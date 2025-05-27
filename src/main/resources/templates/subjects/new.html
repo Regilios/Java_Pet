@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form th:method="POST" th:action="@{/subjects}" th:object="${subject}">
+                <form th:method="POST" th:action="@{/subjects}" th:object="${subjectDto}">
                     <div class="mb-3">
                         <label class="form-label" for="name">name</label>
                         <input class="form-control" type="text" th:field="*{name}" id="name"/>

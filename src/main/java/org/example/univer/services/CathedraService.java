@@ -1,7 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoCathedraInterface;
+import org.example.univer.repositories.CathedraRepository;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Cathedra;
 import org.slf4j.Logger;
@@ -15,15 +15,15 @@ import java.util.Optional;
 
 @Service
 public class CathedraService {
-    private DaoCathedraInterface daoCathedraInterface;
+    private CathedraRepository cathedraRepository;
     private static final Logger logger = LoggerFactory.getLogger(CathedraService.class);
     private AppSettings appSettings;
     private Integer maxLengthNameCathedra;
     private String startSymbolNameCathedra;
 
     @Autowired
-    public CathedraService(DaoCathedraInterface daoCathedraInterface, AppSettings appSettings) {
-        this.daoCathedraInterface = daoCathedraInterface;
+    public CathedraService(CathedraRepository cathedraRepository, AppSettings appSettings) {
+        this.cathedraRepository = cathedraRepository;
         this.appSettings = appSettings;
         this.maxLengthNameCathedra = appSettings.getMaxLengthNameCathedra();
         this.startSymbolNameCathedra = appSettings.getStartSymbolNameCathedra();
@@ -66,7 +66,7 @@ public class CathedraService {
         logger.debug("Start create Cathedra");
         try {
             validate(cathedra, ValidationContext.METHOD_CREATE);
-            daoCathedraInterface.create(cathedra);
+            cathedraRepository.save(cathedra);
             logger.debug("Cathedra created");
         } catch (CathedraExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -91,7 +91,7 @@ public class CathedraService {
         logger.debug("Start update Cathedra");
         try {
             validate(cathedra, ValidationContext.METHOD_UPDATE);
-            daoCathedraInterface.update(cathedra);
+            cathedraRepository.save(cathedra);
         } catch (CathedraExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
             throw e;
@@ -113,21 +113,21 @@ public class CathedraService {
 
     public void deleteById(Long id) {
         logger.debug("Delete cathedra width id: {}", id);
-        daoCathedraInterface.deleteById(id);
+        cathedraRepository.deleteById(id);
     }
 
     public Optional<Cathedra> findById(Long id) {
         logger.debug("Find cathedra width id: {}", id);
-        return daoCathedraInterface.findById(id);
+        return cathedraRepository.findById(id);
     }
 
     public List<Cathedra> findAll() {
         logger.debug("Find all cathedrals");
-        return daoCathedraInterface.findAll();
+        return cathedraRepository.findAll();
     }
 
     public boolean isSingle(Cathedra cathedra) {
         logger.debug("Check cathedra is single");
-        return daoCathedraInterface.isSingle(cathedra);
+        return cathedraRepository.existsByName(cathedra.getName());
     }
 }

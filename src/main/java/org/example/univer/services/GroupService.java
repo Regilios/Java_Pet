@@ -1,7 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoGroupInterface;
+import org.example.univer.repositories.GroupRepository;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Group;
 import org.slf4j.Logger;
@@ -15,14 +15,14 @@ import java.util.Optional;
 
 @Service
 public class GroupService {
-    private DaoGroupInterface daoGroupInterface;
+    private GroupRepository groupRepository;
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
     private AppSettings appSettings;
     private Integer minLengthNameGroup;
 
     @Autowired
-    public GroupService(DaoGroupInterface daoGroupInterface, AppSettings appSettings) {
-        this.daoGroupInterface = daoGroupInterface;
+    public GroupService(GroupRepository groupRepository, AppSettings appSettings) {
+        this.groupRepository = groupRepository;
         this.appSettings = appSettings;
         this.minLengthNameGroup = appSettings.getMinLengthNameGroup();
     }
@@ -54,7 +54,7 @@ public class GroupService {
         logger.debug("Start create Group");
         try {
             validate(group, ValidationContext.METHOD_CREATE);
-            daoGroupInterface.create(group);
+            groupRepository.save(group);
             logger.debug("Group created");
         } catch (GroupExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -78,7 +78,7 @@ public class GroupService {
         logger.debug("Start update Group");
         try {
             validate(group, ValidationContext.METHOD_UPDATE);
-            daoGroupInterface.update(group);
+            groupRepository.save(group);
             logger.debug("Group updated");
         } catch (GroupExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -100,26 +100,21 @@ public class GroupService {
 
     public void deleteById(Long id) {
         logger.debug("Delete group width id: {}", id);
-        daoGroupInterface.deleteById(id);
+        groupRepository.deleteById(id);
     }
 
     public Optional<Group> findById(Long id) {
         logger.debug("Find group width id: {}", id);
-        return daoGroupInterface.findById(id);
-    }
-
-    public List<Group> getGroupById(List<Long> groupIds) {
-        logger.debug("Find groups by id");
-        return daoGroupInterface.getGroupById(groupIds);
+        return groupRepository.findById(id);
     }
 
     public List<Group> findAll() {
         logger.debug("Find all groups");
-        return daoGroupInterface.findAll();
+        return groupRepository.findAll();
     }
 
     public boolean isSingle(Group group) {
         logger.debug("Check group is single");
-        return daoGroupInterface.isSingle(group);
+        return groupRepository.existsByName(group.getName());
     }
 }

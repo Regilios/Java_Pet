@@ -14,18 +14,18 @@
             <div class="col-12 col-md order-md-0 text-center text-md-start">
                 <table class="table">
                     <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Family</th>
-                    </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Family</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><a th:text="${subject.getId()}">Id</a></td>
-                        <td><a th:text="${subject.getName()}">Name</a></td>
-                        <td><a th:text="${subject.getDescription()}">Description</a></td>
-                    </tr>
+                        <tr>
+                            <td><a th:text="${subjectDto.id}">Id</a></td>
+                            <td><a th:text="${subjectDto.name}">Name</a></td>
+                            <td><a th:text="${subjectDto.description}">Description</a></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

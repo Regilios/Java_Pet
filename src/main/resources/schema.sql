@@ -72,11 +72,11 @@ CREATE TABLE IF NOT EXISTS lection (
     subject_id INTEGER,
     lecture_time_id INTEGER,
     audience_id INTEGER, -- date deleted, error in uml
-    FOREIGN KEY (cathedra_id) REFERENCES cathedra (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES teacher (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (subject_id) REFERENCES subject (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (lecture_time_id) REFERENCES lectionTime (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (audience_id) REFERENCES audience (id) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (cathedra_id) REFERENCES cathedra (id) ON DELETE SET NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teacher(id) ON DELETE SET NULL,
+    FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE SET NULL,
+    FOREIGN KEY (lecture_time_id) REFERENCES lectionTime (id) ON DELETE SET NULL,
+    FOREIGN KEY (audience_id) REFERENCES audience (id) ON DELETE SET NULL
 );
 
 -- many-to-many

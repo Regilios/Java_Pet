@@ -25,16 +25,16 @@
                     </thead>
                     <tbody>
                     <tr th:each="vacation: ${vacations}">
-                        <td><a th:text="${vacation.getId()}">Id</a></td>
-                        <td><a th:text="${vacation.getStartJobString()}">Start</a></td>
-                        <td><a th:text="${vacation.getEndJobString()}">End</a></td>
+                        <td><a th:text="${vacation.id}">Id</a></td>
+                            <td><a th:text="${vacation.startJob}">Start</a></td>
+                        <td><a th:text="${vacation.endJob}">End</a></td>
 
                         <td><a class="btn btn-primary"
-                               th:href="@{/teachers/{id}/vacations/{vacId}(id=${teacher.getId()}, vacId=${vacation.getId()})}">show</a>
+                               th:href="@{/teachers/{id}/vacations/{vacId}(id=${teacher.getId()}, vacId=${vacation.id})}">show</a>
                         </td>
                         <td>
                             <a class="btn btn-outline-primary"
-                               th:href="@{/teachers/{id}/vacations/{vacationId}/edit(id=${teacher.getId()}, vacationId=${vacation.getId()})}">
+                               th:href="@{/teachers/{id}/vacations/{vacationId}/edit(id=${teacher.id}, vacationId=${vacation.id})}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                      class="bi bi-pencil-square" viewBox="0 0 16 16">
                                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"></path>
@@ -45,7 +45,7 @@
                         </td>
                         <td>
                             <form th:method="DELETE"
-                                  th:action="@{/teachers/{id}/vacations/{vacationId}(id=${teacher.getId()}, vacationId=${vacation.getId()})}">
+                                  th:action="@{/teachers/{id}/vacations/{vacationId}(id=${teacher.id}, vacationId=${vacation.id})}">
                                 <button class="btn btn-danger" type="submit" value="Delete">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                          class="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -61,7 +61,7 @@
             </div>
             <div class="col-12 mt-5">
                 <a class="btn btn-outline-primary" th:href="@{/teachers}">Back to teacher</a>
-                <a class="btn btn-primary" th:href="@{/teachers/{id}/vacations/new(id=${teacher.getId()})}">Add
+                <a class="btn btn-primary" th:href="@{/teachers/{id}/vacations/new(id=${teacher.id})}">Add
                     vacation</a>
             </div>
         </div>

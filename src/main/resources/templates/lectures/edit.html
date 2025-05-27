@@ -17,8 +17,8 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/lectures/{id}(id=${lecture.getId()})}"
-                      th:object="${lecture}">
+                <form id="form1" th:method="PATCH" th:action="@{/lectures/{id}(id=${lectureDto.id})}"
+                      th:object="${lectureDto}">
                     <div class="mb-3">
                         <label class="form-label" for="cathedra">Select cathedra: </label>
                         <select class="form-control" id="cathedra" name="cathedra" th:field="*{cathedra.id}" required>
@@ -45,7 +45,7 @@
                             <option th:each="anyAudience : ${audiences}"
                                     th:field="*{audience.id}"
                                     th:value="${anyAudience?.id}"
-                                    th:text="${anyAudience?.room}">Room
+                                    th:text="${anyAudience?.roomNumber}">Room
                             </option>
                         </select>
                     </div>
@@ -65,7 +65,7 @@
                             <option th:each="anyTime : ${times}"
                                     th:field="*{time.id}"
                                     th:value="${anyTime?.id}"
-                                    th:text="${anyTime?.startLocal} + ' - ' + ${anyTime?.endLocal}">start
+                                    th:text="${anyTime?.startLecture} + ' - ' + ${anyTime?.endLecture}">start
                             </option>
                         </select>
                     </div>
@@ -74,6 +74,7 @@
                         <select class="form-control" id="groups" name="groupIds" multiple required>
                             <option th:each="group : ${groups}"
                                     th:value="${group.id}"
+                                    th:selected="${lectureDto.groupIds.contains(group.id)}"
                                     th:text="${group.name}">
                             </option>
                         </select>

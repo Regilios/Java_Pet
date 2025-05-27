@@ -1,11 +1,6 @@
 # University pet-project 
 
-### Project update - project translation Spring boot
+### Project update - project translation Spring Data JPA
 Current updates:
-- added Spring Boot logics 
-- modification converters, models, hibernate of some layers
-- deleted old properties and configs
-- add Configuration for Spring Boot
-- add Setting for applications
-- add Setting Boot Test
-- transition to yml
+- added lombok
+- fix models, test, web-layers, hibernate-layers

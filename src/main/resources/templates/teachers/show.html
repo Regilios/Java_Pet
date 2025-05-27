@@ -30,21 +30,21 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td th:text="${teacher.getId()}">Id</td>
-                        <td th:text="${teacher.getFirstName()}">Name</td>
-                        <td th:text="${teacher.getLastName()}">Family</td>
-                        <td th:text="${teacher.getGender()}">gender</td>
-                        <td th:text="${teacher.getAddress()}">address</td>
-                        <td th:text="${teacher.getEmail()}">email</td>
-                        <td th:text="${teacher.getPhone()}">phone</td>
-                        <td th:text="${teacher.getBirthday()}">birthday</td>
-                        <td th:text="${teacher?.getCathedra()?.getName()}">cathedra</td>
+                        <td th:text="${teacherDto.id}">Id</td>
+                        <td th:text="${teacherDto.firstName}">Name</td>
+                        <td th:text="${teacherDto.lastName}">Family</td>
+                        <td th:text="${teacherDto.gender}">gender</td>
+                        <td th:text="${teacherDto.address}">address</td>
+                        <td th:text="${teacherDto.email}">email</td>
+                        <td th:text="${teacherDto.phone}">phone</td>
+                        <td th:text="${teacherDto.birthday}">birthday</td>
+                        <td th:text="${teacherDto?.cathedra?.name}">cathedra</td>
                         <td>
-                            <ul th:each="subject : ${subjects}">
+                            <ul th:each="subject : ${teacherDto.subjects}">
                                 <li th:text="${subject.name}"></li>
                             </ul>
                         </td>
-                        <td><a th:href="@{/teachers/{id}/vacations(id=${teacher.getId()})}">Vacations</a></td>
+                        <td><a th:href="@{/teachers/{id}/vacations(id=${teacherDto.id})}">Vacations</a></td>
                     </tr>
                     </tbody>
                 </table>

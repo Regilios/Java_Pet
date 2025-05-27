@@ -1,7 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoVacationInterface;
+import org.example.univer.repositories.VacationRepository;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Vacation;
 import org.slf4j.Logger;
@@ -16,15 +16,15 @@ import java.util.Optional;
 
 @Service
 public class VacationService {
-    private DaoVacationInterface daoVacationInterface;
+    private VacationRepository vacationRepository;
     private static final Logger logger = LoggerFactory.getLogger(VacationService.class);
     private AppSettings appSettings;
     private Integer minVacationDay;
     private Integer maxVacationDay;
 
     @Autowired
-    public VacationService(DaoVacationInterface daoVacationInterface, AppSettings appSettings) {
-        this.daoVacationInterface = daoVacationInterface;
+    public VacationService(VacationRepository vacationRepository, AppSettings appSettings) {
+        this.vacationRepository = vacationRepository;
         this.appSettings = appSettings;
         this.minVacationDay = appSettings.getMinVacationDay();
         this.maxVacationDay = appSettings.getMaxVacationDay();
@@ -65,7 +65,7 @@ public class VacationService {
         logger.debug("Start create vacation");
         try {
             validate(vacation, VacationService.ValidationContext.METHOD_CREATE);
-            daoVacationInterface.create(vacation);
+            vacationRepository.save(vacation);
             logger.debug("Vacation created");
         } catch (VacationExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -89,7 +89,7 @@ public class VacationService {
         logger.debug("Start update vacation");
         try {
             validate(vacation, VacationService.ValidationContext.METHOD_UPDATE);
-            daoVacationInterface.update(vacation);
+            vacationRepository.save(vacation);
             logger.debug("Vacation updated");
         } catch (VacationExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -111,26 +111,26 @@ public class VacationService {
 
     public void deleteById(Long id) {
         logger.debug("Delete vacation width id: {}", id);
-        daoVacationInterface.deleteById(id);
+        vacationRepository.deleteVacationById(id);
     }
 
     public Optional<Vacation> findById(Long id) {
         logger.debug("Find vacation width id: {}", id);
-        return daoVacationInterface.findById(id);
+        return vacationRepository.findByIdWithTeacherCathedraAndSubjects(id);
     }
 
     public List<Vacation> findByTeacherId(Long id) {
         logger.debug("Find vacation width id: {}", id);
-        return daoVacationInterface.findByTeacherId(id);
+        return vacationRepository.findByTeacher_Id(id);
     }
     public List<Vacation> findAll() {
         logger.debug("Find all vacations");
-        return daoVacationInterface.findAll();
+        return vacationRepository.findAll();
     }
 
-    public boolean isSingle(Vacation subject) {
+    public boolean isSingle(Vacation vacation) {
         logger.debug("Check vacation is single");
-        return daoVacationInterface.isSingle(subject);
+        return vacationRepository.existsByStartJobAndEndJobAndTeacher_Id(vacation.getStartJob(),vacation.getEndJob(),vacation.getTeacher().getId());
     }
 
     private boolean dataVacationCorrect(Vacation vacation) {

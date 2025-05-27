@@ -18,8 +18,8 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/groups/{id}(id=${group.getId()})}"
-                      th:object="${group}">
+                <form id="form1" th:method="PATCH" th:action="@{/groups/{id}(id=${groupDto.id})}"
+                      th:object="${groupDto}">
                     <div class="mb-3">
                         <label class="form-label" for="name">name</label>
                         <input class="form-control" type="text" th:field="*{name}" id="name"/>

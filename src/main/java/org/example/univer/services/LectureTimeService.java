@@ -1,9 +1,9 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoLectureTimeInterface;
 import org.example.univer.exeption.*;
 import org.example.univer.models.LectureTime;
+import org.example.univer.repositories.LectureTimeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +16,14 @@ import java.util.Optional;
 
 @Service
 public class LectureTimeService {
-    DaoLectureTimeInterface daoLectureTimeInterface;
+    LectureTimeRepository lectureTimeRepository;
     private static final Logger logger = LoggerFactory.getLogger(LectureTimeService.class);
     private AppSettings appSettings;
     private Integer minimumLectureTimeMinutes;
 
     @Autowired
-    public LectureTimeService(DaoLectureTimeInterface daoLectureTimeInterface, AppSettings appSettings) {
-        this.daoLectureTimeInterface = daoLectureTimeInterface;
+    public LectureTimeService(LectureTimeRepository lectureTimeRepository, AppSettings appSettings) {
+        this.lectureTimeRepository = lectureTimeRepository;
         this.appSettings = appSettings;
         this.minimumLectureTimeMinutes = appSettings.getMinimumLectureTimeMinutes();
     }
@@ -36,7 +36,7 @@ public class LectureTimeService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lectureTime)) {
-                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStartLection() + " по " + lectureTime.getEndLection() + "уже существует!");
+                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStartLecture() + " по " + lectureTime.getEndLecture() + "уже существует!");
                 }
                 validateCommon(lectureTime, "создать");
                 break;
@@ -63,7 +63,7 @@ public class LectureTimeService {
         logger.debug("Start create LectionTime");
         try {
             validate(lectureTime, ValidationContext.METHOD_CREATE);
-            daoLectureTimeInterface.create(lectureTime);
+            lectureTimeRepository.save(lectureTime);
             logger.debug("LectionTime created");
         } catch (LectureTimeExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -87,7 +87,7 @@ public class LectureTimeService {
         logger.debug("Start update LectionTime");
         try {
             validate(lectureTime, ValidationContext.METHOD_UPDATE);
-            daoLectureTimeInterface.update(lectureTime);
+            lectureTimeRepository.save(lectureTime);
             logger.debug("LectionTime updated");
         } catch (LectureTimeExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -109,29 +109,30 @@ public class LectureTimeService {
 
     public void deleteById(Long id) {
         logger.debug("Delete lectionTime width id: {}", id);
-        daoLectureTimeInterface.deleteById(id);
+        lectureTimeRepository.deleteById(id);
     }
 
     public Optional<LectureTime> findById(Long id) {
         logger.debug("Find lectionTime width id: {}", id);
-        return daoLectureTimeInterface.findById(id);
+        return lectureTimeRepository.findById(id);
     }
 
     public List<LectureTime> findAll() {
         logger.debug("Find all lectionTime");
-        return daoLectureTimeInterface.findAll();
+        return lectureTimeRepository.findAll();
     }
 
     public boolean isSingle(LectureTime lectureTime) {
         logger.debug("Check lectionTime is single");
-        return daoLectureTimeInterface.isSingle(lectureTime);
+        Long count = lectureTimeRepository.countByStartLectureAndEndLecture(lectureTime.getStartLecture(), lectureTime.getEndLecture());
+        return count > 0;
     }
 
     public boolean isTimeLectionCorrect(LectureTime lectureTime) {
-        return lectureTime.getStartLocal().isBefore(lectureTime.getEndLocal());
+        return lectureTime.getStartLecture().isBefore(lectureTime.getEndLecture());
     }
 
     public boolean timeLectionIsNotLessAssignedTime(LectureTime lectureTime) {
-        return Duration.between(lectureTime.getStartLocal(), lectureTime.getEndLocal()).abs().toMinutes() >= minimumLectureTimeMinutes;
+        return Duration.between(lectureTime.getStartLecture(), lectureTime.getEndLecture()).abs().toMinutes() >= minimumLectureTimeMinutes;
     }
 }

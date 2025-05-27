@@ -1,6 +1,8 @@
 package org.example.univer.controllers;
 
+import org.example.univer.dto.CathedraDto;
 import org.example.univer.exeption.ResourceNotFoundException;
+import org.example.univer.mappers.CathedraMapper;
 import org.example.univer.services.CathedraService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
     private CathedraService cathedraService;
+    private final CathedraMapper cathedraMapper;
 
-    public HomeController(CathedraService cathedraService) {
+    public HomeController(CathedraService cathedraService,
+                          CathedraMapper cathedraMapper) {
         this.cathedraService = cathedraService;
+        this.cathedraMapper = cathedraMapper;
     }
 
     @GetMapping("/")
@@ -24,13 +29,11 @@ public class HomeController {
         logger.debug("Show index page");
         model.addAttribute("title", "Welcome");
 
-        cathedraService.findById(1L).ifPresentOrElse(cathedra -> {
-                     model.addAttribute("cathedra", cathedra);
-                     logger.debug("Found and edited audience with id: {}", cathedra.getId());
-                }, () -> {
-                     throw new ResourceNotFoundException("Cathedra not found");
-                }
-        );
+        CathedraDto dto = cathedraService.findById(1L)
+                .map(cathedraMapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Cathedra not found"));
+        model.addAttribute("cathedraDto", dto);
+
         return "index";
     }
 }

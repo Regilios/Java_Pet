@@ -7,7 +7,7 @@
     <div class="container-lg">
         <div class="row align-items-center">
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <h1>Add holiday</h1>
+                <h1>Add lecture</h1>
             </div>
         </div>
         <div class="row">
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form th:method="POST" th:action="@{/lectures}" th:object="${lecture}">
+                <form th:method="POST" th:action="@{/lectures}" th:object="${lectureDto}">
                     <div class="mb-3">
                         <label class="form-label" for="cathedra">Select cathedra: </label>
                         <select class="form-control" id="cathedra" name="cathedra" th:field="*{cathedra.id}" required>
@@ -44,7 +44,7 @@
                             <option th:each="anyAudience : ${audiences}"
                                     th:field="*{audience.id}"
                                     th:value="${anyAudience?.id}"
-                                    th:text="${anyAudience?.room}">Room
+                                    th:text="${anyAudience?.roomNumber}">Room
                             </option>
                         </select>
                     </div>
@@ -64,7 +64,7 @@
                             <option th:each="anyTime : ${times}"
                                     th:field="*{time.id}"
                                     th:value="${anyTime?.id}"
-                                    th:text="${anyTime?.startLocal} + ' - ' + ${anyTime?.endLocal}">start
+                                    th:text="${anyTime?.startLecture} + ' - ' + ${anyTime?.endLecture}">start
                             </option>
                         </select>
                     </div>
