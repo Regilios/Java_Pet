@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import jakarta.validation.Valid;
 import org.example.univer.dto.GroupDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,7 +43,7 @@ public class GroupController {
         return "groups/index";
     }
 
-    /* Обарботка добавления */
+    /* Обработка добавления */
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("groupDto", new GroupDto());
@@ -52,12 +54,23 @@ public class GroupController {
     }
 
     @PostMapping
-    public String newGroup(@ModelAttribute("group") GroupDto groupDto,
+    public String newGroup(@ModelAttribute("groupDto") @Valid GroupDto groupDto,
+                           BindingResult bindingResult,
+                           Model model,
                            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("groupDto", groupDto);
+            model.addAttribute("cathedras", cathedraService.findAll());
+            return "groups/new";
+        }
+
         try {
             groupService.create(groupMapper.toEntity(groupDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("groupDto", groupDto);
+            model.addAttribute("errorMessage", e.getMessage());
             return "redirect:/groups/new";
         }
 
@@ -65,7 +78,7 @@ public class GroupController {
         return "redirect:/groups";
     }
 
-    /* Обарботка изменения */
+    /* Обработка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         GroupDto dto = groupService.findById(id)
@@ -79,23 +92,33 @@ public class GroupController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") GroupDto groupDto,
+    public String update(@ModelAttribute("groupDto") @Valid GroupDto groupDto,
+                         BindingResult bindingResult,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("groupDto", groupDto);
+            model.addAttribute("cathedras", cathedraService.findAll());
+            return "groups/edit";
+        }
+
         try {
             groupDto.setId(id);
             groupService.update(groupMapper.toEntity(groupDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/groups/edit";
+            model.addAttribute("groupDto", groupDto);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "groups/edit";
         }
 
         logger.debug("Show edit page");
         return "redirect:/groups";
     }
 
-    /* Обарботка показа по id */
+    /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         GroupDto dto = groupService.findById(id)
@@ -107,7 +130,7 @@ public class GroupController {
     }
 
 
-    /* Обарботка удаления */
+    /* Обработка удаления */
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         groupService.deleteById(id);

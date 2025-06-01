@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import jakarta.validation.Valid;
 import org.example.univer.dto.TeacherDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -48,7 +50,7 @@ public class TeacherController {
         return "teachers/index";
     }
 
-    /* Обарботка добавления */
+    /* Обработка добавления */
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("subjects", subjectService.findAll());
@@ -59,20 +61,32 @@ public class TeacherController {
     }
 
     @PostMapping
-    public String newLecture(@ModelAttribute TeacherDto teacherDto,
+    public String newLecture(@ModelAttribute("teacherDto") @Valid TeacherDto teacherDto,
+                             BindingResult bindingResult,
+                             Model model,
                              @RequestParam(value = "subjectIds", required = false) List<Long> subjectIds,
                              RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            teacherDto.setSubjectIds(subjectIds);
+            model.addAttribute("teacherDto", teacherDto);
+            model.addAttribute("subjects", subjectService.findAll());
+            model.addAttribute("cathedras", cathedraService.findAll());
+            return "teachers/new";
+        }
+
         try {
             teacherDto.setSubjectIds(subjectIds);
             teacherService.create(teacherMapper.toEntity(teacherDto));
         } catch (ServiceException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("teacherDto", teacherDto);
+            model.addAttribute("errorMessage", e.getMessage());
             return "redirect:/teachers/new";
         }
         return "redirect:/teachers";
     }
 
-    /* Обарботка изменения */
+    /* Обработка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         TeacherDto dto = teacherService.findById(id)
@@ -87,24 +101,36 @@ public class TeacherController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("teacher") TeacherDto teacherDto,
+    public String update(@ModelAttribute("teacherDto") @Valid TeacherDto teacherDto,
+                         BindingResult bindingResult,
                          @RequestParam("subjectIds") List<Long> subjectIds,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            teacherDto.setSubjectIds(subjectIds);
+            model.addAttribute("teacherDto", teacherDto);
+            model.addAttribute("subjects", subjectService.findAll());
+            model.addAttribute("cathedras", cathedraService.findAll());
+            return "teachers/edit";
+        }
+
         try {
             teacherDto.setSubjectIds(subjectIds);
             teacherService.update(teacherMapper.toEntity(teacherDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/teachers/{id}/edit";
+            model.addAttribute("teacherDto", teacherDto);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "teachers/edit";
         }
 
         logger.debug("Show edit page");
         return "redirect:/teachers";
     }
 
-    /* Обарботка показа по id */
+    /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         TeacherDto dto = teacherService.findById(id)
@@ -116,7 +142,7 @@ public class TeacherController {
         return "teachers/show";
     }
 
-    /* Обарботка удаления */
+    /* Обработка удаления */
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         teacherService.deleteById(id);

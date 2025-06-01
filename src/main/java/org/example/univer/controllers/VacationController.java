@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import jakarta.validation.Valid;
 import org.example.univer.dto.VacationDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
@@ -17,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -77,14 +79,24 @@ public class VacationController {
     }
 
     @PostMapping
-    public String newVacation(@ModelAttribute VacationDto vacationDto,
+    public String newVacation(@ModelAttribute("vacationDto") @Valid VacationDto vacationDto,
+                              BindingResult bindingResult,
+                              Model model,
                               @PathVariable("teacherId") Long teacherId,
                               RedirectAttributes redirectAttributes) {
-        try {
-            Teacher teacher = teacherService.findById(teacherId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-            vacationDto.setTeacher(teacherMapper.toDto(teacher));
 
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("teacher", teacherMapper.toDto(
+                    teacherService.findById(teacherId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"))
+            ));
+            model.addAttribute("vacationDto", vacationDto);
+            return "teachers/vacations/new";
+        }
+
+        try {
+            Teacher teacher = teacherService.findById(teacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+            vacationDto.setTeacher(teacherMapper.toDto(teacher));
             Vacation vacation = vacationMapper.toEntity(vacationDto);
 
             List<Lecture> lectures = lectureService.findByTeacherIdAndPeriod(
@@ -124,10 +136,21 @@ public class VacationController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute VacationDto vacationDto,
+    public String update(@ModelAttribute("vacationDto") @Valid VacationDto vacationDto,
+                         BindingResult bindingResult,
+                         Model model,
                          @PathVariable("teacherId") Long teacherId,
                          @PathVariable("id") Long vacationId,
                          RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("teacher", teacherMapper.toDto(
+                    teacherService.findById(teacherId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"))
+            ));
+            return "teachers/vacations/edit";
+        }
+
         try {
             Teacher teacher = teacherService.findById(teacherId)
                     .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));

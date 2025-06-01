@@ -1,5 +1,6 @@
 package org.example.univer.mappers;
 
+import org.example.univer.dto.SubjectDto;
 import org.example.univer.dto.TeacherDto;
 import org.example.univer.models.Subject;
 import org.example.univer.models.Teacher;
@@ -65,6 +66,10 @@ public class TeacherMapper {
                 .collect(Collectors.toList());
         dto.setSubjectIds(subjectsIds);
 
+        List<SubjectDto> subjectDtos = teacher.getSubjects().stream()
+                .map(subjectMapper::toDto)
+                .collect(Collectors.toList());
+        dto.setSubjects(subjectDtos);
         return dto;
     }
 }

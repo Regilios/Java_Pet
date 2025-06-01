@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import jakarta.validation.Valid;
 import org.example.univer.dto.HolidayDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -39,7 +41,7 @@ public class HolidayController {
         return "holidays/index";
     }
 
-    /* Обарботка добавления */
+    /* Обработка добавления */
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("title", "All Holidays");
@@ -49,20 +51,30 @@ public class HolidayController {
     }
 
     @PostMapping
-    public String newHoliday(@ModelAttribute HolidayDto holidayDto,
+    public String newHoliday(@ModelAttribute("holidayDto") @Valid HolidayDto holidayDto,
+                             BindingResult bindingResult,
+                             Model model,
                              RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("holidayDto", holidayDto);
+            return "holidays/new";
+        }
+
         try {
             holidayService.create(holidayMapper.toEntity(holidayDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/holidays/new";
+            model.addAttribute("holidayDto", holidayDto);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "holidays/new";
         }
 
         logger.debug("Create new holidays. Id {}", holidayDto.getId());
         return "redirect:/holidays";
     }
 
-    /* Обарботка изменения */
+    /* Обработка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         HolidayDto dto = holidayService.findById(id)
@@ -74,16 +86,24 @@ public class HolidayController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute HolidayDto holidayDto,
+    public String update(@ModelAttribute("holidayDto") @Valid HolidayDto holidayDto,
+                         BindingResult bindingResult,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
-        try {
 
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("holidayDto", holidayDto);
+            return "holidays/edit";
+        }
+
+        try {
             holidayDto.setId(id);
             holidayService.update(holidayMapper.toEntity(holidayDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("holidayDto", holidayDto);
+            model.addAttribute("errorMessage", e.getMessage());
             return "redirect:/holidays/edit";
         }
 
@@ -91,7 +111,7 @@ public class HolidayController {
         return "redirect:/holidays";
     }
 
-    /* Обарботка показа по id */
+    /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         HolidayDto dto = holidayService.findById(id)
@@ -101,7 +121,7 @@ public class HolidayController {
         return "holidays/show";
     }
 
-    /* Обарботка удаления */
+    /* Обработка удаления */
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         holidayService.deleteById(id);

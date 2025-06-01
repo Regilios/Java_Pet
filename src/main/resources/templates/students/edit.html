@@ -23,10 +23,12 @@
                     <div class="mb-3">
                         <label class="form-label" for="firstName">firstName</label>
                         <input class="form-control" type="text" th:field="*{firstName}" id="firstName"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="lastName">lastName</label>
                         <input class="form-control" type="text" th:field="*{lastName}" id="lastName"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="gender">gender</label>
@@ -41,18 +43,22 @@
                     <div class="mb-3">
                         <label class="form-label" for="address">address</label>
                         <input class="form-control" type="text" th:field="*{address}" id="address"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="email">email</label>
                         <input class="form-control" type="text" th:field="*{email}" id="email"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="phone">phone</label>
                         <input class="form-control" type="text" th:field="*{phone}" id="phone"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="birthday">birthday</label>
                         <input class="form-control" type="date" th:field="*{birthday}" id="birthday"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></div>
                     </div>
 
                     <div class="mb-3">
@@ -65,6 +71,7 @@
                                     th:text="${anyGroup?.name}">
                             </option>
                         </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('group')}" th:errors="*{group}"></div>
                     </div>
 
                     <button type="submit" class="btn btn-primary" value="Update student">Update student</button>

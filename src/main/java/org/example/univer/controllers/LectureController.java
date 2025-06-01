@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import jakarta.validation.Valid;
 import org.example.univer.dto.LectureDto;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.mappers.LectureMapper;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -69,21 +71,38 @@ public class LectureController {
 
     /* Новая лекция */
     @PostMapping
-    public String newLecture(@ModelAttribute LectureDto lectureDto,
-                             @RequestParam(value = "groupsId", required = false) List<Long> groupIds,
+    public String newLecture(@ModelAttribute("lectureDto") @Valid LectureDto lectureDto,
+                             BindingResult bindingResult,
+                             Model model,
+                             @RequestParam(value = "groupIds", required = false) List<Long> groupIds,
                              RedirectAttributes redirectAttributes) {
+
+        lectureDto.setGroupIds(groupIds);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("teachers", teacherService.findAll());
+            model.addAttribute("cathedras", cathedraService.findAll());
+            model.addAttribute("subjects", subjectService.findAll());
+            model.addAttribute("times", lectureTimeService.findAll());
+            model.addAttribute("audiences", audienceService.findAll());
+            model.addAttribute("groups", groupService.findAll());
+            return "lectures/new";
+        }
+
         try {
-            lectureDto.setGroupIds(groupIds);
-            lectureService.create(lectureMapper.toEntity(lectureDto));
+             lectureService.create(lectureMapper.toEntity(lectureDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("errorMessage", e.getMessage());
             return "redirect:/lectures/new";
         }
         logger.debug("Create new lecture. Id {}", lectureDto.getId());
         return "redirect:/lectures";
     }
 
-    /* Обарботка изменения */
+    /* Обработка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         LectureDto dto = lectureService.findById(id);
@@ -100,23 +119,40 @@ public class LectureController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute LectureDto lectureDto,
+    public String update(@ModelAttribute("lectureDto") @Valid LectureDto lectureDto,
+                         BindingResult bindingResult,
                          @RequestParam(value = "groupIds", required = false) List<Long> groupIds,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+
+        lectureDto.setId(id);
+        lectureDto.setGroupIds(groupIds);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("teachers", teacherService.findAll());
+            model.addAttribute("cathedras", cathedraService.findAll());
+            model.addAttribute("subjects", subjectService.findAll());
+            model.addAttribute("times", lectureTimeService.findAll());
+            model.addAttribute("audiences", audienceService.findAll());
+            model.addAttribute("groups", groupService.findAll());
+            return "lectures/edit";
+        }
+
         try {
-            lectureDto.setId(id);
-            lectureDto.setGroupIds(groupIds);
             lectureService.update(lectureMapper.toEntity(lectureDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/lectures/" + id + "/edit";
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("errorMessage", e.getMessage());
+
+            return "lectures/edit";
         }
         return "redirect:/lectures";
     }
 
-    /* Обарботка показа по id */
+    /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         LectureDto dto = lectureService.findById(id);
@@ -124,7 +160,7 @@ public class LectureController {
         return "lectures/show";
     }
 
-    /* Обарботка удаления */
+    /* Обработка удаления */
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         lectureService.deleteById(id);

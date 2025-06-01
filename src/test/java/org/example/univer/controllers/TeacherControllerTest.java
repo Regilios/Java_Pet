@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -71,13 +72,21 @@ public class TeacherControllerTest {
         Teacher entity = new Teacher();
         when(teacherMapper.toEntity(any(TeacherDto.class))).thenReturn(entity);
 
-        mockMvc.perform(post("/teachers"))
+        mockMvc.perform(post("/teachers")
+                        .param("subjectIds","1","2")
+                        .param("cathedra.id","1")
+                        .param("firstName","test")
+                        .param("lastName","test")
+                        .param("address","test")
+                        .param("phone","+79147521710")
+                        .param("email","ttt@ttt.ru")
+                        .param("birthday","2005-10-20")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/teachers"));
 
         verify(teacherService).create(any(Teacher.class));
     }
-
 
     @Test
     void whenEditGroup_thenTeacherReturnedToForm() throws Exception {
@@ -99,8 +108,15 @@ public class TeacherControllerTest {
         when(teacherMapper.toEntity(any(TeacherDto.class))).thenReturn(entity);
 
         mockMvc.perform(patch("/teachers/1")
-                        .param("subjectIds", "1", "2")
-                        .param("cathedra.id", "1"))
+                        .param("subjectIds","1","2")
+                        .param("cathedra.id","1")
+                        .param("firstName","test")
+                        .param("lastName","test")
+                        .param("address","test")
+                        .param("phone","+79147521710")
+                        .param("email","ttt@ttt.ru")
+                        .param("birthday","2005-10-20")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/teachers"));
 

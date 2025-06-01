@@ -1,5 +1,6 @@
 package org.example.univer.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,5 +8,6 @@ import lombok.Setter;
 @Setter
 public class CathedraDto {
     private Long id;
+    @NotBlank(message = "{cathedra.name.notblank}")
     private String name;
 }

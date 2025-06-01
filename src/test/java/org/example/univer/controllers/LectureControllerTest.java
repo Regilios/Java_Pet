@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -85,7 +86,13 @@ class LectureControllerTest {
         when(lectureMapper.toEntity(any(LectureDto.class))).thenReturn(entity);
 
         mockMvc.perform(post("/lectures")
-                        .param("groupsId", "1", "2"))
+                        .param("groupIds", "1", "2")
+                        .param("teacher.id","1")
+                        .param("cathedra.id","1")
+                        .param("audience.id","1")
+                        .param("subject.id","1")
+                        .param("time.id","1")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/lectures"));
 
@@ -118,7 +125,13 @@ class LectureControllerTest {
         when(lectureMapper.toEntity(any(LectureDto.class))).thenReturn(entity);
 
         mockMvc.perform(patch("/lectures/1")
-                        .param("groupIds", "1", "2"))
+                        .param("groupIds", "1", "2")
+                        .param("teacher.id","1")
+                        .param("cathedra.id","1")
+                        .param("subject.id","1")
+                        .param("audience.id","1")
+                        .param("time.id","1")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/lectures"));
 

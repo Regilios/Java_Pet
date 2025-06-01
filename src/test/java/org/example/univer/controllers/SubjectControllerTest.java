@@ -6,6 +6,7 @@ import org.example.univer.models.Subject;
 import org.example.univer.services.SubjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -61,7 +62,8 @@ public class SubjectControllerTest {
 
         mockMvc.perform(post("/subjects")
                         .param("name", "Math")
-                )
+                        .param("description", "Algebra and Geometry")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/subjects"));
 
@@ -88,7 +90,9 @@ public class SubjectControllerTest {
         when(subjectMapper.toEntity(any(SubjectDto.class))).thenReturn(entity);
 
         mockMvc.perform(patch("/subjects/1")
-                        .param("name", "Physics"))
+                        .param("name", "Physics")
+                        .param("description", "Algebra and Geometry")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/subjects"));
 

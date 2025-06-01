@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -83,7 +84,15 @@ public class StudentsControllerTest {
         Student entity = new Student();
         when(studentMapper.toEntity(any())).thenReturn(entity);
 
-        mockMvc.perform(post("/students"))
+        mockMvc.perform(post("/students")
+                        .param("group.id","1")
+                        .param("firstName","test")
+                        .param("lastName","test")
+                        .param("address","test")
+                        .param("phone","+79147521710")
+                        .param("email","ttt@ttt.ru")
+                        .param("birthday","2005-10-20")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/students"));
 
@@ -109,7 +118,15 @@ public class StudentsControllerTest {
         Student entity = new Student();
         when(studentMapper.toEntity(any())).thenReturn(entity);
 
-        mockMvc.perform(patch("/students/1"))
+        mockMvc.perform(patch("/students/1")
+                        .param("group.id","1")
+                        .param("firstName","test")
+                        .param("lastName","test")
+                        .param("address","test")
+                        .param("phone","+79147521710")
+                        .param("email","ttt@ttt.ru")
+                        .param("birthday","2005-10-20")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/students"));
 

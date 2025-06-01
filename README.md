@@ -4,3 +4,7 @@
 Current updates:
 - added lombok
 - fix models, test, web-layers, hibernate-layers
+- edit structure tests
+- add validation
+
+

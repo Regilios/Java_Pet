@@ -1,6 +1,8 @@
 package org.example.univer.controllers;
 
+import jakarta.validation.Valid;
 import org.example.univer.dto.LectureTimeDto;
+import org.example.univer.dto.LectureTimeFormDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.mappers.LectureTimeMapper;
@@ -9,12 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
 
 @Controller
@@ -42,31 +46,45 @@ public class LectureTimeController {
         return "lecturetimes/index";
     }
 
-    /* Обарботка добавления */
+    /* Обработка добавления */
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("title", "All lecturetimes");
-        model.addAttribute("lectureTimeDto", new LectureTimeDto());
+        model.addAttribute("lectureTimeFormDto", new LectureTimeFormDto());
         logger.debug("Show create page");
         return "lecturetimes/new";
     }
 
     @PostMapping
-    public String newLectureTime(
-                           @RequestParam("start_date") String startDate,
-                           @RequestParam("start_time") String startTime,
-                           @RequestParam("end_date") String endDate,
-                           @RequestParam("end_time") String endTime,
-                           RedirectAttributes redirectAttributes) {
-        try {
-            LocalDateTime startLecture = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
-            LocalDateTime endLecture = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
+    public String newLectureTime(@ModelAttribute("lectureTimeFormDto") @Valid LectureTimeFormDto formDto,
+                                 BindingResult bindingResult,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
 
-            LectureTimeDto lectureTimeDto = new LectureTimeDto();
-            lectureTimeDto.setStartLecture(startLecture);
-            lectureTimeDto.setEndLecture(endLecture);
-            lectureTimeService.create(lectureTimeMapper.toEntity(lectureTimeDto));
-            logger.debug("Create new group. Id {}", lectureTimeDto.getId());
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("lectureTimeFormDto", formDto);
+            return "lecturetimes/new";
+        }
+
+        try {
+            LocalDateTime startLecture = LocalDateTime.of(
+                    LocalDate.parse(formDto.getStartDate()),
+                    LocalTime.parse(formDto.getStartTime())
+            );
+            LocalDateTime endLecture = LocalDateTime.of(
+                    LocalDate.parse(formDto.getEndDate()),
+                    LocalTime.parse(formDto.getEndTime())
+            );
+
+            LectureTimeDto dto = new LectureTimeDto();
+            dto.setStartLecture(startLecture);
+            dto.setEndLecture(endLecture);
+
+            lectureTimeService.create(lectureTimeMapper.toEntity(dto));
+        } catch (DateTimeParseException e) {
+            model.addAttribute("lectureTimeFormDto", formDto);
+            model.addAttribute("errorMessage", "Неверный формат даты или времени");
+            return "redirect:/lecturetimes/new";
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/lecturetimes/new";
@@ -75,44 +93,83 @@ public class LectureTimeController {
         return "redirect:/lecturetimes";
     }
 
-    /* Обарботка изменения */
+    /* Обработка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        LectureTimeDto dto = lectureTimeService.findById(id)
-                .map(lectureTimeMapper::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("LectureTime not found"));
-        model.addAttribute("lectureTimeDto", dto);
+        if (!model.containsAttribute("lectureTimeDto")) {
+            LectureTimeDto dto = lectureTimeService.findById(id)
+                    .map(lectureTimeMapper::toDto)
+                    .orElseThrow(() -> new ResourceNotFoundException("LectureTime not found"));
+            model.addAttribute("lectureTimeDto", dto);
+            model.addAttribute("id", id);
+        }
+
+        if (!model.containsAttribute("lectureTimeFormDto")) {
+            LectureTimeDto dto = (LectureTimeDto) model.getAttribute("lectureTimeDto");
+
+            LectureTimeFormDto formDto = new LectureTimeFormDto();
+            formDto.setStartDate(dto.getStartLecture().toLocalDate().toString());
+            formDto.setStartTime(dto.getStartLecture().toLocalTime().toString());
+            formDto.setEndDate(dto.getEndLecture().toLocalDate().toString());
+            formDto.setEndTime(dto.getEndLecture().toLocalTime().toString());
+
+            model.addAttribute("lectureTimeFormDto", formDto);
+            model.addAttribute("id", id);
+        }
+
         logger.debug("Edit lectureTime");
         return "lecturetimes/edit";
     }
 
     @PatchMapping("/{id}")
-    public String update(@RequestParam("start_date") String startDate,
-                         @RequestParam("start_time") String startTime,
-                         @RequestParam("end_date") String endDate,
-                         @RequestParam("end_time") String endTime,
+    public String update(@ModelAttribute("lectureTimeFormDto") @Valid LectureTimeFormDto formDto,
+                         BindingResult bindingResult,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
-        try {
-            LocalDateTime startLecture = LocalDateTime.of(LocalDate.parse(startDate), LocalTime.parse(startTime));
-            LocalDateTime endLecture = LocalDateTime.of(LocalDate.parse(endDate), LocalTime.parse(endTime));
 
-            LectureTimeDto lectureTimeDto = new LectureTimeDto();
-            lectureTimeDto.setId(id);
-            lectureTimeDto.setStartLecture(startLecture);
-            lectureTimeDto.setEndLecture(endLecture);
-            lectureTimeService.update(lectureTimeMapper.toEntity(lectureTimeDto));
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("lectureTimeFormDto", formDto);
+            return "lecturetimes/edit";
+        }
+
+        try {
+            LocalDateTime startLecture = LocalDateTime.of(
+                    LocalDate.parse(formDto.getStartDate()),
+                    LocalTime.parse(formDto.getStartTime())
+            );
+            LocalDateTime endLecture = LocalDateTime.of(
+                    LocalDate.parse(formDto.getEndDate()),
+                    LocalTime.parse(formDto.getEndTime())
+            );
+
+            LectureTimeDto dto = new LectureTimeDto();
+            dto.setStartLecture(startLecture);
+            dto.setEndLecture(endLecture);
+
+            lectureTimeService.update(lectureTimeMapper.toEntity(dto));
+        } catch (DateTimeParseException e) {
+            model.addAttribute("lectureTimeFormDto", formDto);
+            model.addAttribute("errorMessage", "Неверный формат даты или времени");
+            return "lecturetimes/edit";
         } catch (ServiceException e) {
+            LectureTimeDto dto = new LectureTimeDto();
+            dto.setStartLecture(LocalDateTime.of(LocalDate.parse(formDto.getStartDate()), LocalTime.parse(formDto.getStartTime())));
+            dto.setEndLecture(LocalDateTime.of(LocalDate.parse(formDto.getEndDate()), LocalTime.parse(formDto.getEndTime())));
+            dto.setId(id); // если нужно
+
+            redirectAttributes.addFlashAttribute("lectureTimeDto", dto);
+            redirectAttributes.addFlashAttribute("lectureTimeFormDto", formDto);
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/lecturetimes/edit";
+
+            return "redirect:/lecturetimes/" + id + "/edit";
         }
 
         logger.debug("Show edit page");
         return "redirect:/lecturetimes";
     }
 
-    /* Обарботка показа по id */
+    /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         LectureTimeDto dto = lectureTimeService.findById(id)
@@ -124,7 +181,7 @@ public class LectureTimeController {
         return "lecturetimes/show";
     }
 
-    /* Обарботка удаления */
+    /* Обработка удаления */
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         lectureTimeService.deleteById(id);

@@ -41,7 +41,7 @@
                         <td th:text="${teacherDto?.cathedra?.name}">cathedra</td>
                         <td>
                             <ul th:each="subject : ${teacherDto.subjects}">
-                                <li th:text="${subject.name}"></li>
+                                <li th:text="${subject?.name}"></li>
                             </ul>
                         </td>
                         <td><a th:href="@{/teachers/{id}/vacations(id=${teacherDto.id})}">Vacations</a></td>

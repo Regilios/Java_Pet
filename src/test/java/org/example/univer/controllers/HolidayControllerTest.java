@@ -6,6 +6,7 @@ import org.example.univer.models.Holiday;
 import org.example.univer.services.HolidayService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -60,7 +61,11 @@ public class HolidayControllerTest {
         Holiday entity = new Holiday();
         when(holidayMapper.toEntity(any(HolidayDto.class))).thenReturn(entity);
 
-        mockMvc.perform(post("/holidays"))
+        mockMvc.perform(post("/holidays")
+                        .param("description","test test test test")
+                        .param("startHoliday","2025-10-10")
+                        .param("endHoliday","2025-10-20")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/holidays"));
 
@@ -87,9 +92,13 @@ public class HolidayControllerTest {
         Holiday entity = new Holiday();
         when(holidayMapper.toEntity(any(HolidayDto.class))).thenReturn(entity);
 
-        mockMvc.perform(patch("/holidays/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/holidays"));
+        mockMvc.perform(patch("/holidays/1")
+                .param("description","test test test test")
+                .param("startHoliday","2025-10-10")
+                .param("endHoliday","2025-10-20")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/holidays"));
 
         verify(holidayService).update(any(Holiday.class));
     }

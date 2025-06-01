@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -63,17 +64,19 @@ public class GroupControllerTest {
     void whenPostNewValidGroup_thenRedirectToIndex() throws Exception {
         GroupDto dto = new GroupDto();
         Group entity = new Group();
+
         when(groupMapper.toEntity(any(GroupDto.class))).thenReturn(entity);
 
         mockMvc.perform(post("/groups")
                         .param("name", "Alpa")
+                        .param("cathedra.id", "1")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/groups"));
 
         verify(groupService).create(any(Group.class));
     }
-
 
     @Test
     void whenEditGroup_thenGroupReturnedToForm() throws Exception {
@@ -95,7 +98,9 @@ public class GroupControllerTest {
         when(groupMapper.toEntity(any(GroupDto.class))).thenReturn(entity);
 
         mockMvc.perform(patch("/groups/1")
-                        .param("name", "Alpa"))
+                        .param("name", "Alpa")
+                        .param("cathedra.id", "1")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/groups"));
 

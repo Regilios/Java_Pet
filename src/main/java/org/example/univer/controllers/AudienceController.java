@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import jakarta.validation.Valid;
 import org.example.univer.dto.AudienceDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -39,7 +41,7 @@ public class AudienceController {
         return "audiences/index";
     }
 
-    /* Обарботка добавления */
+    /* Обработка добавления */
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("audienceDto", new AudienceDto());
@@ -49,12 +51,22 @@ public class AudienceController {
     }
 
     @PostMapping
-    public String newAudience(@ModelAttribute AudienceDto audienceDto,
+    public String newAudience(@ModelAttribute("audienceDto") @Valid AudienceDto audienceDto,
+                              BindingResult bindingResult,
+                              Model model,
                               RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("audienceDto", audienceDto);
+            return "audiences/new";
+        }
+
         try {
             audienceService.create(audienceMapper.toEntity(audienceDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("audienceDto", audienceDto);
+            model.addAttribute("errorMessage", e.getMessage());
             return "redirect:/audiences/new";
         }
 
@@ -62,7 +74,7 @@ public class AudienceController {
         return "redirect:/audiences";
     }
 
-    /* Обарботка изменения */
+    /* Обработка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
         AudienceDto dto = audienceService.findById(id)
@@ -75,23 +87,31 @@ public class AudienceController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("audience") AudienceDto audienceDto,
+    public String update(@ModelAttribute("audienceDto") @Valid AudienceDto audienceDto,
+                         BindingResult bindingResult,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("audienceDto", audienceDto);
+            return "audiences/edit";
+        }
         try {
             audienceDto.setId(id);
             audienceService.update(audienceMapper.toEntity(audienceDto));
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/audiences/edit";
+            model.addAttribute("audienceDto", audienceDto);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "audiences/edit";
         }
 
         logger.debug("Show edit page");
         return "redirect:/audiences";
     }
 
-    /* Обарботка показа по id */
+    /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
         AudienceDto dto = audienceService.findById(id)
@@ -101,7 +121,7 @@ public class AudienceController {
         return "audiences/show";
     }
 
-    /* Обарботка удаления */
+    /* Обработка удаления */
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         audienceService.deleteById(id);

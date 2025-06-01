@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS students (
     lastName VARCHAR(50) NOT NULL,
     gender VARCHAR(20) NOT NULL,
     address VARCHAR(200) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(200),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(200) UNIQUE,
     birthday TIMESTAMP NOT NULL,
     group_id BIGINT,
     FOREIGN KEY (group_id)
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS teacher (
     lastName VARCHAR(50) NOT NULL,
     gender VARCHAR(20) NOT NULL,
     address VARCHAR(200) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(200),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(200) UNIQUE,
     birthday TIMESTAMP NOT NULL,
     cathedra_id INTEGER,
     FOREIGN KEY (cathedra_id) REFERENCES cathedra (id) ON UPDATE CASCADE ON DELETE CASCADE

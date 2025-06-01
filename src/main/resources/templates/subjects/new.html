@@ -21,10 +21,12 @@
                     <div class="mb-3">
                         <label class="form-label" for="name">name</label>
                         <input class="form-control" type="text" th:field="*{name}" id="name"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="description">description</label>
                         <input class="form-control" type="text" th:field="*{description}" id="description"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                     </div>
 
                     <button type="submit" class="btn btn-primary" value="add student">add subject</button>
