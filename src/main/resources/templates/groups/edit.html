@@ -18,22 +18,25 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/groups/{id}(id=${group.getId()})}"
-                      th:object="${group}">
+                <form id="form1" th:method="PATCH" th:action="@{/groups/{id}(id=${groupDto.id})}"
+                      th:object="${groupDto}">
                     <div class="mb-3">
                         <label class="form-label" for="name">name</label>
                         <input class="form-control" type="text" th:field="*{name}" id="name"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="cathedra">Cathedra:</label>
                         <select class="form-select" name="cathedra" id="cathedra" th:field="*{cathedra.id}">
-                            <option value="0">No cathedra</option>
+                            <option th:value="">-- Выберите кафедру --</option>
                             <option th:each="anyCathedra : ${cathedras}"
-                                    th:field="*{cathedra.id}"
-                                    th:value="${anyCathedra?.id}"
-                                    th:text="${anyCathedra?.name}">
+                                    th:value="${anyCathedra}"
+                                    th.field="${anyCathedra.id}"
+                                    th:text="${anyCathedra.name}">
                             </option>
                         </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('cathedra')}" th:errors="*{cathedra}"></div>
+
                     </div>
 
                     <button type="submit" class="btn btn-primary" value="Update group">Update group</button>

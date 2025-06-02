@@ -1,7 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoAudienceInterface;
+import org.example.univer.repositories.AudienceRepository;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Audience;
 import org.slf4j.Logger;
@@ -17,12 +17,12 @@ import java.util.Optional;
 
 @Service
 public class AudienceService {
-    private DaoAudienceInterface daoAudienceInterfaces;
+    private AudienceRepository audienceRepository;
     private static final Logger logger = LoggerFactory.getLogger(AudienceService.class);
     private AppSettings appSettings;
     @Autowired
-    public AudienceService(DaoAudienceInterface daoAudienceInterfaces, AppSettings appSettings) {
-        this.daoAudienceInterfaces = daoAudienceInterfaces;
+    public AudienceService(AudienceRepository audienceRepository, AppSettings appSettings) {
+        this.audienceRepository = audienceRepository;
         this.appSettings = appSettings;
     }
     public enum ValidationContext {
@@ -34,7 +34,7 @@ public class AudienceService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(audience)) {
-                    throw new InvalidParameterException("Невозможно создать аудиенцию! Аудиенция с номером: " + audience.getRoom() + " уже существует");
+                    throw new InvalidParameterException("Невозможно создать аудиенцию! Аудиенция с номером: " + audience.getRoomNumber() + " уже существует");
                 }
                 validateCommon(audience, "создать");
                 break;
@@ -57,7 +57,7 @@ public class AudienceService {
         logger.debug("Start create Audience");
         try {
             validate(audience, ValidationContext.METHOD_CREATE);
-            daoAudienceInterfaces.create(audience);
+            audienceRepository.save(audience);
             logger.debug("Audience created");
         } catch (AudienceExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -81,7 +81,7 @@ public class AudienceService {
         logger.debug("Start update Audience");
         try {
             validate(audience, ValidationContext.METHOD_UPDATE);
-            daoAudienceInterfaces.update(audience);
+            audienceRepository.save(audience);
             logger.debug("Audience updated");
         } catch (AudienceExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -103,27 +103,27 @@ public class AudienceService {
 
     public void deleteById(Long id) {
         logger.debug("Delete audience width id: {}", id);
-        daoAudienceInterfaces.deleteById(id);
+        audienceRepository.deleteById(id);
     }
 
     public Optional<Audience> findById(Long id) {
         logger.debug("Find audience width id: {}", id);
-        return daoAudienceInterfaces.findById(id);
+        return audienceRepository.findById(id);
     }
 
     public List<Audience> findAll() {
         logger.debug("Find all audiences");
-        return daoAudienceInterfaces.findAll();
+        return audienceRepository.findAll();
     }
 
     public Page<Audience> findAll(Pageable pageable) {
         logger.debug("Find all audiences paginated");
-        return daoAudienceInterfaces.findPaginatedAudience(pageable);
+        return audienceRepository.findAll(pageable);
     }
 
     public boolean isSingle(Audience audience) {
         logger.debug("Check audience is single");
-        return daoAudienceInterfaces.isSingle(audience);
+        return audienceRepository.existsByRoomNumber(audience.getRoomNumber());
     }
 
 }

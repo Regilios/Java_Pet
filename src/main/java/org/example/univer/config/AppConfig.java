@@ -1,23 +1,18 @@
 package org.example.univer.config;
 
 import jakarta.annotation.PostConstruct;
-import org.example.univer.dao.converter.GroupsConverter;
-import org.example.univer.dao.converter.SubjectConverter;
-import org.example.univer.dao.converter.TeacherConverter;
-import org.example.univer.services.GroupService;
-import org.example.univer.services.SubjectService;
-import org.example.univer.services.TeacherService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -92,6 +87,14 @@ public class AppConfig implements WebMvcConfigurer {
         return resolver;
     }
 
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
+
     // ArgumentResolvers
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -99,14 +102,6 @@ public class AppConfig implements WebMvcConfigurer {
         resolver.setFallbackPageable(PageRequest.of(0, appSettings.getDefaultPageSize()));
         resolver.setOneIndexedParameters(true);
         resolvers.add(resolver);
-    }
-
-    // Formatters (Converters)
-    @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(context.getBean(SubjectConverter.class));
-        registry.addConverter(context.getBean(GroupsConverter.class));
-        registry.addConverter(context.getBean(TeacherConverter.class));
     }
 
     // Filters
@@ -128,20 +123,5 @@ public class AppConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("index");
-    }
-
-    @Bean
-    public SubjectConverter subjectConverter(SubjectService subjectService) {
-        return new SubjectConverter(subjectService);
-    }
-
-    @Bean
-    public GroupsConverter groupsConverter(GroupService groupService) {
-        return new GroupsConverter(groupService);
-    }
-
-    @Bean
-    public TeacherConverter teacherConverter(TeacherService teacherService) {
-        return new TeacherConverter(teacherService);
     }
 }

@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS students (
     lastName VARCHAR(50) NOT NULL,
     gender VARCHAR(20) NOT NULL,
     address VARCHAR(200) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(200),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(200) UNIQUE,
     birthday TIMESTAMP NOT NULL,
     group_id BIGINT,
     FOREIGN KEY (group_id)
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS teacher (
     lastName VARCHAR(50) NOT NULL,
     gender VARCHAR(20) NOT NULL,
     address VARCHAR(200) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(200),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(200) UNIQUE,
     birthday TIMESTAMP NOT NULL,
     cathedra_id INTEGER,
     FOREIGN KEY (cathedra_id) REFERENCES cathedra (id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -72,11 +72,11 @@ CREATE TABLE IF NOT EXISTS lection (
     subject_id INTEGER,
     lecture_time_id INTEGER,
     audience_id INTEGER, -- date deleted, error in uml
-    FOREIGN KEY (cathedra_id) REFERENCES cathedra (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES teacher (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (subject_id) REFERENCES subject (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (lecture_time_id) REFERENCES lectionTime (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (audience_id) REFERENCES audience (id) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (cathedra_id) REFERENCES cathedra (id) ON DELETE SET NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teacher(id) ON DELETE SET NULL,
+    FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE SET NULL,
+    FOREIGN KEY (lecture_time_id) REFERENCES lectionTime (id) ON DELETE SET NULL,
+    FOREIGN KEY (audience_id) REFERENCES audience (id) ON DELETE SET NULL
 );
 
 -- many-to-many

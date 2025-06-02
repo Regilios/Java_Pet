@@ -17,10 +17,11 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="POST" th:action="@{/groups}" th:object="${group}">
+                <form id="form1" th:method="POST" th:action="@{/groups}" th:object="${groupDto}">
                     <div class="mb-3">
                         <label class="form-label" for="name">name</label>
                         <input class="form-control" type="text" th:field="*{name}" id="name"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="cathedra">Cathedra:</label>
@@ -32,6 +33,7 @@
                                     th:text="${anyCathedras?.name}">
                             </option>
                         </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('cathedra')}" th:errors="*{cathedra}"></div>
                     </div>
 
                     <button type="submit" class="btn btn-primary" value="add group">add group</button>

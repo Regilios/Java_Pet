@@ -17,14 +17,16 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form th:method="POST" th:action="@{/audiences}" th:object="${audience}">
+                <form th:method="POST" th:action="@{/audiences}" th:object="${audienceDto}">
                     <div class="mb-3">
                         <label class="form-label" for="room">room number</label>
-                        <input class="form-control" type="text" th:field="*{room}" id="room"/>
+                        <input class="form-control" type="text" th:field="*{roomNumber}" id="room"/>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('roomNumber')}" th:errors="*{roomNumber}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="capacity">capacity</label>
                         <input class="form-control" type="text" th:field="*{capacity}" id="capacity"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></div>
                     </div>
 
                     <button type="submit" class="btn btn-primary" value="add audience">add audience</button>

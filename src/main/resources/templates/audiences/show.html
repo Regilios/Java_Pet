@@ -14,18 +14,18 @@
             <div class="col-12 col-md order-md-0 text-center text-md-start">
                 <table class="table">
                     <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Room number</th>
-                        <th>Capacity</th>
-                    </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Room number</th>
+                            <th>Capacity</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><a th:text="${audience.getId()}">Id</a></td>
-                        <td><a th:text="${audience.getRoom()}">Room</a></td>
-                        <td><a th:text="${audience.getCapacity()}">Capacity</a></td>
-                    </tr>
+                        <tr>
+                            <td><a th:text="${audienceDto.id}">Id</a></td>
+                            <td><a th:text="${audienceDto.roomNumber}">Room</a></td>
+                            <td><a th:text="${audienceDto.capacity}">Capacity</a></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

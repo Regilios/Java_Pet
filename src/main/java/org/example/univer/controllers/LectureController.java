@@ -1,9 +1,9 @@
 package org.example.univer.controllers;
 
-import org.example.univer.exeption.ResourceNotFoundException;
+import jakarta.validation.Valid;
+import org.example.univer.dto.LectureDto;
 import org.example.univer.exeption.ServiceException;
-import org.example.univer.models.Group;
-import org.example.univer.models.Lecture;
+import org.example.univer.mappers.LectureMapper;
 import org.example.univer.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/lectures")
@@ -29,6 +28,7 @@ public class LectureController {
     private AudienceService audienceService;
     private LectureService lectureService;
     private GroupService groupService;
+    private final LectureMapper lectureMapper;
 
     public LectureController(TeacherService teacherService,
                              CathedraService cathedraService,
@@ -36,7 +36,8 @@ public class LectureController {
                              LectureTimeService lectureTimeService,
                              AudienceService audienceService,
                              LectureService lectureService,
-                             GroupService groupService) {
+                             GroupService groupService,
+                             LectureMapper lectureMapper) {
         this.teacherService = teacherService;
         this.cathedraService = cathedraService;
         this.subjectService = subjectService;
@@ -44,128 +45,122 @@ public class LectureController {
         this.audienceService = audienceService;
         this.lectureService = lectureService;
         this.groupService = groupService;
+        this.lectureMapper = lectureMapper;
     }
-
     @GetMapping()
     public String index(Model model, Pageable pageable) {
+        Page<LectureDto> page = lectureService.findAllWithGroups(pageable);
         model.addAttribute("title", "All Lectures");
-        Page<Lecture> page = lectureService.findAllWithGroup(pageable);
-        model.addAttribute("lectures", page);
-        logger.debug("Show all lectures");
+        model.addAttribute("lecturesDto", page);
         return "lectures/index";
     }
 
     /* Общая страница */
     @GetMapping("/new")
-    public String index(Lecture lecture, Model model) {
+    public String create(Model model) {
+        model.addAttribute("lectureDto", new LectureDto());
         model.addAttribute("teachers", teacherService.findAll());
         model.addAttribute("cathedras", cathedraService.findAll());
         model.addAttribute("subjects", subjectService.findAll());
         model.addAttribute("times", lectureTimeService.findAll());
         model.addAttribute("audiences", audienceService.findAll());
         model.addAttribute("groups", groupService.findAll());
-        model.addAttribute(lecture);
         logger.debug("Show all lectures");
         return "lectures/new";
     }
 
+    /* Новая лекция */
     @PostMapping
-    public String newLecture(@ModelAttribute Lecture lecture,
-                             @RequestParam(value = "groupsId", required = false) List<Long> groupIds,
+    public String newLecture(@ModelAttribute("lectureDto") @Valid LectureDto lectureDto,
+                             BindingResult bindingResult,
                              Model model,
+                             @RequestParam(value = "groupIds", required = false) List<Long> groupIds,
                              RedirectAttributes redirectAttributes) {
-        try {
-            cathedraService.findById(lecture.getCathedra().getId()).ifPresent(lecture::setCathedra);
-            teacherService.findById(lecture.getTeacher().getId()).ifPresent(lecture::setTeacher);
-            subjectService.findById(lecture.getSubject().getId()).ifPresent(lecture::setSubject);
-            audienceService.findById(lecture.getAudience().getId()).ifPresent(lecture::setAudience);
-            lectureTimeService.findById(lecture.getTime().getId()).ifPresent(lecture::setTime);
 
-            List<Group> groups = groupIds.stream()
-                    .map(groupId -> groupService.findById(groupId).orElse(null))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            lecture.setGroups(groups);
-            lectureService.create(lecture);
-        } catch (ServiceException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/lectures/new";
+        lectureDto.setGroupIds(groupIds);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("teachers", teacherService.findAll());
+            model.addAttribute("cathedras", cathedraService.findAll());
+            model.addAttribute("subjects", subjectService.findAll());
+            model.addAttribute("times", lectureTimeService.findAll());
+            model.addAttribute("audiences", audienceService.findAll());
+            model.addAttribute("groups", groupService.findAll());
+            return "lectures/new";
         }
 
-        logger.debug("Create new lecture. Id {}", lecture.getId());
+        try {
+             lectureService.create(lectureMapper.toEntity(lectureDto));
+        } catch (ServiceException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/lectures/new";
+        }
+        logger.debug("Create new lecture. Id {}", lectureDto.getId());
         return "redirect:/lectures";
     }
 
-    /* Обарботка изменения */
+    /* Обработка изменения */
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("groups", groupService.findAll());
+        LectureDto dto = lectureService.findById(id);
+        model.addAttribute("lectureDto", dto);
         model.addAttribute("teachers", teacherService.findAll());
         model.addAttribute("cathedras", cathedraService.findAll());
         model.addAttribute("subjects", subjectService.findAll());
         model.addAttribute("times", lectureTimeService.findAll());
         model.addAttribute("audiences", audienceService.findAll());
+        model.addAttribute("groups", groupService.findAll());
 
-        lectureService.findById(id).ifPresentOrElse(lecture -> {
-                    model.addAttribute("lecture", lecture);
-                    logger.debug("Found and edited lecture with id: {}", id);
-                }, () -> {
-                    throw new ResourceNotFoundException("Lecture not found");
-                }
-        );
-
-        logger.debug("Edit teacher");
+        logger.debug("Edit lecture");
         return "lectures/edit";
     }
 
-
-
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute Lecture lecture,
+    public String update(@ModelAttribute("lectureDto") @Valid LectureDto lectureDto,
+                         BindingResult bindingResult,
                          @RequestParam(value = "groupIds", required = false) List<Long> groupIds,
                          @PathVariable("id") Long id,
                          Model model,
                          RedirectAttributes redirectAttributes) {
-        try {
-            cathedraService.findById(lecture.getCathedra().getId()).ifPresent(lecture::setCathedra);
-            teacherService.findById(lecture.getTeacher().getId()).ifPresent(lecture::setTeacher);
-            subjectService.findById(lecture.getSubject().getId()).ifPresent(lecture::setSubject);
-            audienceService.findById(lecture.getAudience().getId()).ifPresent(lecture::setAudience);
-            lectureTimeService.findById(lecture.getTime().getId()).ifPresent(lecture::setTime);
 
-            List<Group> groups = groupIds.stream()
-                    .map(groupId -> groupService.findById(groupId).orElseThrow(() -> new IllegalArgumentException("Invalid group ID: " + id)))
-                    .collect(Collectors.toList());
+        lectureDto.setId(id);
+        lectureDto.setGroupIds(groupIds);
 
-            lecture.setGroups(groups);
-            lectureService.update(lecture);
-        } catch (ServiceException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/lectures/{id}/edit";
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("teachers", teacherService.findAll());
+            model.addAttribute("cathedras", cathedraService.findAll());
+            model.addAttribute("subjects", subjectService.findAll());
+            model.addAttribute("times", lectureTimeService.findAll());
+            model.addAttribute("audiences", audienceService.findAll());
+            model.addAttribute("groups", groupService.findAll());
+            return "lectures/edit";
         }
 
+        try {
+            lectureService.update(lectureMapper.toEntity(lectureDto));
+        } catch (ServiceException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("lectureDto", lectureDto);
+            model.addAttribute("errorMessage", e.getMessage());
 
-        logger.debug("Show edit page");
+            return "lectures/edit";
+        }
         return "redirect:/lectures";
     }
 
-    /* Обарботка показа по id */
+    /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        lectureService.findById(id).ifPresentOrElse(lecture -> {
-                    model.addAttribute("lecture", lecture);
-                    model.addAttribute("groups", lecture.getGroups());
-                    logger.debug("Found and edited lecture with id: {}", id);
-                }, () -> {
-                    throw new ResourceNotFoundException("Lecture not found");
-                }
-        );
-
-        logger.debug("Show lecture");
+        LectureDto dto = lectureService.findById(id);
+        model.addAttribute("lectureDto", dto);
         return "lectures/show";
     }
 
-    /* Обарботка удаления */
+    /* Обработка удаления */
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         lectureService.deleteById(id);

@@ -14,33 +14,31 @@
             <div class="col-12 col-md order-md-0 text-center text-md-start">
                 <table class="table">
                     <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Cathedra</th>
-                        <th>Subject</th>
-                        <th>Teacher</th>
-                        <th>Lecture Time</th>
-                        <th>Audience</th>
-                        <th>Group</th>
-                    </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Cathedra</th>
+                            <th>Subject</th>
+                            <th>Teacher</th>
+                            <th>Lecture Time</th>
+                            <th>Audience</th>
+                            <th>Group</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td th:text="${lecture.getId()}">Id</td>
-                        <td th:text="${lecture.getCathedra().getName()}">Cathedra</td>
-                        <td th:text="${lecture.getSubject().getName()}">Subject</td>
-                        <td th:text="${lecture.getTeacher().getFirstName()} + ' ' + ${lecture.getTeacher().getLastName()}">
-                            Teacher
-                        </td>
-                        <td th:text="${lecture.getTimeStart()} + ' ' + ${lecture.getTimeEnd()}">Time</td>
-                        <td th:text="${lecture.getAudience().getRoom()}">Room</td>
-                        <td>
-                            <ul th:each="group : ${groups}">
-                                <li th:text="${group?.getName()}">Group</li>
-                            </ul>
-                        </td>
+                        <tr>
+                            <td th:text="${lectureDto.id}">Id</td>
+                            <td th:text="${lectureDto.cathedra.name}">Cathedra</td>
+                            <td th:text="${lectureDto.subject.name}">Subject</td>
+                            <td th:text="${lectureDto.teacher.firstName} + ' ' + ${lectureDto.teacher.lastName}">Teacher</td>
+                            <td th:text="${#temporals.format(lectureDto.time.startLecture, 'yyyy-MM-dd HH:mm')} + ' ' + ${#temporals.format(lectureDto.time.endLecture, 'yyyy-MM-dd HH:mm')}">Time</td>
+                            <td th:text="${lectureDto.audience.roomNumber}">Room</td>
+                            <td>
+                                <ul th:each="group : ${lectureDto.groups}">
+                                    <li th:text="${group?.name}">Group</li>
+                                </ul>
+                            </td>
 
-                    </tr>
+                        </tr>
                     </tbody>
                 </table>
             </div>

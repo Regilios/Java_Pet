@@ -17,19 +17,22 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/holidays/{id}(id=${holiday.getId()})}"
-                      th:object="${holiday}">
+                <form id="form1" th:method="PATCH" th:action="@{/holidays/{id}(id=${holidayDto.id})}"
+                      th:object="${holidayDto}">
                     <div class="mb-3">
                         <label class="form-label" for="desc">Description</label>
                         <input class="form-control" type="text" th:field="*{description}" id="desc"/>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="start_holiday">Start holiday</label>
-                        <input class="form-control" type="date" th:field="*{startHoliday}" id="start_holiday"/>
+                        <label class="form-label" for="startHoliday">Start holiday</label>
+                        <input class="form-control" type="date" th:field="*{startHoliday}" id="startHoliday"/>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('startHoliday')}" th:errors="*{startHoliday}"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="end_holiday">End holiday</label>
-                        <input class="form-control" type="date" th:field="*{endHoliday}" id="end_holiday"/>
+                        <label class="form-label" for="endHoliday">End holiday</label>
+                        <input class="form-control" type="date" th:field="*{endHoliday}" id="endHoliday"/>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('endHoliday')}" th:errors="*{endHoliday}"></div>
                     </div>
                     <button type="submit" class="btn btn-primary" value="Update holiday">Update holiday</button>
                 </form>

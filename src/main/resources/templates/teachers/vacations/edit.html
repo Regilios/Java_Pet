@@ -18,21 +18,23 @@
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
                 <form id="form1" th:method="PATCH"
-                      th:action="@{/teachers/{teacherId}/vacations/{vacationId}(teacherId=${teacher.getId()}, vacationId=${vacation.getId()})}"
-                      th:object="${vacation}">
+                      th:action="@{/teachers/{teacherId}/vacations/{vacationId}(teacherId=${teacher.getId()}, vacationId=${vacationDto.id})}"
+                      th:object="${vacationDto}">
                     <div class="mb-3">
                         <label class="form-label" for="startJob">startJob</label>
                         <input class="form-control" type="date" th:field="*{startJob}" id="startJob"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('startJob')}" th:errors="*{startJob}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="endJob">endJob</label>
                         <input class="form-control" type="date" th:field="*{endJob}" id="endJob"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('endJob')}" th:errors="*{endJob}"></div>
                     </div>
                     <button type="submit" class="btn btn-primary" value="Update vacation">Update vacation</button>
                 </form>
             </div>
             <div class="col-12 mt-5">
-                <a class="btn btn-outline-primary" th:href="@{/teachers/{id}/vacations(id=${teacher.getId()})}">Back to
+                <a class="btn btn-outline-primary" th:href="@{/teachers/{id}/vacations(id=${teacher.id})}">Back to
                     all vacations</a>
             </div>
         </div>

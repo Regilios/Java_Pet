@@ -17,18 +17,21 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form th:method="POST" th:action="@{/holidays}" th:object="${holiday}">
+                <form th:method="POST" th:action="@{/holidays}" th:object="${holidayDto}">
                     <div class="mb-3">
                         <label class="form-label" for="desc">desc</label>
                         <input class="form-control" type="text" th:field="*{description}" id="desc"/>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="start_holiday">start_holiday</label>
                         <input class="form-control" type="date" th:field="*{startHoliday}" id="start_holiday"/>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('startHoliday')}" th:errors="*{startHoliday}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="end_holiday">end_holiday</label>
                         <input class="form-control" type="date" th:field="*{endHoliday}" id="end_holiday"/>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('endHoliday')}" th:errors="*{endHoliday}"></div>
                     </div>
 
                     <button type="submit" class="btn btn-primary" value="add student">add holiday</button>

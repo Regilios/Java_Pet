@@ -17,34 +17,31 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/lecturetimes/{id}(id=${lectureTime.getId()})}"
-                      th:object="${lectureTime}">
+                <form id="form1" th:method="PATCH" th:action="@{/lecturetimes/{id}(id=${id})}"
+                      th:object="${lectureTimeFormDto}">
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label class="form-label" for="start_date">Start Date</label>
-                            <input class="form-control" type="date"
-                                   th:value="*{startLocal != null ? startLocal.toLocalDate() : ''}" id="start_date"
-                                   name="start_date"/>
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" th:field="*{startDate}" />
+                            <div th:if="${#fields.hasErrors('startDate')}" class="text-danger" th:errors="*{startDate}"></div>
                         </div>
                         <div class="col-6">
-                            <label class="form-label" for="start_time">Start Time</label>
-                            <input class="form-control" type="time"
-                                   th:value="*{startLocal != null ? startLocal.toLocalTime() : ''}" id="start_time"
-                                   name="start_time"/>
+                            <label class="form-label">Start Time</label>
+                            <input type="time" class="form-control" th:field="*{startTime}" />
+                            <div th:if="${#fields.hasErrors('startTime')}" class="text-danger" th:errors="*{startTime}"></div>
                         </div>
                     </div>
+
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label class="form-label" for="end_date">End Date</label>
-                            <input class="form-control" type="date"
-                                   th:value="*{endLocal != null ? endLocal.toLocalDate() : ''}" id="end_date"
-                                   name="end_date"/>
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" th:field="*{endDate}" />
+                            <div th:if="${#fields.hasErrors('endDate')}" class="text-danger" th:errors="*{endDate}"></div>
                         </div>
                         <div class="col-6">
-                            <label class="form-label" for="end_time">End Time</label>
-                            <input class="form-control" type="time"
-                                   th:value="*{endLocal != null ? endLocal.toLocalTime() : ''}" id="end_time"
-                                   name="end_time"/>
+                            <label class="form-label">End Time</label>
+                            <input type="time" class="form-control" th:field="*{endTime}" />
+                            <div th:if="${#fields.hasErrors('endTime')}" class="text-danger" th:errors="*{endTime}"></div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary" value="Update lectureTime">Update lectureTime</button>

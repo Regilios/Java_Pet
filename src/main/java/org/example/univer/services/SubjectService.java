@@ -1,7 +1,7 @@
 package org.example.univer.services;
 
 import org.example.univer.config.AppSettings;
-import org.example.univer.dao.interfaces.DaoSubjectInterface;
+import org.example.univer.repositories.SubjectRepository;
 import org.example.univer.exeption.*;
 import org.example.univer.models.Subject;
 import org.slf4j.Logger;
@@ -15,14 +15,14 @@ import java.util.Optional;
 
 @Service
 public class SubjectService {
-    private DaoSubjectInterface daoSubjectInterface;
+    private SubjectRepository subjectRepository;
     private static final Logger logger = LoggerFactory.getLogger(SubjectService.class);
     private AppSettings appSettings;
     private Integer minSizeDescription;
 
     @Autowired
-    public SubjectService(DaoSubjectInterface daoSubjectInterface, AppSettings appSettings) {
-        this.daoSubjectInterface = daoSubjectInterface;
+    public SubjectService(SubjectRepository subjectRepository, AppSettings appSettings) {
+        this.subjectRepository = subjectRepository;
         this.appSettings = appSettings;
         this.minSizeDescription = appSettings.getMinSizeDescription();
     }
@@ -59,7 +59,7 @@ public class SubjectService {
         logger.debug("Start create subject");
         try {
             validate(subject, SubjectService.ValidationContext.METHOD_CREATE);
-            daoSubjectInterface.create(subject);
+            subjectRepository.save(subject);
             logger.debug("Subject created");
         } catch (SubjectExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -83,7 +83,7 @@ public class SubjectService {
         logger.debug("Start update subject");
         try {
             validate(subject, SubjectService.ValidationContext.METHOD_UPDATE);
-            daoSubjectInterface.update(subject);
+            subjectRepository.save(subject);
             logger.debug("Subject updated");
         } catch (SubjectExeption e) {
             logger.error("Ошибка: {}", e.getMessage(), e);
@@ -104,28 +104,27 @@ public class SubjectService {
     }
     public void deleteById(Long id) {
         logger.debug("Delete subject width id: {}", id);
-        daoSubjectInterface.deleteById(id);
+        subjectRepository.deleteById(id);
     }
 
     public Optional<Subject> findById(Long id) {
         logger.debug("Find subject width id: {}", id);
-        return daoSubjectInterface.findById(id);
+        return subjectRepository.findById(id);
     }
 
     public List<Subject> findAll() {
         logger.debug("Find all subjects");
-        return daoSubjectInterface.findAll();
+        return subjectRepository.findAll();
     }
 
     public boolean isSingle(Subject subject) {
         logger.debug("Check subject is single");
-        return daoSubjectInterface.isSingle(subject);
+        return subjectRepository.existsByName(subject.getName());
     }
-
 
     public List<Subject> getSubjectById(Long teacher_id) {
         logger.debug("Get list subject by id");
-        return daoSubjectInterface.getSubjectById(teacher_id);
+        return subjectRepository.findByTeachers_Id(teacher_id);
     }
 
     private boolean descriptionNotEmpty(Subject subject) {

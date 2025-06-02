@@ -17,8 +17,8 @@
                 </div>
             </div>
             <div class="col-12 col-md order-md-0 text-center text-md-start">
-                <form id="form1" th:method="PATCH" th:action="@{/lectures/{id}(id=${lecture.getId()})}"
-                      th:object="${lecture}">
+                <form id="form1" th:method="PATCH" th:action="@{/lectures/{id}(id=${lectureDto.id})}"
+                      th:object="${lectureDto}">
                     <div class="mb-3">
                         <label class="form-label" for="cathedra">Select cathedra: </label>
                         <select class="form-control" id="cathedra" name="cathedra" th:field="*{cathedra.id}" required>
@@ -28,6 +28,7 @@
                                     th:text="${anyCathedra?.name}">Cathedra name
                             </option>
                         </select>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('cathedra')}" th:errors="*{cathedra}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="teacher">Select teacher: </label>
@@ -38,6 +39,7 @@
                                     th:text="${anyTeacher?.firstName} + ' ' + ${anyTeacher?.lastName}">Teacher name
                             </option>
                         </select>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('teacher')}" th:errors="*{teacher}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="audience">Choose audience: </label>
@@ -45,9 +47,10 @@
                             <option th:each="anyAudience : ${audiences}"
                                     th:field="*{audience.id}"
                                     th:value="${anyAudience?.id}"
-                                    th:text="${anyAudience?.room}">Room
+                                    th:text="${anyAudience?.roomNumber}">Room
                             </option>
                         </select>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('audience')}" th:errors="*{audience}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="subject">Choose subject: </label>
@@ -58,6 +61,7 @@
                                     th:text="${anySubject?.name}">Subject name
                             </option>
                         </select>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="lectureTime">Choose time: </label>
@@ -65,18 +69,21 @@
                             <option th:each="anyTime : ${times}"
                                     th:field="*{time.id}"
                                     th:value="${anyTime?.id}"
-                                    th:text="${anyTime?.startLocal} + ' - ' + ${anyTime?.endLocal}">start
+                                    th:text="${anyTime?.startLecture} + ' - ' + ${anyTime?.endLecture}">start
                             </option>
                         </select>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('time')}" th:errors="*{time}"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="groups">Choose group(s): </label>
                         <select class="form-control" id="groups" name="groupIds" multiple required>
-                            <option th:each="group : ${groups}"
-                                    th:value="${group.id}"
-                                    th:text="${group.name}">
+                            <option th:each="anyGroup : ${groups}"
+                                    th:value="${anyGroup.id}"
+                                    th:selected="${lectureDto.groupIds.contains(anyGroup.id)}"
+                                    th:text="${anyGroup.name}">
                             </option>
                         </select>
+                        <div class="text-danger"  th:if="${#fields.hasErrors('groups')}" th:errors="*{groups}"></div>
                     </div>
                     <button type="submit" class="btn btn-primary" value="Update holiday">Update lecture</button>
                 </form>
