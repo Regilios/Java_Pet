@@ -25,4 +25,8 @@ public interface VacationRepository extends JpaRepository<Vacation, Long> {
     @Transactional
     @Query("DELETE FROM Vacation v WHERE v.id = :id")
     void deleteVacationById(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"teacher", "teacher.cathedra", "teacher.subjects"})
+    @Override
+    List<Vacation> findAll();
 }

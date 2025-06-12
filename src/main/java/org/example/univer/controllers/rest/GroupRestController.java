@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/groups")
 public class GroupRestController {
-    private static final Logger logger = LoggerFactory.getLogger(AudienceRestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroupRestController.class);
 
     private final GroupService groupService;
     private final GroupMapper groupMapper;
