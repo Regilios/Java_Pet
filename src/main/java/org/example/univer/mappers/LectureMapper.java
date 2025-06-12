@@ -1,3 +1,4 @@
+
 package org.example.univer.mappers;
 
 import org.example.univer.dto.GroupDto;
@@ -26,17 +27,17 @@ public class LectureMapper {
     private final GroupMapper groupMapper;
 
     public LectureMapper(TeacherMapper teacherMapper,
-                        LectureTimeMapper lectureTimeMapper,
-                        SubjectMapper subjectMapper,
-                        CathedraMapper cathedraMapper,
-                        AudienceMapper audienceMapper,
-                        TeacherService teacherService,
-                        GroupService groupService,
-                        AudienceService audienceService,
-                        SubjectService subjectService,
-                        CathedraService cathedraService,
-                        LectureTimeService lectureTimeService,
-                        GroupMapper groupMapper) {
+                         LectureTimeMapper lectureTimeMapper,
+                         SubjectMapper subjectMapper,
+                         CathedraMapper cathedraMapper,
+                         AudienceMapper audienceMapper,
+                         TeacherService teacherService,
+                         GroupService groupService,
+                         AudienceService audienceService,
+                         SubjectService subjectService,
+                         CathedraService cathedraService,
+                         LectureTimeService lectureTimeService,
+                         GroupMapper groupMapper) {
         this.audienceMapper = audienceMapper;
         this.teacherService = teacherService;
         this.groupService = groupService;

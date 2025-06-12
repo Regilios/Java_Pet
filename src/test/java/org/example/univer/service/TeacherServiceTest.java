@@ -32,7 +32,6 @@ public class TeacherServiceTest {
     private AppSettings appSettings = new AppSettings();
     @Mock
     private TeacherRepository mockTeacher;
-
     @Mock
     private SubjectService subjectService;
     @InjectMocks
@@ -41,7 +40,7 @@ public class TeacherServiceTest {
     @BeforeEach
     void setUp() {
         appSettings.setGenderTeacher("FEMALE");
-        teacherService = new TeacherService(mockTeacher, subjectService, appSettings);
+        teacherService.init();
     }
 
     @Test

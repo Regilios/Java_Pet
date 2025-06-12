@@ -37,7 +37,7 @@ public class GroupServiceTest {
     @BeforeEach
     void setUp() {
         appSettings.setMinLengthNameGroup(3);
-        groupService = new GroupService(mockGroup, appSettings);
+        groupService.init();
     }
 
     @Test

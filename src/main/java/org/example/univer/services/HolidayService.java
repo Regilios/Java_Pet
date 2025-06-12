@@ -1,13 +1,14 @@
 package org.example.univer.services;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.example.univer.config.AppSettings;
-import org.example.univer.repositories.HolidayRepository;
-import org.example.univer.exeption.*;
+import org.example.univer.exeption.HolidaysExeption;
+import org.example.univer.exeption.InvalidParameterException;
 import org.example.univer.models.Holiday;
+import org.example.univer.repositories.HolidayRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -16,17 +17,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class HolidayService {
-    HolidayRepository holidayRepository;
+    private final HolidayRepository holidayRepository;
     private static final Logger logger = LoggerFactory.getLogger(HolidayService.class);
-    private AppSettings appSettings;
+    private final AppSettings appSettings;
     private Integer maxDayHoliday;
     private String startDayHoliday;
 
-    @Autowired
-    public HolidayService(HolidayRepository holidayRepository, AppSettings appSettings) {
-        this.holidayRepository = holidayRepository;
-        this.appSettings = appSettings;
+    @PostConstruct
+    public void init() {
         this.maxDayHoliday = appSettings.getMaxDayHoliday();
         this.startDayHoliday = appSettings.getStartDayHoliday();
     }
@@ -40,7 +40,7 @@ public class HolidayService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(holiday)) {
-                    throw new InvalidParameterException("Невозможно создать каникулы! Каникулы с названием: " + holiday.getDescription() + " уже существуют!");
+                    throw new InvalidParameterException(String.format("Невозможно создать каникулы! Каникулы с названием: %s уже существуют!", holiday.getDescription()));
                 }
                 validateCommon(holiday, "создать");
                 break;
@@ -64,54 +64,16 @@ public class HolidayService {
         }
     }
 
-    public void create(Holiday holiday) {
-        logger.debug("Start create holiday");
-        try {
-            validate(holiday, ValidationContext.METHOD_CREATE);
-            holidayRepository.save(holiday);
-            logger.debug("Holiday created");
-        } catch (HolidaysExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта праздника: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект праздника не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта праздника: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта праздника", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект праздника не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта праздника", e);
-        }
-        logger.debug("Holiday created");
+    public Holiday create(Holiday holiday) {
+        logger.debug("Creating holiday: {}", holiday);
+        validate(holiday, ValidationContext.METHOD_CREATE);
+        return holidayRepository.save(holiday);
     }
 
-    public void update(Holiday holiday) {
-        logger.debug("Start update holiday");
-        try {
-            validate(holiday, ValidationContext.METHOD_UPDATE);
-            holidayRepository.save(holiday);
-            logger.debug("Holiday updated");
-        } catch (HolidaysExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта праздника: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект праздника не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта праздника: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта праздника", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект праздника не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта праздника", e);
-        }
-        logger.debug("Holiday updated");
+    public Holiday update(Holiday holiday) {
+        logger.debug("Updating holiday: {}", holiday);
+        validate(holiday, ValidationContext.METHOD_UPDATE);
+        return holidayRepository.save(holiday);
     }
 
     public void deleteById(Long id) {
@@ -132,5 +94,10 @@ public class HolidayService {
     public boolean isSingle(Holiday holiday) {
         logger.debug("Check holiday is single");
         return holidayRepository.existsByDescription(holiday.getDescription());
+    }
+
+    public boolean existsById(Long id) {
+        logger.debug("Check holiday is single");
+        return holidayRepository.existsById(id);
     }
 }

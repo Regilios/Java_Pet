@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import org.example.univer.controllers.web.LectureController;
 import org.example.univer.dto.LectureDto;
 import org.example.univer.mappers.LectureMapper;
 import org.example.univer.models.Lecture;

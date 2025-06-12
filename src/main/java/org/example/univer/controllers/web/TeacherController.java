@@ -1,4 +1,4 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
 import jakarta.validation.Valid;
 import org.example.univer.dto.TeacherDto;

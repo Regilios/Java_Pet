@@ -1,4 +1,4 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
 import org.example.univer.dto.CathedraDto;
 import org.example.univer.exeption.ResourceNotFoundException;

@@ -15,14 +15,12 @@ import java.util.Optional;
 @Repository
 public interface VacationRepository extends JpaRepository<Vacation, Long> {
     boolean existsByStartJobAndEndJobAndTeacher_Id(LocalDate startJob,LocalDate endJob,Long teacher_id);
-
+    boolean existsById(Long id);
     @EntityGraph(attributePaths = {"teacher", "teacher.cathedra", "teacher.subjects"})
     @Query("SELECT v FROM Vacation v WHERE v.id = :id")
     Optional<Vacation> findByIdWithTeacherCathedraAndSubjects(@Param("id") Long id);
-
     @EntityGraph(attributePaths = {"teacher", "teacher.cathedra", "teacher.subjects"})
     List<Vacation> findByTeacher_Id(Long teacherId);
-
     @Modifying
     @Transactional
     @Query("DELETE FROM Vacation v WHERE v.id = :id")

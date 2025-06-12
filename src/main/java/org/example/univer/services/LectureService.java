@@ -1,17 +1,21 @@
 package org.example.univer.services;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.example.univer.config.AppSettings;
 import org.example.univer.dto.LectureDto;
-import org.example.univer.exeption.*;
+import org.example.univer.exeption.InvalidParameterException;
+import org.example.univer.exeption.LectureExeption;
+import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.mappers.LectureMapper;
-import org.example.univer.models.Group;
 import org.example.univer.models.Lecture;
 import org.example.univer.models.Teacher;
-import org.example.univer.repositories.*;
+import org.example.univer.repositories.HolidayRepository;
+import org.example.univer.repositories.LectureRepository;
+import org.example.univer.repositories.SubjectRepository;
+import org.example.univer.repositories.TeacherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,36 +27,29 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LectureService {
-    private SubjectRepository subjectRepository;
-    private HolidayRepository holidayRepository;
-
-    private AppSettings appSettings;
-    private LocalTime startLectionDay ;
-    private LocalTime endLectionDay;
-
-    private LectureRepository lectureRepository;
-    private LectureMapper lectureMapper;
-
-
-    @Autowired
-    public LectureService(LectureMapper lectureMapper, LectureRepository lectureRepository, SubjectRepository subjectRepository, HolidayRepository holidayRepository, AppSettings appSettings) {
-        this.subjectRepository = subjectRepository;
-        this.holidayRepository = holidayRepository;
-        this.lectureRepository = lectureRepository;
-        this.lectureMapper = lectureMapper;
-        if (appSettings.getStartLectionDay() != null && appSettings.getEndLectionDay() != null) {
-            this.startLectionDay = LocalTime.parse(appSettings.getStartLectionDay(), DateTimeFormatter.ofPattern("HH:mm"));
-            this.endLectionDay = LocalTime.parse(appSettings.getEndLectionDay(), DateTimeFormatter.ofPattern("HH:mm"));
-        } else {
-            throw new IllegalArgumentException("Start and end lection day must be set in configuration.");
-        }
-    }
+    private final LectureRepository lectureRepository;
+    private final TeacherRepository teacherRepository;
+    private final SubjectRepository subjectRepository;
+    private final HolidayRepository holidayRepository;
+    private final LectureMapper lectureMapper;
+    private final AppSettings appSettings;
 
     private static final Logger logger = LoggerFactory.getLogger(LectureService.class);
+    private LocalTime startLectionDay;
+    private LocalTime endLectionDay;
+
+    @PostConstruct
+    public void init() {
+        this.startLectionDay = LocalTime.parse(appSettings.getStartLectionDay(), DateTimeFormatter.ofPattern("HH:mm"));
+        this.endLectionDay = LocalTime.parse(appSettings.getEndLectionDay(), DateTimeFormatter.ofPattern("HH:mm"));
+    }
 
     public enum ValidationContext {
         METHOD_CREATE,
@@ -63,143 +60,107 @@ public class LectureService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lecture)) {
-                    throw new InvalidParameterException("Невозможно создать лекцию! Лекция с такими параметрами уже существует!");
+                    throw new InvalidParameterException("Лекция с такими параметрами уже существует!");
                 }
                 if (isAudienceFreeForCreate(lecture)) {
-                    throw new LectureExeption("Невозможно создать лекцию! Аудитория: " + lecture.getAudience().getRoomNumber() + " уже занята на время: " + lecture.getTime().getStartLecture());
+                    throw new LectureExeption(String.format("Аудитория %s уже занята на время %s",
+                            lecture.getAudience().getRoomNumber(), lecture.getTime().getStartLecture()));
                 }
                 if (!isTeacherBusyForCreate(lecture)) {
-                    throw new LectureExeption("Невозможно создать лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLecture());
+                    throw new LectureExeption(String.format("Учитель уже занят на время %s",
+                            lecture.getTime().getStartLecture()));
                 }
                 validateCommon(lecture, "создать");
                 break;
             case METHOD_UPDATE:
                 if (isAudienceFreeForUpdate(lecture)) {
-                    throw new LectureExeption("Невозможно обновить лекцию! Аудитория: " + lecture.getAudience().getRoomNumber() + " уже занята на время: " + lecture.getTime().getStartLecture());
+                    throw new LectureExeption(String.format("Аудитория %s уже занята на время %s",
+                            lecture.getAudience().getRoomNumber(), lecture.getTime().getStartLecture()));
                 }
                 if (isTeacherBusyForUpdate(lecture)) {
-                    throw new LectureExeption("Невозможно обновить лекцию! У учителя уже назначена лекция на: " + lecture.getTime().getStartLecture());
+                    throw new LectureExeption(String.format("Учитель уже занят на время %s",
+                            lecture.getTime().getStartLecture()));
                 }
                 validateCommon(lecture, "обновить");
                 break;
             default:
-                return "Контекст валидации отсутствует или неизвестен " + context;
+                return "Неизвестный контекст валидации: " + context;
         }
         return null;
     }
 
     private void validateCommon(Lecture lecture, String action) {
         if (!beginningAndEndLectureCorrect(lecture)) {
-            throw new LectureExeption("Невозможно " + action + " лекцию! Начало лекции не должно быть раньше: " + startLectionDay + " а конец лекции не позднее: " + endLectionDay);
+            throw new LectureExeption(String.format("Время лекции должно быть между %s и %s",
+                    startLectionDay, endLectionDay));
         }
         if (lectureNotOnHoliday(lecture)) {
-            throw new LectureExeption("Невозможно " + action + " лекцию! Лекция не может быть в праздник.");
+            throw new LectureExeption("Лекция не может быть назначена на праздничный день");
         }
         if (!isTeacherSubject(lecture)) {
-            throw new LectureExeption("Невозможно " + action + " лекцию! Учитель не ведёт заданный предмет.");
+            throw new LectureExeption("Учитель не ведёт указанный предмет");
         }
     }
 
-    public void create(Lecture lecture) {
-        logger.debug("Start create Lecture");
-        try {
-            validate(lecture, ValidationContext.METHOD_CREATE);
-            logger.debug("validate completed");
-            lectureRepository.save(lecture);
-            logger.debug("Lecture created");
-        } catch (LectureExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта лекции: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект лекции не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта лекции: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта лекции", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект лекции не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта лекции", e);
-        }
+    public Lecture create(Lecture lecture) {
+        logger.debug("Creating lecture: {}", lecture);
+        validate(lecture, ValidationContext.METHOD_CREATE);
+        return lectureRepository.save(lecture);
     }
 
-    public void update(Lecture lecture) {
-        logger.debug("Start update holiday");
-        try {
-            validate(lecture, ValidationContext.METHOD_UPDATE);
-            lectureRepository.save(lecture);
-            logger.debug("Lecture updated");
-        } catch (LectureExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта лекции: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект лекции не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта лекции: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта лекции", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект лекции не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта лекции", e);
-        }
+    public Lecture update(Lecture lecture) {
+        logger.debug("Updating lecture: {}", lecture);
+        validate(lecture, ValidationContext.METHOD_UPDATE);
+        return lectureRepository.save(lecture);
     }
-    @Transactional
+
+
     public void deleteById(Long id) {
-        logger.debug("Delete lecture width id: {}", id);
-        Lecture lecture = lectureRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Lecture not found"));
-
         // Удаляем связи с группами т.к. у нас двустороння связь
-        for (Group group : lecture.getGroups()) {
-            group.getLectures().remove(lecture);
-        }
+        logger.debug("Deleting lecture with id: {}", id);
+        Lecture lecture = lectureRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Лекция не найдена"));
+
+        lecture.getGroups().forEach(group -> group.getLectures().remove(lecture));
         lecture.getGroups().clear();
 
         lectureRepository.delete(lecture);
     }
 
     @Transactional(readOnly = true)
-    // Чтобы lazy поля могли подгружаться сохраняем сессию, стандартный JPA не подходит
     public LectureDto findById(Long id) {
-        Lecture lecture = lectureRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Lecture not found"));
+        // Чтобы lazy поля могли подгружаться сохраняем сессию, стандартный JPA не подходит
+        return lectureRepository.findById(id)
+                .map(lectureMapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Лекция не найдена"));
+    }
 
-        return lectureMapper.toDto(lecture);
+    @Transactional(readOnly = true)
+    public Optional<LectureDto> findEntityById(Long id) {
+        return lectureRepository.findById(id)
+                .map(lectureMapper::toDto);
     }
 
     public List<Lecture> findAll() {
         logger.debug("Find all lectures");
         return lectureRepository.findAll();
     }
+
     @Transactional(readOnly = true)
     public Page<LectureDto> findAllWithGroups(Pageable pageable) {
         // Пагинатор не может работать корректно с ManyToMany если там есть 2 List, требуется ручная разбивка
         Page<Lecture> page = lectureRepository.findAllLectures(pageable);
 
-        // Подгружаем группы одной пачкой
         List<Long> ids = page.getContent().stream()
                 .map(Lecture::getId)
-                .collect(Collectors.toList());
+                .toList();
 
-        List<Lecture> withGroups = lectureRepository.findWithGroupsByIdIn(ids);
+        Map<Long, Lecture> lectureMap = lectureRepository.findWithGroupsByIdIn(ids).stream()
+                .collect(Collectors.toMap(Lecture::getId, Function.identity()));
 
-        // Map them by ID for fast access
-        Map<Long, Lecture> lectureWithGroupsMap = withGroups.stream()
-                .collect(Collectors.toMap(Lecture::getId, l -> l));
-
-        // Объединяем результат
         List<Lecture> mergedLectures = page.getContent().stream()
-                .map(l -> {
-                    Lecture complete = lectureWithGroupsMap.get(l.getId());
-                    return complete != null ? complete : l;
-                })
-                .collect(Collectors.toList());
-
+                .map(lecture -> lectureMap.getOrDefault(lecture.getId(), lecture))
+                .toList();
 
         return new PageImpl<>(mergedLectures, pageable, page.getTotalElements())
                 .map(lectureMapper::toDto);
@@ -211,6 +172,11 @@ public class LectureService {
                                                                                     lecture.getSubject().getId(),
                                                                                     lecture.getTime().getId(),
                                                                                     lecture.getAudience().getId());
+    }
+
+    public boolean existsById(Long id) {
+        logger.debug("Check lecture is single");
+        return lectureRepository.existsById(id);
     }
 
     private boolean beginningAndEndLectureCorrect(Lecture lecture) {

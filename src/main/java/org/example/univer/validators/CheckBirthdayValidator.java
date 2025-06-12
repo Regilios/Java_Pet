@@ -2,7 +2,6 @@ package org.example.univer.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.example.univer.interfeses.CheckBirthday;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -27,8 +26,7 @@ public class CheckBirthdayValidator implements ConstraintValidator<CheckBirthday
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Возраст должен быть ≥18 лет")
-                    .addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Возраст должен быть ≥18 лет");
         }
 
         return isValid;

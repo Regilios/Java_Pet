@@ -1,13 +1,14 @@
 package org.example.univer.services;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.example.univer.config.AppSettings;
-import org.example.univer.repositories.VacationRepository;
-import org.example.univer.exeption.*;
+import org.example.univer.exeption.InvalidParameterException;
+import org.example.univer.exeption.VacationExeption;
 import org.example.univer.models.Vacation;
+import org.example.univer.repositories.VacationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
@@ -15,17 +16,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class VacationService {
-    private VacationRepository vacationRepository;
+    private final VacationRepository vacationRepository;
     private static final Logger logger = LoggerFactory.getLogger(VacationService.class);
-    private AppSettings appSettings;
+    private final AppSettings appSettings;
     private Integer minVacationDay;
     private Integer maxVacationDay;
 
-    @Autowired
-    public VacationService(VacationRepository vacationRepository, AppSettings appSettings) {
-        this.vacationRepository = vacationRepository;
-        this.appSettings = appSettings;
+    @PostConstruct
+    public void init() {
         this.minVacationDay = appSettings.getMinVacationDay();
         this.maxVacationDay = appSettings.getMaxVacationDay();
     }
@@ -61,52 +61,16 @@ public class VacationService {
         }
     }
 
-    public void create(Vacation vacation) {
-        logger.debug("Start create vacation");
-        try {
-            validate(vacation, VacationService.ValidationContext.METHOD_CREATE);
-            vacationRepository.save(vacation);
-            logger.debug("Vacation created");
-        } catch (VacationExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта вакансии: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект вакансии не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта вакансии: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта вакансии", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект вакансии не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта вакансии", e);
-        }
+    public Vacation create(Vacation vacation) {
+        logger.debug("Creating vacation: {}", vacation);
+        validate(vacation, VacationService.ValidationContext.METHOD_CREATE);
+        return vacationRepository.save(vacation);
     }
 
-    public void update(Vacation vacation) {
-        logger.debug("Start update vacation");
-        try {
-            validate(vacation, VacationService.ValidationContext.METHOD_UPDATE);
-            vacationRepository.save(vacation);
-            logger.debug("Vacation updated");
-        } catch (VacationExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта вакансии: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект вакансии не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта вакансии: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта вакансии", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект вакансии не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта вакансии", e);
-        }
+    public Vacation update(Vacation vacation) {
+        logger.debug("Updating vacation: {}", vacation);
+        validate(vacation, VacationService.ValidationContext.METHOD_UPDATE);
+        return vacationRepository.save(vacation);
     }
 
     public void deleteById(Long id) {
@@ -131,6 +95,11 @@ public class VacationService {
     public boolean isSingle(Vacation vacation) {
         logger.debug("Check vacation is single");
         return vacationRepository.existsByStartJobAndEndJobAndTeacher_Id(vacation.getStartJob(),vacation.getEndJob(),vacation.getTeacher().getId());
+    }
+
+    public boolean existsById(Long id) {
+        logger.debug("Check vacation is single");
+        return vacationRepository.existsById(id);
     }
 
     private boolean dataVacationCorrect(Vacation vacation) {

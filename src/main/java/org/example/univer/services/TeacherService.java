@@ -1,31 +1,30 @@
 package org.example.univer.services;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.example.univer.config.AppSettings;
-import org.example.univer.repositories.TeacherRepository;
-import org.example.univer.exeption.*;
+import org.example.univer.exeption.InvalidParameterException;
+import org.example.univer.exeption.TeacherExeption;
 import org.example.univer.models.Teacher;
+import org.example.univer.repositories.TeacherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TeacherService {
-    private TeacherRepository teacherRepository;
-    private SubjectService subjectService;
+    private final TeacherRepository teacherRepository;
+    private final SubjectService subjectService;
     private static final Logger logger = LoggerFactory.getLogger(TeacherService.class);
-    private AppSettings appSettings;
+    private final AppSettings appSettings;
     private String genderTeacher;
 
-    @Autowired
-    public TeacherService(TeacherRepository teacherRepository, SubjectService subjectService, AppSettings appSettings) {
-        this.teacherRepository = teacherRepository;
-        this.subjectService = subjectService;
-        this.appSettings = appSettings;
+    @PostConstruct
+    public void init() {
         this.genderTeacher = appSettings.getGenderTeacher();
     }
 
@@ -56,51 +55,16 @@ public class TeacherService {
         }
     }
 
-    public void create(Teacher teacher) {
-        logger.debug("Start create teacher");
-        try {
-            validate(teacher, ValidationContext.METHOD_CREATE);
-            teacherRepository.save(teacher);
-            logger.debug("Teacher created");
-        } catch (TeacherExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта учитель: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект учитель не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта учитель: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта учитель", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект учитель не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта учитель", e);
-        }
+    public Teacher create(Teacher teacher) {
+        logger.debug("Creating teacher: {}", teacher);
+        validate(teacher, ValidationContext.METHOD_CREATE);
+        return teacherRepository.save(teacher);
     }
 
-    public void update(Teacher teacher) {
-        logger.debug("Start update teacher");
-        try {
-            teacherRepository.save(teacher);
-            logger.debug("Teacher updated");
-        } catch (TeacherExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта учитель: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект учитель не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта учитель: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта учитель", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект учитель не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта учитель", e);
-        }
+    public Teacher update(Teacher teacher) {
+        logger.debug("Updating teacher: {}", teacher);
+        validate(teacher, ValidationContext.METHOD_UPDATE);
+        return teacherRepository.save(teacher);
     }
 
     public void deleteById(Long id) {
@@ -121,6 +85,11 @@ public class TeacherService {
     public boolean isSingle(Teacher teacher) {
         logger.debug("Check teacher is single");
         return teacherRepository.existsByFirstNameAndLastName(teacher.getFirstName(),teacher.getLastName());
+    }
+
+    public boolean existsById(Long id) {
+        logger.debug("Check teacher is single");
+        return teacherRepository.existsById(id);
     }
 
     private boolean checkGender(Teacher teacher) {

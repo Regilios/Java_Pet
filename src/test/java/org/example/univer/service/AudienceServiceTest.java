@@ -37,8 +37,7 @@ public class AudienceServiceTest {
         settings.setSizeMin(20);
         settings.setSizeMax(100);
         appSettings.setRoomSettings(settings);
-
-        audienceService = new AudienceService(mockAudience, appSettings);
+        audienceService.init();
     }
 
     @Test

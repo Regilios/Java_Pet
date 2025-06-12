@@ -11,10 +11,9 @@ import java.util.Optional;
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
     boolean existsByName(String name);
-
+    boolean existsById(Long id);
     @EntityGraph(attributePaths = {"cathedra"})
     Optional<Group> findById(Long groupId);
-
     @EntityGraph(attributePaths = {"cathedra"})
     List<Group> findAll();
 }

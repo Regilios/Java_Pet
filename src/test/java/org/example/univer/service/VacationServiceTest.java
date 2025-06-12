@@ -37,7 +37,7 @@ public class VacationServiceTest {
     void setUp() {
         appSettings.setMinVacationDay(7);
         appSettings.setMaxVacationDay(20);
-        vacationService = new VacationService(mockVacation, appSettings);
+        vacationService.init();
     }
 
     @Test

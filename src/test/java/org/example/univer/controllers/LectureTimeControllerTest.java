@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import org.example.univer.controllers.web.LectureTimeController;
 import org.example.univer.dto.LectureTimeDto;
 import org.example.univer.dto.LectureTimeFormDto;
 import org.example.univer.mappers.LectureTimeMapper;

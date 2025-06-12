@@ -1,4 +1,4 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
 import jakarta.validation.Valid;
 import org.example.univer.dto.StudentDto;
@@ -19,13 +19,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/students")
-public class StudentsController {
-    private static final Logger logger = LoggerFactory.getLogger(StudentsController.class);
+public class StudentController {
+    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
     private StudentService studentService;
     private GroupService groupService;
     private final StudentMapper studentMapper;
 
-    public StudentsController(StudentService studentService, GroupService groupService, StudentMapper studentMapper) {
+    public StudentController(StudentService studentService, GroupService groupService, StudentMapper studentMapper) {
         this.studentService = studentService;
         this.groupService = groupService;
         this.studentMapper = studentMapper;

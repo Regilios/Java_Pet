@@ -37,7 +37,7 @@ public class StudentServiceTest {
     @BeforeEach
     void setUp() {
         appSettings.setMaxGroupSize(4);
-        studentService = new StudentService(mockStudent, appSettings);
+        studentService.init();
     }
 
     @Test

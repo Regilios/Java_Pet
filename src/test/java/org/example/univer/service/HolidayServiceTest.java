@@ -37,7 +37,7 @@ public class HolidayServiceTest {
     void setUp() {
         appSettings.setMaxDayHoliday(14);
         appSettings.setStartDayHoliday("MONDAY");
-        holidayService = new HolidayService(mockHoliday, appSettings);
+        holidayService.init();
     }
 
     @Test

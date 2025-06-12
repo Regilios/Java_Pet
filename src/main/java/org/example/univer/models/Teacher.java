@@ -2,6 +2,8 @@ package org.example.univer.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,5 +35,6 @@ public class Teacher extends Person implements Serializable {
     private Cathedra cathedra;
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Vacation> vacation = new ArrayList<>();
 }

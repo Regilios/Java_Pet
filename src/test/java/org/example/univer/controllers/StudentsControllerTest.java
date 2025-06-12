@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import org.example.univer.controllers.web.StudentController;
 import org.example.univer.dto.StudentDto;
 import org.example.univer.mappers.StudentMapper;
 import org.example.univer.models.Student;
@@ -39,14 +40,14 @@ public class StudentsControllerTest {
     @Mock
     private StudentMapper studentMapper;
     @InjectMocks
-    private StudentsController studentsController;
+    private StudentController studentController;
 
     @BeforeEach
     public void setUp() {
         PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
         pageableResolver.setFallbackPageable(PageRequest.of(0, 10));
         mockMvc = MockMvcBuilders
-                .standaloneSetup(studentsController)
+                .standaloneSetup(studentController)
                 .setCustomArgumentResolvers(pageableResolver)
                 .build();
     }

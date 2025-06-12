@@ -34,11 +34,10 @@ public class LectionTimeServiceTest {
     @InjectMocks
     private LectureTimeService lectureTimeService;
 
-
     @BeforeEach
     void setUp() {
         appSettings.setMinimumLectureTimeMinutes(30);
-        lectureTimeService = new LectureTimeService(mockLectureTime, appSettings);
+        lectureTimeService.init();
     }
 
     private DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

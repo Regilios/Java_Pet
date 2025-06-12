@@ -8,8 +8,7 @@ import java.util.List;
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     boolean existsByName(String name);
-
+    boolean existsById(Long id);
     boolean existsByTeachers_IdAndId(Long teacherId, Long subjectId);
-
     List<Subject> findByTeachers_Id(Long teacherId);
 }

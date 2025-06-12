@@ -1,5 +1,6 @@
 package org.example.univer.controllers;
 
+import org.example.univer.controllers.web.VacationController;
 import org.example.univer.dto.TeacherDto;
 import org.example.univer.dto.VacationDto;
 import org.example.univer.mappers.TeacherMapper;

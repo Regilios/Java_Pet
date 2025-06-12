@@ -3,7 +3,7 @@ package org.example.univer.dto;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.univer.interfeses.CheckBirthday;
+import org.example.univer.validators.CheckBirthday;
 import org.example.univer.models.Gender;
 import org.springframework.format.annotation.DateTimeFormat;
 

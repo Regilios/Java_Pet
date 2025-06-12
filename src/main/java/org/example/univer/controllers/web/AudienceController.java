@@ -1,4 +1,4 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
 import jakarta.validation.Valid;
 import org.example.univer.dto.AudienceDto;
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/audiences")
-@Transactional
 public class AudienceController {
     private static final Logger logger = LoggerFactory.getLogger(HolidayController.class);
     private AudienceService audienceService;

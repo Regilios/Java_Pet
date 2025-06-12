@@ -1,13 +1,13 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.univer.dto.LectureDto;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.mappers.LectureMapper;
 import org.example.univer.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,39 +19,22 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/lectures")
+@RequiredArgsConstructor
 public class LectureController {
     private static final Logger logger = LoggerFactory.getLogger(LectureController.class);
-    private CathedraService cathedraService;
-    private TeacherService teacherService;
-    private SubjectService subjectService;
-    private LectureTimeService lectureTimeService;
-    private AudienceService audienceService;
-    private LectureService lectureService;
-    private GroupService groupService;
+    private final LectureService lectureService;
+    private final TeacherService teacherService;
+    private final GroupService groupService;
+    private final AudienceService audienceService;
+    private final SubjectService subjectService;
+    private final CathedraService cathedraService;
+    private final LectureTimeService lectureTimeService;
     private final LectureMapper lectureMapper;
 
-    public LectureController(TeacherService teacherService,
-                             CathedraService cathedraService,
-                             SubjectService subjectService,
-                             LectureTimeService lectureTimeService,
-                             AudienceService audienceService,
-                             LectureService lectureService,
-                             GroupService groupService,
-                             LectureMapper lectureMapper) {
-        this.teacherService = teacherService;
-        this.cathedraService = cathedraService;
-        this.subjectService = subjectService;
-        this.lectureTimeService = lectureTimeService;
-        this.audienceService = audienceService;
-        this.lectureService = lectureService;
-        this.groupService = groupService;
-        this.lectureMapper = lectureMapper;
-    }
-    @GetMapping()
+    @GetMapping
     public String index(Model model, Pageable pageable) {
-        Page<LectureDto> page = lectureService.findAllWithGroups(pageable);
         model.addAttribute("title", "All Lectures");
-        model.addAttribute("lecturesDto", page);
+        model.addAttribute("lecturesDto", lectureService.findAllWithGroups(pageable));
         return "lectures/index";
     }
 
@@ -59,13 +42,7 @@ public class LectureController {
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("lectureDto", new LectureDto());
-        model.addAttribute("teachers", teacherService.findAll());
-        model.addAttribute("cathedras", cathedraService.findAll());
-        model.addAttribute("subjects", subjectService.findAll());
-        model.addAttribute("times", lectureTimeService.findAll());
-        model.addAttribute("audiences", audienceService.findAll());
-        model.addAttribute("groups", groupService.findAll());
-        logger.debug("Show all lectures");
+        addCommonAttributes(model);
         return "lectures/new";
     }
 
@@ -81,25 +58,19 @@ public class LectureController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("lectureDto", lectureDto);
-            model.addAttribute("teachers", teacherService.findAll());
-            model.addAttribute("cathedras", cathedraService.findAll());
-            model.addAttribute("subjects", subjectService.findAll());
-            model.addAttribute("times", lectureTimeService.findAll());
-            model.addAttribute("audiences", audienceService.findAll());
-            model.addAttribute("groups", groupService.findAll());
+            addCommonAttributes(model);
             return "lectures/new";
         }
 
         try {
-             lectureService.create(lectureMapper.toEntity(lectureDto));
+            lectureService.create(lectureMapper.toEntity(lectureDto));
+            return "redirect:/lectures";
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             model.addAttribute("lectureDto", lectureDto);
-            model.addAttribute("errorMessage", e.getMessage());
+            addCommonAttributes(model);
             return "redirect:/lectures/new";
         }
-        logger.debug("Create new lecture. Id {}", lectureDto.getId());
-        return "redirect:/lectures";
     }
 
     /* Обработка изменения */
@@ -107,14 +78,7 @@ public class LectureController {
     public String edit(@PathVariable("id") Long id, Model model) {
         LectureDto dto = lectureService.findById(id);
         model.addAttribute("lectureDto", dto);
-        model.addAttribute("teachers", teacherService.findAll());
-        model.addAttribute("cathedras", cathedraService.findAll());
-        model.addAttribute("subjects", subjectService.findAll());
-        model.addAttribute("times", lectureTimeService.findAll());
-        model.addAttribute("audiences", audienceService.findAll());
-        model.addAttribute("groups", groupService.findAll());
-
-        logger.debug("Edit lecture");
+        addCommonAttributes(model);
         return "lectures/edit";
     }
 
@@ -131,32 +95,25 @@ public class LectureController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("lectureDto", lectureDto);
-            model.addAttribute("teachers", teacherService.findAll());
-            model.addAttribute("cathedras", cathedraService.findAll());
-            model.addAttribute("subjects", subjectService.findAll());
-            model.addAttribute("times", lectureTimeService.findAll());
-            model.addAttribute("audiences", audienceService.findAll());
-            model.addAttribute("groups", groupService.findAll());
+            addCommonAttributes(model);
             return "lectures/edit";
         }
 
         try {
             lectureService.update(lectureMapper.toEntity(lectureDto));
+            return "redirect:/lectures";
         } catch (ServiceException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             model.addAttribute("lectureDto", lectureDto);
-            model.addAttribute("errorMessage", e.getMessage());
-
+            addCommonAttributes(model);
             return "lectures/edit";
         }
-        return "redirect:/lectures";
     }
 
     /* Обработка показа по id */
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Long id, Model model) {
-        LectureDto dto = lectureService.findById(id);
-        model.addAttribute("lectureDto", dto);
+        model.addAttribute("lectureDto", lectureService.findById(id));
         return "lectures/show";
     }
 
@@ -164,7 +121,15 @@ public class LectureController {
     @DeleteMapping("{id}")
     public String delete(@PathVariable("id") Long id) {
         lectureService.deleteById(id);
-        logger.debug("Deleted lecture");
         return "redirect:/lectures";
+    }
+
+    private void addCommonAttributes(Model model) {
+        model.addAttribute("teachers", teacherService.findAll());
+        model.addAttribute("cathedras", cathedraService.findAll());
+        model.addAttribute("subjects", subjectService.findAll());
+        model.addAttribute("times", lectureTimeService.findAll());
+        model.addAttribute("audiences", audienceService.findAll());
+        model.addAttribute("groups", groupService.findAll());
     }
 }

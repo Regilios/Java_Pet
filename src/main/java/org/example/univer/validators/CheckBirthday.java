@@ -1,8 +1,7 @@
-package org.example.univer.interfeses;
+package org.example.univer.validators;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import org.example.univer.validators.CheckBirthdayValidator;
 
 import java.lang.annotation.*;
 

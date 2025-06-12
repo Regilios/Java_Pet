@@ -34,7 +34,7 @@ public class CathedraServiceTest {
     void setUp() {
         appSettings.setMaxLengthNameCathedra(10);
         appSettings.setStartSymbolNameCathedra("А");
-        cathedraService = new CathedraService(mockCathedra, appSettings);
+        cathedraService.init();
     }
 
     @Test

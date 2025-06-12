@@ -1,32 +1,31 @@
 package org.example.univer.services;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.example.univer.config.AppSettings;
-import org.example.univer.repositories.SubjectRepository;
-import org.example.univer.exeption.*;
+import org.example.univer.exeption.InvalidParameterException;
+import org.example.univer.exeption.SubjectExeption;
 import org.example.univer.models.Subject;
+import org.example.univer.repositories.SubjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class SubjectService {
-    private SubjectRepository subjectRepository;
+    private final SubjectRepository subjectRepository;
     private static final Logger logger = LoggerFactory.getLogger(SubjectService.class);
-    private AppSettings appSettings;
+    private final AppSettings appSettings;
     private Integer minSizeDescription;
 
-    @Autowired
-    public SubjectService(SubjectRepository subjectRepository, AppSettings appSettings) {
-        this.subjectRepository = subjectRepository;
-        this.appSettings = appSettings;
+    @PostConstruct
+    public void init() {
         this.minSizeDescription = appSettings.getMinSizeDescription();
     }
-
     public enum ValidationContext {
         METHOD_CREATE,
         METHOD_UPDATE
@@ -36,7 +35,7 @@ public class SubjectService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(subject)) {
-                    throw new InvalidParameterException("Невозможно создать передмет! Предмет с такими параметрами уже существует!");
+                    throw new InvalidParameterException("Невозможно создать предмет! Предмет с такими параметрами уже существует!");
                 }
                 validateCommon(subject, "создать");
                 break;
@@ -51,57 +50,22 @@ public class SubjectService {
 
     private void validateCommon(Subject subject, String action) {
         if (!descriptionNotEmpty(subject)) {
-            throw new SubjectExeption("Невозможно " + action + " предмет! Описание не заполнено и не может быть меньше чем: "+minSizeDescription+" символов!");
+            throw new SubjectExeption("Невозможно " + action + " предмет! Описание не заполнено и не может быть меньше чем: " + minSizeDescription + " символов!");
         }
     }
 
-    public void create(Subject subject) {
-        logger.debug("Start create subject");
-        try {
-            validate(subject, SubjectService.ValidationContext.METHOD_CREATE);
-            subjectRepository.save(subject);
-            logger.debug("Subject created");
-        } catch (SubjectExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта предмета: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект предмета не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта предмета: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта предмета", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект предмета не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта предмета", e);
-        }
+    public Subject create(Subject subject) {
+        logger.debug("Creating subject: {}", subject);
+         validate(subject, SubjectService.ValidationContext.METHOD_CREATE);
+         return subjectRepository.save(subject);
     }
 
-    public void update(Subject subject) {
-        logger.debug("Start update subject");
-        try {
-            validate(subject, SubjectService.ValidationContext.METHOD_UPDATE);
-            subjectRepository.save(subject);
-            logger.debug("Subject updated");
-        } catch (SubjectExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта предмета: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект предмета не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта предмета: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта предмета", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект предмета не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта предмета", e);
-        }
+    public Subject update(Subject subject) {
+        logger.debug("Updating subject: {}", subject);
+        validate(subject, SubjectService.ValidationContext.METHOD_UPDATE);
+        return subjectRepository.save(subject);
     }
+
     public void deleteById(Long id) {
         logger.debug("Delete subject width id: {}", id);
         subjectRepository.deleteById(id);
@@ -120,6 +84,11 @@ public class SubjectService {
     public boolean isSingle(Subject subject) {
         logger.debug("Check subject is single");
         return subjectRepository.existsByName(subject.getName());
+    }
+
+    public boolean existsById(Long id) {
+        logger.debug("Check subject is single");
+        return subjectRepository.existsById(id);
     }
 
     public List<Subject> getSubjectById(Long teacher_id) {
