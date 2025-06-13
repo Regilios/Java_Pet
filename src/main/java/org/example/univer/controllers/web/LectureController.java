@@ -80,7 +80,7 @@ public class LectureController {
         model.addAttribute("lectureDto", dto);
         addCommonAttributes(model);
         return "lectures/edit";
-    }
+}
 
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("lectureDto") @Valid LectureDto lectureDto,
@@ -90,11 +90,11 @@ public class LectureController {
                          Model model,
                          RedirectAttributes redirectAttributes) {
 
-        lectureDto.setId(id);
-        lectureDto.setGroupIds(groupIds);
+            lectureDto.setId(id);
+            lectureDto.setGroupIds(groupIds);
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("lectureDto", lectureDto);
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("lectureDto", lectureDto);
             addCommonAttributes(model);
             return "lectures/edit";
         }

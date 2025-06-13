@@ -34,7 +34,7 @@ public class VacationRestController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<VacationDto> create(@RequestBody @Valid VacationDto dto) {
+    public ResponseEntity<VacationDto> create(@PathVariable int teacherId, @RequestBody @Valid VacationDto dto) {
         Vacation saved = vacationService.create(vacationMapper.toEntity(dto));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

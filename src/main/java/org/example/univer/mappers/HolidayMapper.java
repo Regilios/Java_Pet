@@ -5,7 +5,10 @@ import org.example.univer.models.Holiday;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(
+        componentModel = "spring",
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+)
 public interface HolidayMapper {
      Holiday toEntity(HolidayDto dto);
      HolidayDto toDto(Holiday holiday);

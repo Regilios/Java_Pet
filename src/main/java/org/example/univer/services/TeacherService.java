@@ -10,6 +10,7 @@ import org.example.univer.repositories.TeacherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,9 +78,11 @@ public class TeacherService {
         return teacherRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Teacher> findAll() {
         logger.debug("Find all teachers");
-        return teacherRepository.findAll();
+        List<Teacher> list = teacherRepository.findAll();
+        return teacherRepository.findAllWithVacation(list);
     }
 
     public boolean isSingle(Teacher teacher) {

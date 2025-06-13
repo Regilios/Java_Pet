@@ -20,9 +20,9 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     // Загрузка всех учителей с их subjects
     @Query("""
-        SELECT DISTINCT t FROM Teacher t
-        LEFT JOIN FETCH t.subjects
-        WHERE t IN :teachers
-    """)
-    List<Teacher> findAllWithSubjects(@Param("teachers") List<Teacher> teachers);
+    SELECT DISTINCT t FROM Teacher t
+    LEFT JOIN FETCH t.vacation
+    WHERE t IN :teachers
+""")
+    List<Teacher> findAllWithVacation(@Param("teachers") List<Teacher> teachers);
 }

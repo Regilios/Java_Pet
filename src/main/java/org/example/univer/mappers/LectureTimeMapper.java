@@ -5,7 +5,10 @@ import org.example.univer.models.LectureTime;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(
+        componentModel = "spring",
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+)
 public interface LectureTimeMapper {
      LectureTime toEntity(LectureTimeDto dto);
      LectureTimeDto toDto(LectureTime lectureTime);

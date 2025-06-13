@@ -70,7 +70,7 @@ public class VacationController {
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
 
         VacationDto dto = new VacationDto();
-        dto.setTeacher(teacherMapper.toDto(teacher));
+        dto.setTeacherId(teacherMapper.toDto(teacher).getId());
 
         model.addAttribute("teacher", teacherMapper.toDto(teacher));
         model.addAttribute("vacationDto", dto);
@@ -96,8 +96,10 @@ public class VacationController {
 
         try {
             Teacher teacher = teacherService.findById(teacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-            vacationDto.setTeacher(teacherMapper.toDto(teacher));
+            vacationDto.setTeacherId(teacherMapper.toDto(teacher).getId());
+
             Vacation vacation = vacationMapper.toEntity(vacationDto);
+            vacation.setTeacher(teacher);
 
             List<Lecture> lectures = lectureService.findByTeacherIdAndPeriod(
                     teacher, vacation.getStartJob(), vacation.getEndJob()
@@ -155,9 +157,10 @@ public class VacationController {
             Teacher teacher = teacherService.findById(teacherId)
                     .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
             vacationDto.setId(vacationId);
-            vacationDto.setTeacher(teacherMapper.toDto(teacher));
+            vacationDto.setTeacherId(teacherMapper.toDto(teacher).getId());
 
             Vacation vacation = vacationMapper.toEntity(vacationDto);
+            vacation.setTeacher(teacher);
 
             List<Lecture> lectures = lectureService.findByTeacherIdAndPeriod(
                     teacher, vacation.getStartJob(), vacation.getEndJob()

@@ -1,75 +1,52 @@
 package org.example.univer.mappers;
 
-import org.example.univer.dto.SubjectDto;
 import org.example.univer.dto.TeacherDto;
+import org.example.univer.exeption.EntityNotFoundException;
 import org.example.univer.models.Subject;
 import org.example.univer.models.Teacher;
 import org.example.univer.services.CathedraService;
 import org.example.univer.services.SubjectService;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-@Transactional(readOnly = true)
-public class TeacherMapper {
-    private final SubjectService subjectService;
-    private final SubjectMapper subjectMapper;
-    private final CathedraService cathedraService;
-    private final CathedraMapper cathedraMapper;
+@Mapper(
+        componentModel = "spring",
+        uses = {
+                SubjectMapper.class,
+                CathedraMapper.class,
+                VacationMapper.class
+        },
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+)
+public abstract class TeacherMapper {
+    @Autowired
+    protected SubjectService subjectService;
+    @Autowired
+    protected CathedraService cathedraService;
 
-    public TeacherMapper(SubjectMapper subjectMapper,
-                         SubjectService subjectService,
-                         CathedraService cathedraService,
-                         CathedraMapper cathedraMapper) {
-        this.subjectService = subjectService;
-        this.subjectMapper = subjectMapper;
-        this.cathedraService = cathedraService;
-        this.cathedraMapper = cathedraMapper;
-    }
+    @Mapping(target = "subjects", ignore = true)
+    @Mapping(target = "cathedra", ignore = true)
+    public abstract Teacher toEntity(TeacherDto dto);
 
-    public Teacher toEntity(TeacherDto dto) {
-        Teacher teacher = new Teacher();
-        teacher.setId(dto.getId());
-        teacher.setFirstName(dto.getFirstName());
-        teacher.setLastName(dto.getLastName());
-        teacher.setGender(dto.getGender());
-        teacher.setAddress(dto.getAddress());
-        teacher.setEmail(dto.getEmail());
-        teacher.setPhone(dto.getPhone());
-        teacher.setBirthday(dto.getBirthday());
-        cathedraService.findById(dto.getCathedra().getId()).ifPresent(teacher::setCathedra);
+    @AfterMapping
+    protected void afterDtoToEntity(TeacherDto dto, @MappingTarget Teacher teacher) {
+        cathedraService.findById(dto.getCathedra().getId())
+                .ifPresentOrElse(teacher::setCathedra, () -> { throw new EntityNotFoundException("Cathedra not found");
+        });
         List<Subject> subjects = dto.getSubjectIds().stream()
-                .map(id -> subjectService.findById(id).orElse(null))
-                .collect(Collectors.toList());
+                .map(id -> subjectService.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Subject not found: " + id)))
+                .toList();
 
         teacher.setSubjects(subjects);
-        return teacher;
     }
 
-    public TeacherDto toDto(Teacher teacher) {
-        TeacherDto dto = new TeacherDto();
-        dto.setId(teacher.getId());
-        dto.setFirstName(teacher.getFirstName());
-        dto.setLastName(teacher.getLastName());
-        dto.setGender(teacher.getGender());
-        dto.setAddress(teacher.getAddress());
-        dto.setEmail(teacher.getEmail());
-        dto.setPhone(teacher.getPhone());
-        dto.setBirthday(teacher.getBirthday());
-        dto.setCathedra(cathedraMapper.toDto(teacher.getCathedra()));
+    @Mapping(target = "subjectIds", expression = "java(mapSubjectIds(teacher))")
+    public abstract TeacherDto toDto(Teacher teacher);
 
-        List<Long> subjectsIds = teacher.getSubjects().stream()
-                .map(Subject::getId)
-                .collect(Collectors.toList());
-        dto.setSubjectIds(subjectsIds);
-
-        List<SubjectDto> subjectDtos = teacher.getSubjects().stream()
-                .map(subjectMapper::toDto)
-                .collect(Collectors.toList());
-        dto.setSubjects(subjectDtos);
-        return dto;
+    protected List<Long> mapSubjectIds(Teacher teacher) {
+        return teacher.getSubjects().stream().map(Subject::getId).toList();
     }
 }

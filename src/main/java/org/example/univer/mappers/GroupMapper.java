@@ -5,7 +5,11 @@ import org.example.univer.models.Group;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = {CathedraMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(
+        componentModel = "spring",
+        uses = {CathedraMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+)
 public interface GroupMapper {
     Group toEntity(GroupDto dto);
     GroupDto toDto(Group group);

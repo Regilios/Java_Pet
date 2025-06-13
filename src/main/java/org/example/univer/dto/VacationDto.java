@@ -18,5 +18,7 @@ public class VacationDto {
     @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     @NotNull(message = "{vacation.endJob.notnull}")
     private LocalDate endJob;
-    private TeacherDto teacher;
+    private Long teacherId;
+    private String teacherFirstName;
+    private String teacherLastName;
 }
