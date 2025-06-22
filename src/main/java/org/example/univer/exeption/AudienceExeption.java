@@ -5,7 +5,6 @@ public class AudienceExeption extends ServiceException {
     public AudienceExeption(String message) {
         super(message);
     }
-
     public AudienceExeption(String message, Throwable cause) {
         super(message, cause);
     }

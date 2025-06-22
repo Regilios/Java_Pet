@@ -2,11 +2,13 @@ package org.example.univer.controllers.rest;
 
 import jakarta.validation.Valid;
 import org.example.univer.dto.AudienceDto;
+import org.example.univer.exeption.AudienceExeption;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.mappers.AudienceMapper;
 import org.example.univer.models.Audience;
 import org.example.univer.services.AudienceService;
+import org.example.univer.util.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -59,7 +61,7 @@ public class AudienceRestController {
         return audienceService.findById(id)
                 .map(audienceMapper::toDto)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new AudienceExeption("Audience not found with id " + id));
     }
 
     @PutMapping("/{id}")
@@ -87,5 +89,14 @@ public class AudienceRestController {
         audienceService.deleteById(id);
         logger.debug("Deleted audience with id: {}", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler // пример своей реализации
+    private ResponseEntity<ErrorResponse> handleException(AudienceExeption e) {
+        ErrorResponse response = new ErrorResponse(
+            "Аудиенция не найдена",
+                System.currentTimeMillis()
+        );
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
     }
 }

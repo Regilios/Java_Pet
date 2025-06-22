@@ -1,6 +1,5 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
-import org.example.univer.controllers.web.GroupController;
 import org.example.univer.dto.GroupDto;
 import org.example.univer.mappers.GroupMapper;
 import org.example.univer.models.Group;

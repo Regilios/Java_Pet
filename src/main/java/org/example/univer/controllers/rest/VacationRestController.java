@@ -5,6 +5,7 @@ import org.example.univer.dto.VacationDto;
 import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.ServiceException;
 import org.example.univer.mappers.VacationMapper;
+import org.example.univer.models.Teacher;
 import org.example.univer.models.Vacation;
 import org.example.univer.services.VacationService;
 import org.slf4j.Logger;
@@ -34,8 +35,12 @@ public class VacationRestController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<VacationDto> create(@PathVariable int teacherId, @RequestBody @Valid VacationDto dto) {
-        Vacation saved = vacationService.create(vacationMapper.toEntity(dto));
+    public ResponseEntity<VacationDto> create(@RequestBody @Valid VacationDto dto) {
+        Teacher teacher = vacationService.findTeacherById(dto.getTeacherId());
+        Vacation vacation = vacationMapper.toEntity(dto);
+        vacation.setTeacher(teacher);
+
+        Vacation saved = vacationService.create(vacation);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(saved.getId())

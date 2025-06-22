@@ -2,9 +2,9 @@
 
 ### Project update - project translation Spring Data JPA
 Current updates:
-- added first REST
+- added REST
 - changes mappers -> mapStruct
-- fix tests
+- add tests
 - optimized Services layer
 
 

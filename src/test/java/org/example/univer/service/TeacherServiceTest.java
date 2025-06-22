@@ -122,6 +122,7 @@ public class TeacherServiceTest {
         List<Teacher> teacherList = List.of(new Teacher(), new Teacher());
 
         when(mockTeacher.findAll()).thenReturn(teacherList);
+        when(mockTeacher.findAllWithVacation(teacherList)).thenReturn(teacherList);
         List<Teacher> result = teacherService.findAll();
 
         assertEquals(teacherList, result);

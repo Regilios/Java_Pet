@@ -1,6 +1,5 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
-import org.example.univer.controllers.web.AudienceController;
 import org.example.univer.dto.AudienceDto;
 import org.example.univer.mappers.AudienceMapper;
 import org.example.univer.models.Audience;

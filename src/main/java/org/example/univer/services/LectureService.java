@@ -14,6 +14,7 @@ import org.example.univer.repositories.HolidayRepository;
 import org.example.univer.repositories.LectureRepository;
 import org.example.univer.repositories.SubjectRepository;
 import org.example.univer.repositories.TeacherRepository;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -113,14 +114,14 @@ public class LectureService {
         validate(lecture, ValidationContext.METHOD_UPDATE);
         return lectureRepository.save(lecture);
     }
-
-
+    @Transactional
     public void deleteById(Long id) {
-        // Удаляем связи с группами т.к. у нас двустороння связь
+        // Удаляем связи с группами т.к. у нас двухсторонняя связь c 2 List
         logger.debug("Deleting lecture with id: {}", id);
-        Lecture lecture = lectureRepository.findById(id)
+        Lecture lecture = lectureRepository.findByIdWithGroups(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Лекция не найдена"));
 
+        lecture.getGroups().forEach(group -> Hibernate.initialize(group.getLectures()));
         lecture.getGroups().forEach(group -> group.getLectures().remove(lecture));
         lecture.getGroups().clear();
 

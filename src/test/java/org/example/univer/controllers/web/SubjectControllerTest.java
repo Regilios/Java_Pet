@@ -1,6 +1,5 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
-import org.example.univer.controllers.web.SubjectController;
 import org.example.univer.dto.SubjectDto;
 import org.example.univer.mappers.SubjectMapper;
 import org.example.univer.models.Subject;

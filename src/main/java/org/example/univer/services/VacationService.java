@@ -4,7 +4,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.example.univer.config.AppSettings;
 import org.example.univer.exeption.InvalidParameterException;
+import org.example.univer.exeption.ResourceNotFoundException;
 import org.example.univer.exeption.VacationExeption;
+import org.example.univer.models.Teacher;
 import org.example.univer.models.Vacation;
 import org.example.univer.repositories.VacationRepository;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class VacationService {
     private final VacationRepository vacationRepository;
+    private final TeacherService teacherService;
     private static final Logger logger = LoggerFactory.getLogger(VacationService.class);
     private final AppSettings appSettings;
     private Integer minVacationDay;
@@ -87,6 +90,12 @@ public class VacationService {
         logger.debug("Find vacation width id: {}", id);
         return vacationRepository.findByTeacher_Id(id);
     }
+
+    public Teacher findTeacherById(Long id) {
+        return teacherService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Преподаватель с id " + id + " не найден"));
+    }
+
     public List<Vacation> findAll() {
         logger.debug("Find all vacations");
         return vacationRepository.findAll();

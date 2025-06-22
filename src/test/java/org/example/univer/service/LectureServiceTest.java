@@ -94,7 +94,7 @@ public class LectureServiceTest {
         group.setLectures(new ArrayList<>());
         group.getLectures().add(lecture);
 
-        when(lectureRepository.findById(id)).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findByIdWithGroups(id)).thenReturn(Optional.of(lecture));
 
         lectureService.deleteById(id);
 

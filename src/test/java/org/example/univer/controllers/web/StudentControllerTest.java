@@ -1,6 +1,5 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
-import org.example.univer.controllers.web.StudentController;
 import org.example.univer.dto.StudentDto;
 import org.example.univer.mappers.StudentMapper;
 import org.example.univer.models.Student;
@@ -31,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StudentsControllerTest {
+public class StudentControllerTest {
     private MockMvc mockMvc;
     @Mock
     private GroupService groupService;

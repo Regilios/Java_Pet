@@ -1,6 +1,5 @@
-package org.example.univer.controllers;
+package org.example.univer.controllers.web;
 
-import org.example.univer.controllers.web.HolidayController;
 import org.example.univer.dto.HolidayDto;
 import org.example.univer.mappers.HolidayMapper;
 import org.example.univer.models.Holiday;
