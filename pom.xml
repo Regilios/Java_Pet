@@ -13,7 +13,10 @@
         <java.version>17</java.version>
         <bootstrap.version>5.3.3</bootstrap.version>
         <jquery.version>3.7.1</jquery.version>
-
+        <org.mapstruct>1.5.5.Final</org.mapstruct>
+        <jakarta.persistence>3.1.0</jakarta.persistence>
+        <org.projectlombok>1.18.38</org.projectlombok>
+        <com.fasterxml.jackson.datatype>2.19.1</com.fasterxml.jackson.datatype>
     </properties>
 
     <parent>
@@ -33,13 +36,13 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.5.5.Final</version>
+            <version>${org.mapstruct}</version>
         </dependency>
 
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>1.5.5.Final</version>
+            <version>${org.mapstruct}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -124,14 +127,18 @@
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.1.0</version>
+            <version>${jakarta.persistence}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
+            <version>${org.projectlombok}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${com.fasterxml.jackson.datatype}</version>
+        </dependency>
     </dependencies>
 
     <build>

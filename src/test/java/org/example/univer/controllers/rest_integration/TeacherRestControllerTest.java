@@ -1,9 +1,9 @@
-package org.example.univer.controllers.rest;
+package org.example.univer.controllers.rest_integration;
 
 import org.example.univer.dto.CathedraDto;
+import org.example.univer.dto.LectureDto;
 import org.example.univer.dto.SubjectDto;
 import org.example.univer.dto.TeacherDto;
-import org.example.univer.dto.VacationDto;
 import org.example.univer.models.Cathedra;
 import org.example.univer.models.Gender;
 import org.example.univer.models.Subject;
@@ -31,32 +31,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class VacationRestControllerTest {
+public class TeacherRestControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
     @Autowired
-    private VacationRepository vacationRepository;
+    private SubjectRepository subjectRepository;
     @Autowired
-    private TeacherRepository teacherRepository;
+    private VacationRepository vacationRepository;
     @Autowired
     private CathedraRepository cathedraRepository;
     @Autowired
-    private SubjectRepository subjectRepository;
-    @LocalServerPort
-    private int port;
+    private TeacherRepository teacherRepository;
 
     @BeforeEach
     void setUp() {
-        vacationRepository.deleteAll();
         teacherRepository.deleteAll();
         cathedraRepository.deleteAll();
+        vacationRepository.deleteAll();
         subjectRepository.deleteAll();
+        teacherRepository.deleteAll();
     }
 
+    @LocalServerPort
+    private int port;
+
     @Test
-    void whenGetAllVacations_thenReturnList() {
+    void whenGetAllTeachers_thenReturnList() {
         ResponseEntity<List> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/vacations",
+                "http://localhost:" + port + "/api/teachers",
                 List.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -64,77 +66,87 @@ public class VacationRestControllerTest {
     }
 
     @Test
-    void whenGetExistingVacation_thenReturnVacation() {
-        VacationDto vacationDto = createVacation();
+    void whenGetExistingTeacher_thenReturnLecture() {
+        TeacherDto teacherDto = createTeacher();
 
-        ResponseEntity<VacationDto> createResponse = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/vacations",
-                vacationDto,
-                VacationDto.class);
+        ResponseEntity<TeacherDto> createResponse = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/teachers",
+                teacherDto,
+                TeacherDto.class);
 
         Long createdId = createResponse.getBody().getId();
 
-        ResponseEntity<VacationDto> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/vacations/" + createdId,
-                VacationDto.class);
+        ResponseEntity<TeacherDto> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/api/teachers/" + createdId,
+                TeacherDto.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getId()).isEqualTo(createdId);
-        assertThat(response.getBody().getStartJob()).isEqualTo(LocalDate.parse("2025-10-01"));
-        assertThat(response.getBody().getEndJob()).isEqualTo(LocalDate.parse("2025-10-11"));
+        TeacherDto result = response.getBody();
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(createdId);
+        assertThat(result.getCathedra().getName()).isEqualTo("Math");
+        assertThat(result.getEmail()).isEqualTo("alice@example.com");
+        assertThat(result.getSubjects().get(0).getName()).isEqualTo("Algebra");
     }
 
     @Test
-    void whenCreateNewVacation_thenReturnCreated() {
-        VacationDto vacationDto = createVacation();
+    void whenCreateNewTeacher_thenReturnCreated() {
+        TeacherDto teacherDto = createTeacher();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<VacationDto> request = new HttpEntity<>(vacationDto, headers);
+        HttpEntity<TeacherDto> request = new HttpEntity<>(teacherDto, headers);
 
-        ResponseEntity<VacationDto> response = restTemplate.postForEntity("/api/vacations", request, VacationDto.class);
+        ResponseEntity<TeacherDto> response = restTemplate.postForEntity("/api/teachers", request, TeacherDto.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getHeaders().getLocation()).isNotNull();
-        VacationDto createdDto = response.getBody();
+        TeacherDto createdDto = response.getBody();
         assertThat(createdDto).isNotNull();
         assertThat(createdDto.getId()).isNotNull();
     }
 
     @Test
-    void whenUpdateExistingVacation_thenReturnOk() {
-        VacationDto vacationDto = createVacation();
+    void whenUpdateExistingTeacher_thenReturnOk() {
+        TeacherDto teacherDto = createTeacher();
 
-        ResponseEntity<VacationDto> createResponse = restTemplate.postForEntity("/api/vacations", vacationDto, VacationDto.class);
+        ResponseEntity<TeacherDto> createResponse = restTemplate.postForEntity("/api/teachers", teacherDto, TeacherDto.class);
         Long id = createResponse.getBody().getId();
 
-        vacationDto.setId(id);
-        vacationDto.setStartJob(LocalDate.parse("2025-10-02"));
+        Cathedra cathedra = new Cathedra();
+        cathedra.setName("World");
+        cathedra = cathedraRepository.save(cathedra);
 
-        HttpEntity<VacationDto> request = new HttpEntity<>(vacationDto);
-        ResponseEntity<VacationDto> updateResponse = restTemplate.exchange(
-                "/api/vacations/" + id,
+        CathedraDto cDto = new CathedraDto();
+        cDto.setId(cathedra.getId());
+        cDto.setName(cathedra.getName());
+
+        teacherDto.setId(id);
+        teacherDto.setCathedra(cDto);
+
+        HttpEntity<TeacherDto> request = new HttpEntity<>(teacherDto);
+        ResponseEntity<TeacherDto> updateResponse = restTemplate.exchange(
+                "/api/teachers/" + id,
                 HttpMethod.PUT,
                 request,
-                VacationDto.class
+                TeacherDto.class
         );
 
         assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(updateResponse.getBody().getStartJob()).isEqualTo(LocalDate.parse("2025-10-02"));
+        assertThat(updateResponse.getBody().getCathedra().getName()).isEqualTo("World");
     }
 
 
     @Test
-    void whenDeleteVacation_thenReturnNoContent() {
-        VacationDto vacationDto = createVacation();
+    void whenDeleteTeacher_thenReturnNoContent() {
+        TeacherDto teacherDto = createTeacher();
 
-        ResponseEntity<VacationDto> createResponse = restTemplate.postForEntity("/api/vacations", vacationDto, VacationDto.class);
+        ResponseEntity<LectureDto> createResponse = restTemplate.postForEntity("/api/teachers", teacherDto, LectureDto.class);
         Long id = createResponse.getBody().getId();
 
         ResponseEntity<Void> deleteResponse = restTemplate.exchange(
-                "/api/vacations/" + id,
+                "/api/teachers/" + id,
                 HttpMethod.DELETE,
                 null,
                 Void.class
@@ -144,14 +156,15 @@ public class VacationRestControllerTest {
     }
 
     @Test
-    void whenGetNonExistingVacation_thenReturnNotFound() {
+    void whenGetNonExistingTeacher_thenReturnNotFound() {
         ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/vacations/999999",
+                "http://localhost:" + port + "/api/teachers/999999",
                 String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
-    private VacationDto createVacation() {
+
+    private TeacherDto createTeacher() {
         Cathedra cathedra = new Cathedra();
         cathedra.setName("Math");
         cathedra = cathedraRepository.save(cathedra);
@@ -162,7 +175,7 @@ public class VacationRestControllerTest {
         subject = subjectRepository.save(subject);
 
         Teacher teacher = new Teacher();
-        teacher.setFirstName("Alice");
+        teacher.setFirstName("Alexa");
         teacher.setLastName("Smith");
         teacher.setEmail("alice@example.com");
         teacher.setPhone("+79001234567");
@@ -171,7 +184,7 @@ public class VacationRestControllerTest {
         teacher.setBirthday(LocalDate.now().minusYears(30));
         teacher.setCathedra(cathedra);
         teacher.setSubjects(Collections.singletonList(subject));
-        teacher = teacherRepository.save(teacher);
+
 
         CathedraDto cDto = new CathedraDto();
         cDto.setId(cathedra.getId());
@@ -194,11 +207,6 @@ public class VacationRestControllerTest {
         teacherDto.setCathedra(cDto);
         teacherDto.setSubjectIds(teacher.getSubjects().stream().map(Subject::getId).toList());
 
-        VacationDto vacationDto = new VacationDto();
-        vacationDto.setStartJob(LocalDate.parse("2025-10-01"));
-        vacationDto.setEndJob(LocalDate.parse("2025-10-11"));
-        vacationDto.setTeacherId(teacherDto.getId());
-
-        return vacationDto;
+        return teacherDto;
     }
 }

@@ -94,9 +94,9 @@ public class AudienceRestController {
     @ExceptionHandler // пример своей реализации
     private ResponseEntity<ErrorResponse> handleException(AudienceExeption e) {
         ErrorResponse response = new ErrorResponse(
-            "Аудиенция не найдена",
-                System.currentTimeMillis()
+            "Аудитория не найдена",
+               e.getMessage()
         );
-        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

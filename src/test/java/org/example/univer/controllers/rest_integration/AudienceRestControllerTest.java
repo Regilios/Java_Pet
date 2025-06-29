@@ -1,4 +1,4 @@
-package org.example.univer.controllers.rest;
+package org.example.univer.controllers.rest_integration;
 
 import org.example.univer.dto.AudienceDto;
 import org.example.univer.repositories.AudienceRepository;
@@ -137,6 +137,6 @@ class AudienceRestControllerTest {
                 String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).contains("Аудиенция не найдена");
+        assertThat(response.getBody()).contains("Аудитория не найдена");
     }
 }

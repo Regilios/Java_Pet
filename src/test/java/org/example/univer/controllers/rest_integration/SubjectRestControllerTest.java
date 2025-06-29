@@ -1,4 +1,4 @@
-package org.example.univer.controllers.rest;
+package org.example.univer.controllers.rest_integration;
 
 import org.example.univer.dto.SubjectDto;
 import org.example.univer.repositories.SubjectRepository;
