@@ -1,5 +1,6 @@
 package org.example.univer.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -19,9 +20,11 @@ public class HolidayDto {
     @DateTimeFormat(pattern = DATE_PATTERN_HOLIDAY)
     @NotNull(message = "{holiday.endHoliday.notnull}")
     @FutureOrPresent(message = "{holiday.startHoliday.future}")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startHoliday;
     @DateTimeFormat(pattern = DATE_PATTERN_HOLIDAY)
     @NotNull(message = "{holiday.endHoliday.notnull}")
     @FutureOrPresent(message = "{holiday.endHoliday.future}")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endHoliday;
 }

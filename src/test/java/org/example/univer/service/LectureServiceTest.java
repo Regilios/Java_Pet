@@ -7,6 +7,7 @@ import org.example.univer.models.*;
 import org.example.univer.repositories.HolidayRepository;
 import org.example.univer.repositories.LectureRepository;
 import org.example.univer.repositories.SubjectRepository;
+import org.example.univer.repositories.TeacherRepository;
 import org.example.univer.services.LectureService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,8 @@ public class LectureServiceTest {
     @Mock
     private LectureMapper lectureMapper;
     @Mock
+    private TeacherRepository teacherRepository;
+    @Mock
     private LectureRepository lectureRepository;
     @Mock
     private SubjectRepository subjectRepository;
@@ -53,7 +56,12 @@ public class LectureServiceTest {
         when(appSettings.getEndLectionDay()).thenReturn("19:00");
 
         lectureService = spy(new LectureService(
-                lectureMapper, lectureRepository, subjectRepository, holidayRepository, appSettings
+                lectureRepository,
+                teacherRepository,
+                subjectRepository,
+                holidayRepository,
+                lectureMapper,
+                appSettings
         ));
     }
     @Test
@@ -86,7 +94,7 @@ public class LectureServiceTest {
         group.setLectures(new ArrayList<>());
         group.getLectures().add(lecture);
 
-        when(lectureRepository.findById(id)).thenReturn(Optional.of(lecture));
+        when(lectureRepository.findByIdWithGroups(id)).thenReturn(Optional.of(lecture));
 
         lectureService.deleteById(id);
 

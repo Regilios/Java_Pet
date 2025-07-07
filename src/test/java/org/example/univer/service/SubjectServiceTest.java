@@ -34,7 +34,7 @@ public class SubjectServiceTest {
     @BeforeEach
     void setUp() {
         appSettings.setMinSizeDescription(20);
-        subjectService = new SubjectService(mockSubject, appSettings);
+        subjectService.init();
     }
 
     @Test

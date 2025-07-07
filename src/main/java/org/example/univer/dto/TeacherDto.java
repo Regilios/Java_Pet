@@ -1,5 +1,6 @@
 package org.example.univer.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,5 +38,6 @@ public class TeacherDto {
     private String phone;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "{teacher.birthday.notnull}")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 }

@@ -1,5 +1,6 @@
 package org.example.univer.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +15,13 @@ public class VacationDto {
     private Long id;
     @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     @NotNull(message = "{vacation.startJob.notnull}")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startJob;
     @DateTimeFormat(pattern = DATE_PATTERN_VACATION)
     @NotNull(message = "{vacation.endJob.notnull}")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endJob;
-    private TeacherDto teacher;
+    private Long teacherId;
+    private String teacherFirstName;
+    private String teacherLastName;
 }

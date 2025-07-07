@@ -2,9 +2,9 @@
 
 ### Project update - project translation Spring Data JPA
 Current updates:
-- added lombok
-- fix models, test, web-layers, hibernate-layers
-- edit structure tests
-- add validation
+- added REST
+- changes mappers -> mapStruct
+- add tests
+- optimized Services layer
 
 

@@ -32,7 +32,6 @@ public class TeacherServiceTest {
     private AppSettings appSettings = new AppSettings();
     @Mock
     private TeacherRepository mockTeacher;
-
     @Mock
     private SubjectService subjectService;
     @InjectMocks
@@ -41,7 +40,7 @@ public class TeacherServiceTest {
     @BeforeEach
     void setUp() {
         appSettings.setGenderTeacher("FEMALE");
-        teacherService = new TeacherService(mockTeacher, subjectService, appSettings);
+        teacherService.init();
     }
 
     @Test
@@ -123,6 +122,7 @@ public class TeacherServiceTest {
         List<Teacher> teacherList = List.of(new Teacher(), new Teacher());
 
         when(mockTeacher.findAll()).thenReturn(teacherList);
+        when(mockTeacher.findAllWithVacation(teacherList)).thenReturn(teacherList);
         List<Teacher> result = teacherService.findAll();
 
         assertEquals(teacherList, result);

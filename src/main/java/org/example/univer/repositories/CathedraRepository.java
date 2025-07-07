@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CathedraRepository extends JpaRepository<Cathedra, Long> {
     boolean existsByName(String name);
+    boolean existsById(Long id);
 }

@@ -3,6 +3,7 @@ package org.example.univer.repositories;
 import org.example.univer.models.Lecture;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,12 +15,18 @@ import java.util.Optional;
 
 @Repository
 public interface LectureRepository extends JpaRepository<Lecture,Long> {
+    @EntityGraph(attributePaths = {"teacher.cathedra", "teacher.subjects", "teacher.vacation", "groups", "subject", "cathedra", "audience", "time"})
+    Optional<Lecture> findById(Long id);
+
     @Query("SELECT l FROM Lecture l")
     Page<Lecture> findAllLectures(Pageable pageable);
 
     @Query("SELECT l FROM Lecture l JOIN FETCH l.groups WHERE l.id IN :lectureIds")
     List<Lecture> findWithGroupsByIdIn(@Param("lectureIds") List<Long> lectureIds);
+
     boolean existsByTeacherIdAndSubjectIdAndTimeIdAndAudienceId (Long teacherId, Long subjectId, Long lectureTimeId, Long audienceId);
+
+    boolean existsByTime_IdAndAudience_Id(Long lectureTimeId, Long audienceId);
 
     @Query("SELECT DISTINCT l FROM Lecture l LEFT JOIN FETCH l.groups g WHERE l.id = :id")
     Optional<Lecture> findByIdWithGroups(@Param("id") Long id);
@@ -42,8 +49,6 @@ public interface LectureRepository extends JpaRepository<Lecture,Long> {
             @Param("endLecture") LocalDateTime endLecture,
             @Param("teacherId") Long teacherId
     );
-
-    boolean existsByTime_IdAndAudience_Id(Long lectureTimeId, Long audienceId);
 
     @Query("SELECT COUNT(l) > 0 FROM Lecture l JOIN l.audience a JOIN l.time t WHERE t.id = :timeId AND a.id = :audienceId AND l.id <> :currentLectureId")
     boolean findByAudienceDateAndLectureTimeForUpdate(@Param("timeId") Long timeId,

@@ -1,13 +1,14 @@
 package org.example.univer.services;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.example.univer.config.AppSettings;
-import org.example.univer.exeption.*;
+import org.example.univer.exeption.InvalidParameterException;
+import org.example.univer.exeption.LectureTimeExeption;
 import org.example.univer.models.LectureTime;
 import org.example.univer.repositories.LectureTimeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -15,16 +16,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LectureTimeService {
-    LectureTimeRepository lectureTimeRepository;
+    private final LectureTimeRepository lectureTimeRepository;
     private static final Logger logger = LoggerFactory.getLogger(LectureTimeService.class);
-    private AppSettings appSettings;
+    private final AppSettings appSettings;
     private Integer minimumLectureTimeMinutes;
 
-    @Autowired
-    public LectureTimeService(LectureTimeRepository lectureTimeRepository, AppSettings appSettings) {
-        this.lectureTimeRepository = lectureTimeRepository;
-        this.appSettings = appSettings;
+    @PostConstruct
+    public void init() {
         this.minimumLectureTimeMinutes = appSettings.getMinimumLectureTimeMinutes();
     }
 
@@ -36,7 +36,7 @@ public class LectureTimeService {
         switch (context) {
             case METHOD_CREATE:
                 if (isSingle(lectureTime)) {
-                    throw new InvalidParameterException("Невозможно создать время для лекции! Время с: " + lectureTime.getStartLecture() + " по " + lectureTime.getEndLecture() + "уже существует!");
+                    throw new InvalidParameterException(String.format("Невозможно создать время для лекции! Время с: %s по %s уже существует!", lectureTime.getStartLecture(), lectureTime.getEndLecture()));
                 }
                 validateCommon(lectureTime, "создать");
                 break;
@@ -59,73 +59,42 @@ public class LectureTimeService {
     }
 
 
-    public void create(LectureTime lectureTime) {
-        logger.debug("Start create LectionTime");
-        try {
-            validate(lectureTime, ValidationContext.METHOD_CREATE);
-            lectureTimeRepository.save(lectureTime);
-            logger.debug("LectionTime created");
-        } catch (LectureTimeExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта времени-лекции: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект времени-лекции не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта времени-лекции: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта времени-лекции", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект времени-лекции не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта времени-лекции", e);
-        }
+    public LectureTime create(LectureTime lectureTime) {
+        logger.debug("Creating lectureTime: {}", lectureTime);
+        validate(lectureTime, ValidationContext.METHOD_CREATE);
+        return lectureTimeRepository.save(lectureTime);
     }
 
-    public void update(LectureTime lectureTime) {
-        logger.debug("Start update LectionTime");
-        try {
-            validate(lectureTime, ValidationContext.METHOD_UPDATE);
-            lectureTimeRepository.save(lectureTime);
-            logger.debug("LectionTime updated");
-        } catch (LectureTimeExeption e) {
-            logger.error("Ошибка: {}", e.getMessage(), e);
-            throw e;
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException при создании объекта времени-лекции: {}", e.getMessage(), e);
-            throw new NullEntityException("Объект времени-лекции не может быть null", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("IllegalArgumentException при создании объекта времени-лекции: {}", e.getMessage(), e);
-            throw new InvalidParameterException("Неправильный аргумент для создания объекта времени-лекции", e);
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("EmptyResultDataAccessException при создании объекта: {}", e.getMessage(), e);
-            throw new EntityNotFoundException("Объект времени-лекции не найден", e);
-        } catch (Exception e) {
-            logger.error("Неизвестная ошибка при создании объекта: {}", e.getMessage(), e);
-            throw new ServiceException("Неизвестная ошибка при создании объекта времени-лекции", e);
-        }
+    public LectureTime update(LectureTime lectureTime) {
+        logger.debug("Updating lectureTime: {}", lectureTime);
+        validate(lectureTime, ValidationContext.METHOD_UPDATE);
+        return lectureTimeRepository.save(lectureTime);
     }
 
     public void deleteById(Long id) {
-        logger.debug("Delete lectionTime width id: {}", id);
+        logger.debug("Delete lectureTime width id: {}", id);
         lectureTimeRepository.deleteById(id);
     }
 
     public Optional<LectureTime> findById(Long id) {
-        logger.debug("Find lectionTime width id: {}", id);
+        logger.debug("Find lectureTime width id: {}", id);
         return lectureTimeRepository.findById(id);
     }
 
     public List<LectureTime> findAll() {
-        logger.debug("Find all lectionTime");
+        logger.debug("Find all lectureTime");
         return lectureTimeRepository.findAll();
     }
 
     public boolean isSingle(LectureTime lectureTime) {
-        logger.debug("Check lectionTime is single");
+        logger.debug("Check lectureTime is single");
         Long count = lectureTimeRepository.countByStartLectureAndEndLecture(lectureTime.getStartLecture(), lectureTime.getEndLecture());
         return count > 0;
+    }
+
+    public boolean existsById(Long id) {
+        logger.debug("Check lectureTime is single");
+        return lectureTimeRepository.existsById(id);
     }
 
     public boolean isTimeLectionCorrect(LectureTime lectureTime) {

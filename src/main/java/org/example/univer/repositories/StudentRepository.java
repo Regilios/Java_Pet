@@ -7,14 +7,18 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
     boolean existsByFirstNameAndLastName(String firstName, String lastName);
+    boolean existsById(Long id);
     @EntityGraph(attributePaths = {"group", "group.cathedra"})
     Page<Student> findAllByOrderById(Pageable pageable);
-
     @EntityGraph(attributePaths = {"group", "group.cathedra"})
     Optional<Student> findById(Long id);
     int countByGroup_Id(Long groupId);
+    @EntityGraph(attributePaths = {"group", "group.cathedra"})
+    @Override
+    List<Student> findAll();
 }

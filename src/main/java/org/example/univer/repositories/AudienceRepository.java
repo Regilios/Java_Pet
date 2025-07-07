@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AudienceRepository extends JpaRepository<Audience, Long> {
     boolean existsByRoomNumber(Integer roomNumber);
+    boolean existsById(Long id);
     Page<Audience> findAllByOrderById(Pageable pageable);
 }
